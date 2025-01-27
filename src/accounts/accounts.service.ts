@@ -17,6 +17,15 @@ export class AccountsService {
         private readonly person: PersonService,
     ) {}
 
+    async checkIfAccountExists(email: string) {
+        const response = await this.database.account.findFirst({
+            where: {
+                email,
+            },
+        });
+        return !response;
+    }
+
     async getAccounts(isEmailVerified?: boolean) {
         if (isEmailVerified) {
             return this.database.account.findMany({
@@ -42,12 +51,9 @@ export class AccountsService {
     async createAccount(
         data: CreateAccountDto & Omit<CreatePersonDto, 'account'>,
     ) {
-        const check = await this.database.account.findFirst({
-            where: {
-                email: data.email,
-            },
-        });
-        if (check) throw new BadRequestException('Email already registered');
+        if (!(await this.checkIfAccountExists(data.email))) {
+            throw new BadRequestException('Email already registered');
+        }
         return this.database.account.create({
             data: {
                 email: data.email,
@@ -59,17 +65,24 @@ export class AccountsService {
     }
 
     async updateAccount(id: number, updates: UpdateAccountDto) {
-        if (updates.email || updates.name) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { createdAt, updatedAt, role, lastLogin, ...rest } = updates;
+        const body = rest;
+        if (body.email || body.name) {
             await this.person.update(id, {
-                name: updates.name,
                 email: updates.email,
+                name: updates.name,
             });
+        }
+        if (rest.password) {
+            const hashed = bcrypt.hashSync(rest.password, 10);
+            body.password = hashed;
         }
         return this.database.account.update({
             where: {
                 id,
             },
-            data: updates,
+            data: body,
         });
     }
 }

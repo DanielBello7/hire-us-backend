@@ -7,6 +7,9 @@ import { DatabaseModule } from './database/database.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { RegisterModule } from './register/register.module';
+import { AdministratorModule } from './administrator/administrator.module';
+import { EmployeeModule } from './employee/employee.module';
+import { OrganizationModule } from './organization/organization.module';
 
 @Module({
     imports: [
@@ -18,6 +21,9 @@ import { RegisterModule } from './register/register.module';
             { ttl: 60000, limit: 100, name: 'long' },
         ]),
         RegisterModule,
+        AdministratorModule,
+        EmployeeModule,
+        OrganizationModule,
     ],
     controllers: [AppController],
     providers: [
