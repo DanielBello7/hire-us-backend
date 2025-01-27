@@ -1,0 +1,227 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                  Int             @id @default(autoincrement())
+  name                String
+  email               String          @unique
+  password            String
+  role                String
+  lastLogin           DateTime        @default(now())
+  isEmailVerified     Boolean         @default(false)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  Person              Person[]
+  Administrator       Administrator[]
+  Organization        Organization[]
+  Message             Message[]
+  CreatedBy           Conversation[]  @relation("CreatedBy")
+  ConversationMembers Conversation[]  @relation("ConversationMembers")
+}
+
+model Person {
+  id        Int        @id @default(autoincrement())
+  accountId Int
+  account   Account    @relation(fields: [accountId], references: [id])
+  name      String
+  email     String     @unique
+  username  String     @unique
+  country   String
+  address   String
+  gender    String
+  avatar    String?
+  idNumber  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Employee  Employee[]
+}
+
+model Administrator {
+  id        Int      @id @default(autoincrement())
+  accountId Int
+  account   Account  @relation(fields: [accountId], references: [id])
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Organization {
+  id        Int        @id @default(autoincrement())
+  accountId Int
+  account   Account    @relation(fields: [accountId], references: [id])
+  title     String
+  email     String     @unique
+  country   String
+  address   String
+  avatar    String?
+  brief     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Employee  Employee[]
+  Position  Position[]
+  Branch    Branch[]
+  Exam      Exam[]
+}
+
+model Employee {
+  id             Int          @id @default(autoincrement())
+  personId       Int
+  person         Person       @relation(fields: [personId], references: [id])
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  positionId     Int?
+  position       Position?    @relation(fields: [personId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  isTerminated   Boolean      @default(false)
+  Branch         Branch[]
+  Exam           Exam?        @relation(fields: [examId], references: [id])
+  examId         Int?
+  ExamStatus     ExamStatus[]
+  Promotion      Promotion[]
+  CreatedBy      Review[]     @relation("CreatedBy")
+  CreatedFor     Review[]     @relation("CreatedFor")
+}
+
+model Branch {
+  id             Int          @id @default(autoincrement())
+  country        String
+  address        String
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  managerId      Int?
+  manager        Employee?    @relation(fields: [managerId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Position {
+  id             Int          @id @default(autoincrement())
+  title          String
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  successorId    Int?         @unique
+  successor      Position?    @relation("PositionHistory", fields: [successorId], references: [id])
+  predecessor    Position?    @relation("PositionHistory")
+  salary         Int
+  currency       String
+  description    String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  Employee       Employee[]
+  Exam           Exam?        @relation(fields: [examId], references: [id])
+  examId         Int?
+  fromPosition   Promotion[]  @relation("FromPosition")
+  toPosition     Promotion[]  @relation("ToPosition")
+}
+
+model Exam {
+  id                  Int          @id @default(autoincrement())
+  title               String
+  description         String
+  organizationId      Int
+  organization        Organization @relation(fields: [organizationId], references: [id])
+  eligiblePositions   Position[]
+  ineligibleEmployees Employee[]
+  availableAt         DateTime
+  startsAt            DateTime
+  endsAt              DateTime
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  Promotion           Promotion[]
+}
+
+model Question {
+  id         Int          @id @default(autoincrement())
+  examId     Int
+  type       String
+  body       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Options    Option[]
+  ExamStatus ExamStatus[]
+}
+
+model Option {
+  id          Int      @id @default(autoincrement())
+  questionId  Int
+  question    Question @relation(fields: [questionId], references: [id])
+  body        String
+  description String?
+  isCorrect   Boolean
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ExamStatus {
+  id             Int       @id @default(autoincrement())
+  employeeId     Int
+  employee       Employee  @relation(fields: [employeeId], references: [id])
+  score          Int?
+  isCompleted    Boolean   @default(false)
+  lastQuestionId Int?
+  lastQuestion   Question? @relation(fields: [lastQuestionId], references: [id])
+  status         String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Promotion {
+  id             Int      @id @default(autoincrement())
+  type           String
+  examId         Int?
+  exam           Exam?    @relation(fields: [examId], references: [id])
+  employeeId     Int
+  employee       Employee @relation(fields: [employeeId], references: [id])
+  fromPositionId Int
+  fromPosition   Position @relation("FromPosition", fields: [fromPositionId], references: [id])
+  toPositionId   Int
+  toPosition     Position @relation("ToPosition", fields: [toPositionId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Conversation {
+  id          Int       @id @default(autoincrement())
+  members     Account[] @relation("ConversationMembers")
+  createdById Int
+  createdBy   Account   @relation("CreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Message {
+  id          Int      @id @default(autoincrement())
+  body        String
+  media       String?
+  mediaType   String?
+  createdById Int
+  createdBy   Account  @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  id           Int      @id @default(autoincrement())
+  rating       Int
+  body         String?
+  createdById  Int
+  createdBy    Employee @relation("CreatedBy", fields: [createdById], references: [id])
+  createdForId Int
+  createdFor   Employee @relation("CreatedFor", fields: [createdForId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
