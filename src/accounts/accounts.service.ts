@@ -1,60 +1,75 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    Injectable,
+    BadRequestException,
+    NotFoundException,
+} from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
+import { DatabaseService } from 'src/database/database.service';
+import { PersonService } from 'src/person/person.service';
+import { CreatePersonDto } from 'src/person/dto/create-person.dto';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class AccountsService {
-    private accounts = [
-        {
-            _id: '1',
-            email: 'adam@example.com',
-            password: 'adam1',
-            isEmailVerified: false,
-        },
-        {
-            _id: '2',
-            email: 'eve@example.com',
-            password: 'eve2',
-            isEmailVerified: true,
-        },
-    ];
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly person: PersonService,
+    ) {}
 
-    getAccounts(isEmailVerified?: boolean) {
+    async getAccounts(isEmailVerified?: boolean) {
         if (isEmailVerified) {
-            return this.accounts.filter(
-                (account) => account.isEmailVerified === isEmailVerified,
-            );
+            return this.database.account.findMany({
+                where: {
+                    isEmailVerified,
+                },
+            });
         } else {
-            return this.accounts;
+            return this.database.account.findMany();
         }
     }
 
-    findAccount(id: string) {
-        const selected = this.accounts.find((account) => account._id === id);
-        if (selected) return selected;
+    async findAccount(id: number) {
+        const account = await this.database.account.findFirst({
+            where: {
+                id,
+            },
+        });
+        if (account) return account;
         throw new NotFoundException('account not found');
     }
 
-    createAccount(account: CreateAccountDto) {
-        const created = {
-            _id: String(Math.random() * 10),
-            email: account.email,
-            isEmailVerified: false,
-            password: 'password',
-        };
-        this.accounts.push(created);
-        return created;
+    async createAccount(
+        data: CreateAccountDto & Omit<CreatePersonDto, 'account'>,
+    ) {
+        const check = await this.database.account.findFirst({
+            where: {
+                email: data.email,
+            },
+        });
+        if (check) throw new BadRequestException('Email already registered');
+        return this.database.account.create({
+            data: {
+                email: data.email,
+                name: data.name,
+                role: data.role,
+                password: bcrypt.hashSync(data.password, 10),
+            },
+        });
     }
 
-    updateAccount(id: string, updates: UpdateAccountDto) {
-        this.accounts = this.accounts.map((account) => {
-            if (account._id === id)
-                account = {
-                    ...account,
-                    ...updates,
-                };
-            return account;
+    async updateAccount(id: number, updates: UpdateAccountDto) {
+        if (updates.email || updates.name) {
+            await this.person.update(id, {
+                name: updates.name,
+                email: updates.email,
+            });
+        }
+        return this.database.account.update({
+            where: {
+                id,
+            },
+            data: updates,
         });
-        return this.findAccount(id);
     }
 }

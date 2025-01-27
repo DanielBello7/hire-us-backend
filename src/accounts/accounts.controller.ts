@@ -4,39 +4,34 @@ import {
     Get,
     Param,
     ParseBoolPipe,
-    Post,
+    ParseIntPipe,
     Put,
     Query,
-    UseGuards,
     ValidationPipe,
 } from '@nestjs/common';
-import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
-import { RoleGuard } from 'src/role/role.guard';
 import { AccountsService } from './accounts.service';
+import { Throttle, SkipThrottle } from '@nestjs/throttler';
 
 @Controller('accounts')
 export class AccountsController {
     constructor(private readonly accountService: AccountsService) {}
+
+    @SkipThrottle({ default: false })
     @Get()
-    getAccounts(@Query('isVerified', ParseBoolPipe) isVerified: boolean) {
+    getAccounts(@Query('isVerified', ParseBoolPipe) isVerified?: boolean) {
         return this.accountService.getAccounts(isVerified);
     }
 
+    @Throttle({ short: { ttl: 1000, limit: 1 } })
     @Get(':id')
-    getAccount(@Param('id') id: string) {
+    getAccount(@Param('id', ParseIntPipe) id: number) {
         return this.accountService.findAccount(id);
-    }
-
-    @Post()
-    @UseGuards(RoleGuard)
-    createAccount(@Body(new ValidationPipe()) data: CreateAccountDto) {
-        return this.accountService.createAccount(data);
     }
 
     @Put(':id')
     updateAccount(
-        @Param('id') id: string,
+        @Param('id', ParseIntPipe) id: number,
         @Body(ValidationPipe) updates: UpdateAccountDto,
     ) {
         return this.accountService.updateAccount(id, updates);

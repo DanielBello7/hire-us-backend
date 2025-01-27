@@ -1,42 +1,33 @@
 import {
     Controller,
     Get,
-    Post,
     Body,
     Patch,
     Param,
-    Delete,
+    ValidationPipe,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
-import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 
 @Controller('person')
 export class PersonController {
-    constructor(private readonly personService: PersonService) {}
-
-    @Post()
-    create(@Body() createPersonDto: CreatePersonDto) {
-        return this.personService.create(createPersonDto);
-    }
+    constructor(private readonly person: PersonService) {}
 
     @Get()
     findAll() {
-        return this.personService.findAll();
+        return this.person.findAll();
     }
 
     @Get(':id')
     findOne(@Param('id') id: string) {
-        return this.personService.findOne(+id);
+        return this.person.findOne(+id);
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updatePersonDto: UpdatePersonDto) {
-        return this.personService.update(+id, updatePersonDto);
-    }
-
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.personService.remove(+id);
+    update(
+        @Param('id') id: string,
+        @Body(new ValidationPipe()) updatePersonDto: UpdatePersonDto,
+    ) {
+        return this.person.update(+id, updatePersonDto);
     }
 }

@@ -1,26 +1,63 @@
-import { Injectable } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class PersonService {
-  create(createPersonDto: CreatePersonDto) {
-    return 'This action adds a new person';
-  }
+    constructor(private readonly database: DatabaseService) {}
 
-  findAll() {
-    return `This action returns all person`;
-  }
+    async create(body: CreatePersonDto) {
+        const check = await this.database.person.findFirst({
+            where: {
+                email: body.email,
+            },
+        });
+        if (check) throw new BadRequestException('Email already registered');
+        return this.database.person.create({
+            data: {
+                ...body,
+                account: {
+                    connect: {
+                        id: body.account,
+                    },
+                },
+            },
+        });
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} person`;
-  }
+    async findAll() {
+        return this.database.person.findMany();
+    }
 
-  update(id: number, updatePersonDto: UpdatePersonDto) {
-    return `This action updates a #${id} person`;
-  }
+    async findOne(id: number) {
+        const check = await this.database.person.findFirst({
+            where: {
+                id,
+            },
+        });
+        if (!check) throw new NotFoundException('Unable to find person');
+        return check;
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} person`;
-  }
+    async update(id: number, body: Omit<UpdatePersonDto, 'account'>) {
+        return this.database.person.update({
+            where: {
+                id,
+            },
+            data: body,
+        });
+    }
+
+    async remove(id: number) {
+        return this.database.person.delete({
+            where: {
+                id,
+            },
+        });
+    }
 }

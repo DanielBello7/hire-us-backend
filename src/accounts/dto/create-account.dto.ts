@@ -1,23 +1,38 @@
 import {
     IsEmail,
-    IsEnum,
+    IsIn,
     IsNotEmpty,
     IsString,
     IsStrongPassword,
 } from 'class-validator';
+import { Prisma } from '@prisma/client';
 
-export enum AccountType {
+export enum AccountEnum {
     ORGANIZATION = 'organization',
     EMPLOYEE = 'employee',
     ADMINISTRATOR = 'administrator',
 }
 
-export class CreateAccountDto {
-    /** @IsIn(Object.values(AccountType)) */
+export class CreateAccountDto
+    implements
+        Omit<
+            Prisma.AccountCreateInput,
+            | 'Person'
+            | 'Administrator'
+            | 'Organization'
+            | 'Message'
+            | 'CreatedBy'
+            | 'ConversationMembers'
+        >
+{
+    @IsString()
+    @IsNotEmpty()
+    name: string;
+
+    @IsIn(Object.values(AccountEnum))
     @IsNotEmpty()
     @IsString()
-    @IsEnum(AccountType)
-    role: AccountType;
+    role: AccountEnum;
 
     @IsString()
     @IsEmail()
@@ -28,15 +43,9 @@ export class CreateAccountDto {
     @IsString()
     @IsStrongPassword()
     password: string;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
+    lastLogin?: string | Date | undefined;
+    isEmailVerified: boolean | undefined;
 }
-/**
-{
-    role: AccountType;
-    email: string;
-    password: string;
-    isEmailVerified: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    lastLogin: Date;
-}
-*/
