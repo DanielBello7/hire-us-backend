@@ -52,7 +52,7 @@ export class OrganizationService {
 
     async update(id: number, body: UpdateOrganizationDto) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { taxId, account, createdAt, updatedAt, address, ...rest } = body;
+        const { taxId, account, address, ...rest } = body;
         return this.database.organization.update({
             where: {
                 id,

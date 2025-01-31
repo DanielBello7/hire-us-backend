@@ -1,25 +1,57 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRegisterDto } from './dto/create-register.dto';
 import { AccountsService } from 'src/accounts/accounts.service';
 import { PersonService } from 'src/person/person.service';
-import { CreateAccountDto } from 'src/accounts/dto/create-account.dto';
+import { OrganizationService } from 'src/organization/organization.service';
+import { EmployeeService } from 'src/employee/employee.service';
+import { CreateRegisterEmployeeDto } from './dto/create-register-employee.dto';
+import { CreateRegisterAdministratorDto } from './dto/create-register-administrator.dto';
+import { CreateRegisterOrganizationDto } from './dto/create-register-organization.dto';
+import { AdministratorService } from 'src/administrator/administrator.service';
 
 @Injectable()
 export class RegisterService {
     constructor(
         private readonly account: AccountsService,
         private readonly person: PersonService,
+        private readonly organization: OrganizationService,
+        private readonly employee: EmployeeService,
+        private readonly admin: AdministratorService,
     ) {}
 
-    createEmployee(body: CreateRegisterDto) {
-        return 'This action adds a new register';
+    async registerEmployee(body: CreateRegisterEmployeeDto) {
+        const account = await this.account.createAccount({
+            ...body,
+            isEmailVerified: false,
+        });
+        const person = await this.person.create({
+            ...body,
+            account: account.id,
+        });
+        return this.employee.create({
+            ...body,
+            person: person.id,
+        });
     }
 
-    createAdministrator(body: CreateAccountDto) {
-        return 'This action adds a new register';
+    async registerAdministrator(body: CreateRegisterAdministratorDto) {
+        const account = await this.account.createAccount({
+            ...body,
+            isEmailVerified: false,
+        });
+        return this.admin.create({
+            ...body,
+            account: account.id,
+        });
     }
 
-    createOrganization(body: CreateAccountDto) {
-        return 'This action adds a new register';
+    async registerOrganization(body: CreateRegisterOrganizationDto) {
+        const account = await this.account.createAccount({
+            ...body,
+            isEmailVerified: false,
+        });
+        return this.organization.create({
+            ...body,
+            account: account.id,
+        });
     }
 }

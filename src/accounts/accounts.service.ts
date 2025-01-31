@@ -3,11 +3,10 @@ import {
     BadRequestException,
     NotFoundException,
 } from '@nestjs/common';
+import { PersonService } from 'src/person/person.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { DatabaseService } from 'src/database/database.service';
-import { PersonService } from 'src/person/person.service';
-import { CreatePersonDto } from 'src/person/dto/create-person.dto';
 import bcrypt from 'bcrypt';
 
 @Injectable()
@@ -48,9 +47,7 @@ export class AccountsService {
         throw new NotFoundException('account not found');
     }
 
-    async createAccount(
-        data: CreateAccountDto & Omit<CreatePersonDto, 'account'>,
-    ) {
+    async createAccount(data: CreateAccountDto) {
         if (!(await this.checkIfAccountExists(data.email))) {
             throw new BadRequestException('Email already registered');
         }
@@ -66,7 +63,7 @@ export class AccountsService {
 
     async updateAccount(id: number, updates: UpdateAccountDto) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { createdAt, updatedAt, role, lastLogin, ...rest } = updates;
+        const { role, ...rest } = updates;
         const body = rest;
         if (body.email || body.name) {
             await this.person.update(id, {

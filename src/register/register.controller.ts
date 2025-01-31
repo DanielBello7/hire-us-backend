@@ -8,8 +8,9 @@ import {
 import { RegisterService } from './register.service';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { RoleGuard } from 'src/role/role.guard';
-import { CreateAccountDto } from 'src/accounts/dto/create-account.dto';
-import { CreateRegisterDto } from './dto/create-register.dto';
+import { CreateRegisterAdministratorDto } from './dto/create-register-administrator.dto';
+import { CreateRegisterEmployeeDto } from './dto/create-register-employee.dto';
+import { CreateRegisterOrganizationDto } from './dto/create-register-organization.dto';
 
 @SkipThrottle()
 @Controller('register')
@@ -19,21 +20,25 @@ export class RegisterController {
     @Post('administrator')
     createAdministrator(
         @Body(new ValidationPipe())
-        data: CreateAccountDto,
+        data: CreateRegisterAdministratorDto,
     ) {
-        return this.register.createAdministrator(data);
+        return this.register.registerAdministrator(data);
     }
 
     @Post('employee')
     @Throttle({ short: { ttl: 1000, limit: 1 } })
     @UseGuards(RoleGuard)
-    createEmployee(@Body(new ValidationPipe()) data: CreateRegisterDto) {
-        return this.register.createEmployee(data);
+    createEmployee(
+        @Body(new ValidationPipe()) data: CreateRegisterEmployeeDto,
+    ) {
+        return this.register.registerEmployee(data);
     }
 
-    @Post('organiztion')
+    @Post('organization')
     @UseGuards(RoleGuard)
-    createOrganization(@Body(new ValidationPipe()) data: CreateAccountDto) {
-        return this.register.createOrganization(data);
+    createOrganization(
+        @Body(new ValidationPipe()) data: CreateRegisterOrganizationDto,
+    ) {
+        return this.register.registerOrganization(data);
     }
 }

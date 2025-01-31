@@ -1,6 +1,7 @@
 import { Person as PrismaPerson } from '@prisma/client';
 
 export class Person implements PrismaPerson {
+    taxId: string;
     name: string;
     id: number;
     accountId: number;
@@ -10,7 +11,6 @@ export class Person implements PrismaPerson {
     address: string;
     gender: string;
     avatar: string | null;
-    idNumber: string;
     createdAt: Date;
     updatedAt: Date;
 }

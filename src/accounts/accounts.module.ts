@@ -8,5 +8,6 @@ import { PersonModule } from 'src/person/person.module';
     controllers: [AccountsController],
     imports: [DatabaseModule, PersonModule],
     providers: [AccountsService],
+    exports: [AccountsService],
 })
 export class AccountsModule {}
