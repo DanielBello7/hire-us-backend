@@ -1,6 +1,7 @@
 import {
     Controller,
     Post,
+    Ip,
     Body,
     UseGuards,
     ValidationPipe,
@@ -11,11 +12,13 @@ import { RoleGuard } from 'src/role/role.guard';
 import { CreateRegisterAdministratorDto } from './dto/create-register-administrator.dto';
 import { CreateRegisterEmployeeDto } from './dto/create-register-employee.dto';
 import { CreateRegisterOrganizationDto } from './dto/create-register-organization.dto';
+import { WinstonLoggerService } from 'src/winston-logger/winston-logger.service';
 
 @SkipThrottle()
 @Controller('register')
 export class RegisterController {
     constructor(private readonly register: RegisterService) {}
+    private readonly logger = new WinstonLoggerService(RegisterController.name);
 
     @Post('administrator')
     createAdministrator(
@@ -37,8 +40,10 @@ export class RegisterController {
     @Post('organization')
     @UseGuards(RoleGuard)
     createOrganization(
+        @Ip() ip: string,
         @Body(new ValidationPipe()) data: CreateRegisterOrganizationDto,
     ) {
+        this.logger.log(`request made from ${ip}`);
         return this.register.registerOrganization(data);
     }
 }

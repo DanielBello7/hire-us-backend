@@ -10,6 +10,7 @@ import { RegisterModule } from './register/register.module';
 import { AdministratorModule } from './administrator/administrator.module';
 import { EmployeeModule } from './employee/employee.module';
 import { OrganizationModule } from './organization/organization.module';
+import { WinstonLoggerModule } from './winston-logger/winston-logger.module';
 
 @Module({
     imports: [
@@ -32,6 +33,7 @@ import { OrganizationModule } from './organization/organization.module';
         RegisterModule,
         PersonModule,
         EmployeeModule,
+        WinstonLoggerModule,
     ],
     controllers: [AppController],
     providers: [
