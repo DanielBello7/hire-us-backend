@@ -1,18 +1,27 @@
-import { Prisma } from '@prisma/client';
-import { CreateRegisterDto } from './create-register.dto';
 import { CreateOrganizationDto } from 'src/organization/dto/create-organization.dto';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { CreateRegisterDto } from './create-register.dto';
+import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { AccountEnum } from 'src/accounts/dto/create-account.dto';
 
-type RegisterOrganizationDto = Omit<CreateOrganizationDto, 'account'> &
-    Omit<
-        Prisma.OrganizationCreateInput,
-        'Employee' | 'Position' | 'Branch' | 'Exam' | 'Payment' | 'account'
-    >;
+type RegisterOrganizationDto = Omit<CreateOrganizationDto, 'account'>;
 
 export class CreateRegisterOrganizationDto
     extends CreateRegisterDto
     implements RegisterOrganizationDto
 {
+    @IsString()
+    @IsNotEmpty()
+    @Matches(AccountEnum.ORGANIZATION)
+    role: AccountEnum;
+
+    @IsString()
+    @IsNotEmpty()
+    country: string;
+
+    @IsString()
+    @IsNotEmpty()
+    address: string;
+
     @IsNotEmpty()
     @IsString()
     title: string;
@@ -21,5 +30,7 @@ export class CreateRegisterOrganizationDto
     @IsString()
     taxId: string;
 
+    @IsString()
+    @IsNotEmpty()
     brief?: string | null | undefined;
 }

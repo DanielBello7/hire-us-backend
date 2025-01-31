@@ -34,10 +34,4 @@ export class CreateOrganizationDto
 
     @IsString()
     brief?: string | null | undefined;
-
-    @IsString()
-    avatar?: string | null | undefined;
-
-    createdAt?: string | Date | undefined;
-    updatedAt?: string | Date | undefined;
 }

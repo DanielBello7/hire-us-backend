@@ -1,25 +1,17 @@
-import { IsNotEmpty, IsNumber, Matches } from 'class-validator';
-import { Prisma } from '@prisma/client';
+import {
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsString,
+    Matches,
+} from 'class-validator';
 import { CreateRegisterDto } from './create-register.dto';
 import { CreateEmployeeDto } from 'src/employee/dto/create-employee.dto';
-import { CreatePersonDto } from 'src/person/dto/create-person.dto';
+import { CreatePersonDto, GenderEnum } from 'src/person/dto/create-person.dto';
 import { AccountEnum } from 'src/accounts/dto/create-account.dto';
 
 type RegisterEmployeeDto = Omit<CreateEmployeeDto, 'account' | 'person'> &
-    Omit<
-        Prisma.EmployeeCreateInput,
-        | 'account'
-        | 'Exam'
-        | 'Branch'
-        | 'ExamStatus'
-        | 'Promotion'
-        | 'CreatedBy'
-        | 'CreatedFor'
-        | 'Payment'
-        | 'organization'
-        | 'person'
-    > &
-    Omit<CreatePersonDto, 'account' | 'positionId' | 'position'>;
+    Omit<CreatePersonDto, 'account'>;
 
 export class CreateRegisterEmployeeDto
     extends CreateRegisterDto
@@ -28,6 +20,26 @@ export class CreateRegisterEmployeeDto
     @Matches(AccountEnum.EMPLOYEE)
     @IsNotEmpty()
     role: AccountEnum;
+
+    @IsNotEmpty()
+    @IsString()
+    taxId: string;
+
+    @IsString()
+    @IsNotEmpty()
+    username: string;
+
+    @IsString()
+    @IsNotEmpty()
+    country: string;
+
+    @IsString()
+    @IsNotEmpty()
+    address: string;
+
+    @IsNotEmpty()
+    @IsEnum(GenderEnum)
+    gender: string;
 
     @IsNotEmpty()
     @IsNumber()

@@ -11,6 +11,10 @@ export class CreatePersonDto
 {
     @IsString()
     @IsNotEmpty()
+    taxId: string;
+
+    @IsString()
+    @IsNotEmpty()
     name: string;
 
     @IsNotEmpty()
@@ -34,14 +38,6 @@ export class CreatePersonDto
     @IsEnum(GenderEnum)
     gender: string;
 
-    @IsString()
-    @IsNotEmpty()
-    idNumber: string;
-
     @IsNotEmpty()
     account: number;
-
-    avatar?: string | null | undefined;
-    createdAt?: string | Date | undefined;
-    updatedAt?: string | Date | undefined;
 }
