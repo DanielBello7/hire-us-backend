@@ -11,6 +11,7 @@ import { AdministratorModule } from './administrator/administrator.module';
 import { EmployeeModule } from './employee/employee.module';
 import { OrganizationModule } from './organization/organization.module';
 import { WinstonLoggerModule } from './winston-logger/winston-logger.module';
+import { BranchModule } from './branch/branch.module';
 
 @Module({
     imports: [
@@ -34,6 +35,7 @@ import { WinstonLoggerModule } from './winston-logger/winston-logger.module';
         PersonModule,
         EmployeeModule,
         WinstonLoggerModule,
+        BranchModule,
     ],
     controllers: [AppController],
     providers: [

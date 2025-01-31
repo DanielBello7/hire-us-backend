@@ -29,4 +29,10 @@ export class EmployeeController {
     ) {
         return this.employeeService.update(+id, updateEmployeeDto);
     }
+
+    /**
+     * APIs
+     *
+     * PATCH
+     */
 }

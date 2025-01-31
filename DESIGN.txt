@@ -1,0 +1,111 @@
+---------------------------------------------------------------------------
+REGISTER    
+- POST     /api/register/employee/                  register employee             ✅
+- POST     /api/register/organization/              register organization         ✅
+- POST     /api/register/administrator/             register admin                ✅
+---------------------------------------------------------------------------       
+AUTHENTICATION       
+- POST     /api/auth/login/                         login user                    ❌
+- POST     /api/auth/logout/                        logout user                   ❌
+- GET      /api/auth/me/                            get current user              ❌
+---------------------------------------------------------------------------       
+ACCOUNTS       
+- GET      /api/accounts/                           get accounts                  ✅
+- GET      /api/accounts/:id/                       find account using id         ✅
+- PATCH    /api/accounts/:id/                       update account                ✅
+---------------------------------------------------------------------------       
+ADMINISTRATORS       
+- GET      /api/administrators/                     get admins                    ✅
+- GET      /api/administrators/:id/                 find admin using id           ✅
+- PATCH    /api/administrators/:id/                 update admin                  ✅
+---------------------------------------------------------------------------       
+PERSON       
+- GET      /api/person/                             get persons                   ✅
+- GET      /api/person/:id/                         find person                   ✅
+---------------------------------------------------------------------------       
+EMPLOYEES       
+- GET      /api/employees/                          get employees                 ✅
+- GET      /api/employees/:id/                      find employee                 ✅
+- PATCH    /api/employees/:id/                      update employee               ✅
+- PATCH    /api/employees/:id/terminate/            layoff an employee            ❌
+---------------------------------------------------------------------------  
+BRANCH  
+- GET      /api/branch/                             get branches                  ✅
+- GET      /api/branch/:id/                         find branch                   ✅
+- POST     /api/branch/                             create branch                 ✅
+- PATCH    /api/branch/:id/                         update branch                 ✅
+- PATCH    /api/branch/:id/manager/                 change branch manager         ❌
+- DELETE   /api/branch/:id/                         delete branch                 ✅
+---------------------------------------------------------------------------  
+POSITION  
+- GET      /api/position/                           get positions                 ❌
+- GET      /api/position/:id/                       find position                 ❌
+- POST     /api/position/                           create position               ❌
+- PATCH    /api/position/:id/                       update position               ❌
+- DELETE   /api/position/:id/                       delete position               ❌
+---------------------------------------------------------------------------  
+EXAMS  
+- GET      /api/exams/                              get exams                     ❌
+- GET      /api/exams/:id/                          find exam                     ❌
+- POST     /api/exams/                              create exam                   ❌
+- PATCH    /api/exams/                              update exam                   ❌
+- DELETE   /api/exams/:id/                          delete exam                   ❌
+- POST     /api/exams/:id/eligible_positions/       add eligible_positions        ❌
+- DELETE   /api/exams/eligible_positions/:id/       delete eligible_positions     ❌
+- POST     /api/exams/:id/ineligible_positions/     add ineligible_positions      ❌
+- DELETE   /api/exams/ineligible_positions/:id/     delete ineligible_positions   ❌
+- POST     /api/exams/:id/submit/                   submit exam                   ❌
+---------------------------------------------------------------------------
+QUESTIONS
+- GET      /api/questions/                          get questions                 ❌
+- GET      /api/questions/:id/                      find question                 ❌
+- POST     /api/questions/                          create question               ❌
+- DELETE   /api/questions/:id/                      delete question               ❌
+- DELETE   /api/questions/exam/:id/                 delete exam questions         ❌
+- PATCH    /api/questions/:id/                      update question               ❌
+- POST     /api/questions/:id/submit/               submit question               ❌
+---------------------------------------------------------------------------       
+OPTIONS       
+- GET      /api/options/                            get options                   ❌
+- GET      /api/options/:id/                        find option                   ❌
+- POST     /api/options/                            create option                 ❌
+- PATCH    /api/options/:id/                        update options                ❌
+- DELETE   /api/options/:id/                        delete options                ❌
+---------------------------------------------------------------------------
+EXAM STATUS
+- GET      /api/exam_status/                        get exam status               ❌
+- GET      /api/exam_status/employee/:id            find employee exam status     ❌
+- POST     /api/exam_status/                        start exam                    ❌
+---------------------------------------------------------------------------    
+PROMOTION    
+- GET      /api/promotions/                         get promotions                ❌
+- GET      /api/promotions/employee/:id/            get employee promotions       ❌
+- POST     /api/promotions/                         promote employee              ❌
+---------------------------------------------------------------------------    
+DEMOMOTION    
+- GET      /api/demotions/                          get demotions                 ❌
+- GET      /api/demotions/employee/:id/             get employee demotions        ❌
+- POST     /api/demotions/                          demote employee               ❌
+---------------------------------------------------------------------------    
+CONVERSATIONS    
+- GET      /api/conversations/                      get conversations             ❌
+- GET      /api/conversations/:id/                  find conversation             ❌
+- GET      /api/conversations/:id/messages/         get conversation messages     ❌
+- POST     /api/conversations/                      start conversation            ❌
+- DELETE   /api/conversations/                      delete conversations          ❌
+---------------------------------------------------------------------------    
+MESSAGES    
+- POST     /api/messages/                           create message                ❌
+- DELETE   /api/messages/                           delete message                ❌
+---------------------------------------------------------------------------
+REVIEWS
+- GET      /api/reviews/                            get reviews                   ❌
+- GET      /api/reviews/employee/:id/               get employee reviews          ❌ 
+- POST     /api/reviews/                            create review                 ❌
+---------------------------------------------------------------------------
+PAYMENTS
+- GET      /api/payments/                           get payments                  ❌
+- GET      /api/payments/:id/                       find payment                  ❌
+- POST     /api/payments/                           pay employee                  ❌
+- POST     /api/payments/salary/                    make employee salary payments ❌
+---------------------------------------------------------------------------
