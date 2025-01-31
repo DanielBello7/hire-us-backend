@@ -1,4 +1,5 @@
 import {
+    IsBoolean,
     IsEmail,
     IsIn,
     IsNotEmpty,
@@ -44,8 +45,7 @@ export class CreateAccountDto
     @IsStrongPassword()
     password: string;
 
-    createdAt?: string | Date | undefined;
-    updatedAt?: string | Date | undefined;
-    lastLogin?: string | Date | undefined;
+    @IsBoolean()
+    @IsNotEmpty()
     isEmailVerified: boolean | undefined;
 }

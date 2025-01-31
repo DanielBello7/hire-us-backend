@@ -13,17 +13,25 @@ import { OrganizationModule } from './organization/organization.module';
 
 @Module({
     imports: [
-        AccountsModule,
-        PersonModule,
-        DatabaseModule,
         ThrottlerModule.forRoot([
-            { ttl: 1000, limit: 3, name: 'short' },
-            { ttl: 60000, limit: 100, name: 'long' },
+            {
+                ttl: 1000,
+                limit: 3,
+                name: 'short',
+            },
+            {
+                ttl: 60000,
+                limit: 100,
+                name: 'long',
+            },
         ]),
-        RegisterModule,
+        AccountsModule,
         AdministratorModule,
-        EmployeeModule,
         OrganizationModule,
+        DatabaseModule,
+        RegisterModule,
+        PersonModule,
+        EmployeeModule,
     ],
     controllers: [AppController],
     providers: [
