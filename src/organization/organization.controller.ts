@@ -1,16 +1,16 @@
 import {
     Controller,
-    Get,
     Body,
-    Patch,
-    Param,
     ValidationPipe,
     ParseIntPipe,
+    Patch,
+    Get,
+    Param,
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 
-@Controller('organization')
+@Controller('organizations')
 export class OrganizationController {
     constructor(private readonly organization: OrganizationService) {}
 

@@ -1,16 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param } from '@nestjs/common';
 import { AdministratorService } from './administrator.service';
-import { CreateAdministratorDto } from './dto/create-administrator.dto';
 import { UpdateAdministratorDto } from './dto/update-administrator.dto';
 
-@Controller('administrator')
+@Controller('administrators')
 export class AdministratorController {
     constructor(private readonly administratorService: AdministratorService) {}
-
-    @Post()
-    create(@Body() createAdministratorDto: CreateAdministratorDto) {
-        return this.administratorService.create(createAdministratorDto);
-    }
 
     @Get()
     findAll() {

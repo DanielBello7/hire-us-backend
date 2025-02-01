@@ -1,10 +1,11 @@
 import {
     Controller,
-    Get,
-    Body,
-    Patch,
     Param,
     ValidationPipe,
+    Patch,
+    Get,
+    ParseIntPipe,
+    Body,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { UpdatePersonDto } from './dto/update-person.dto';
@@ -25,9 +26,9 @@ export class PersonController {
 
     @Patch(':id')
     update(
-        @Param('id') id: string,
+        @Param('id', ParseIntPipe) id: number,
         @Body(new ValidationPipe()) updatePersonDto: UpdatePersonDto,
     ) {
-        return this.person.update(+id, updatePersonDto);
+        return this.person.update(id, updatePersonDto);
     }
 }

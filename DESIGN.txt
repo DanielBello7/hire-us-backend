@@ -12,29 +12,35 @@ AUTHENTICATION
 ACCOUNTS       
 - GET      /api/accounts/                           get accounts                  ✅
 - GET      /api/accounts/:id/                       find account using id         ✅
-- PATCH    /api/accounts/:id/                       update account                ✅
+- PUT      /api/accounts/:id/                       update account                ✅
 ---------------------------------------------------------------------------       
 ADMINISTRATORS       
 - GET      /api/administrators/                     get admins                    ✅
 - GET      /api/administrators/:id/                 find admin using id           ✅
 - PATCH    /api/administrators/:id/                 update admin                  ✅
 ---------------------------------------------------------------------------       
+ORGANIZATIONS
+- GET      /api/organizations/                      get organizations             ✅
+- GET      /api/organizations/:id/                  find organization using id    ✅
+- PATCH    /api/organizations/:id/                  update organization           ✅
+---------------------------------------------------------------------------       
 PERSON       
 - GET      /api/person/                             get persons                   ✅
 - GET      /api/person/:id/                         find person                   ✅
+- PATCH    /api/person/:id/                         update person account         ✅
 ---------------------------------------------------------------------------       
 EMPLOYEES       
 - GET      /api/employees/                          get employees                 ✅
 - GET      /api/employees/:id/                      find employee                 ✅
 - PATCH    /api/employees/:id/                      update employee               ✅
-- PATCH    /api/employees/:id/terminate/            layoff an employee            ❌
+- PATCH    /api/employees/:id/terminate/            layoff an employee            ✅
 ---------------------------------------------------------------------------  
 BRANCH  
 - GET      /api/branch/                             get branches                  ✅
 - GET      /api/branch/:id/                         find branch                   ✅
 - POST     /api/branch/                             create branch                 ✅
 - PATCH    /api/branch/:id/                         update branch                 ✅
-- PATCH    /api/branch/:id/manager/                 change branch manager         ❌
+- PATCH    /api/branch/:id/manager/                 change branch manager         ✅
 - DELETE   /api/branch/:id/                         delete branch                 ✅
 ---------------------------------------------------------------------------  
 POSITION  

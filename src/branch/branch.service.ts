@@ -2,10 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { EmployeeService } from 'src/employee/employee.service';
 
 @Injectable()
 export class BranchService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly employee: EmployeeService,
+    ) {}
 
     async create(body: CreateBranchDto) {
         return this.database.branch.create({
@@ -58,6 +62,22 @@ export class BranchService {
             data: {
                 ...rest,
                 manager: {},
+            },
+        });
+    }
+
+    async updateManager(id: number, manager: number) {
+        await this.employee.findOne(id);
+        return this.database.branch.update({
+            where: {
+                id,
+            },
+            data: {
+                manager: {
+                    connect: {
+                        id: manager,
+                    },
+                },
             },
         });
     }

@@ -72,4 +72,15 @@ export class EmployeeService {
             },
         });
     }
+
+    async layoffEmployee(id: number) {
+        return this.database.employee.update({
+            where: {
+                id,
+            },
+            data: {
+                isTerminated: true,
+            },
+        });
+    }
 }
