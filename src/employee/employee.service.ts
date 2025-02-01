@@ -64,11 +64,13 @@ export class EmployeeService {
             where: { id },
             data: {
                 ...rest,
-                position: {
-                    connect: {
-                        id: rest.position,
-                    },
-                },
+                position: rest.position
+                    ? {
+                          connect: {
+                              id: rest.position,
+                          },
+                      }
+                    : undefined,
             },
         });
     }

@@ -44,11 +44,11 @@ BRANCH
 - DELETE   /api/branch/:id/                         delete branch                 ✅
 ---------------------------------------------------------------------------  
 POSITION  
-- GET      /api/position/                           get positions                 ❌
-- GET      /api/position/:id/                       find position                 ❌
-- POST     /api/position/                           create position               ❌
-- PATCH    /api/position/:id/                       update position               ❌
-- DELETE   /api/position/:id/                       delete position               ❌
+- GET      /api/position/                           get positions                 ✅
+- GET      /api/position/:id/                       find position                 ✅
+- POST     /api/position/                           create position               ✅
+- PATCH    /api/position/:id/                       update position               ✅
+- DELETE   /api/position/:id/                       delete position               ✅
 ---------------------------------------------------------------------------  
 EXAMS  
 - GET      /api/exams/                              get exams                     ❌

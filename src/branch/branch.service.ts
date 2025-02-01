@@ -54,14 +54,14 @@ export class BranchService {
 
     async update(id: number, updates: UpdateBranchDto) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { organization, ...rest } = updates;
+        const { organization, manager, ...rest } = updates;
         return this.database.branch.update({
             where: {
                 id,
             },
             data: {
                 ...rest,
-                manager: {},
+                manager: undefined,
             },
         });
     }
