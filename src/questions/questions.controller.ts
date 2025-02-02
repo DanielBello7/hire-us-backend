@@ -1,34 +1,60 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Delete,
+    Post,
+    ValidationPipe,
+    Patch,
+    Body,
+    ParseIntPipe,
+    Param,
+} from '@nestjs/common';
 import { QuestionsService } from './questions.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 
 @Controller('questions')
 export class QuestionsController {
-  constructor(private readonly questionsService: QuestionsService) {}
+    constructor(private readonly questionsService: QuestionsService) {}
 
-  @Post()
-  create(@Body() createQuestionDto: CreateQuestionDto) {
-    return this.questionsService.create(createQuestionDto);
-  }
+    @Get()
+    findAll() {
+        return this.questionsService.findAll();
+    }
 
-  @Get()
-  findAll() {
-    return this.questionsService.findAll();
-  }
+    @Get(':id')
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.questionsService.findOne(id);
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.questionsService.findOne(+id);
-  }
+    @Post()
+    create(@Body(new ValidationPipe()) body: CreateQuestionDto) {
+        return this.questionsService.create(body);
+    }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQuestionDto: UpdateQuestionDto) {
-    return this.questionsService.update(+id, updateQuestionDto);
-  }
+    @Post(':id/submit')
+    submit(
+        @Param('id', ParseIntPipe) id: number,
+        @Body(new ValidationPipe()) body: CreateQuestionDto,
+    ) {
+        return this.questionsService.submitQuestion(id, body);
+    }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.questionsService.remove(+id);
-  }
+    @Patch(':id')
+    update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body(new ValidationPipe()) body: UpdateQuestionDto,
+    ) {
+        return this.questionsService.update(id, body);
+    }
+
+    @Delete(':id')
+    remove(@Param('id', ParseIntPipe) id: number) {
+        return this.questionsService.remove(id);
+    }
+
+    @Delete('exam/:id')
+    deleteExamQuestions(@Param('id', ParseIntPipe) id: number) {
+        return this.questionsService.deleteQuestions(id);
+    }
 }
