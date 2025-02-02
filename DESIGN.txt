@@ -72,11 +72,11 @@ QUESTIONS
 - POST     /api/questions/:id/submit/               submit question               ✅❌
 ---------------------------------------------------------------------------       
 OPTIONS       
-- GET      /api/options/                            get options                   ❌
-- GET      /api/options/:id/                        find option                   ❌
-- POST     /api/options/                            create option                 ❌
-- PATCH    /api/options/:id/                        update options                ❌
-- DELETE   /api/options/:id/                        delete options                ❌
+- GET      /api/options/                            get options                   ✅
+- GET      /api/options/:id/                        find option                   ✅
+- POST     /api/options/                            create option                 ✅
+- PATCH    /api/options/:id/                        update options                ✅
+- DELETE   /api/options/:id/                        delete options                ✅
 ---------------------------------------------------------------------------
 EXAM STATUS
 - GET      /api/exam_status/                        get exam status               ❌

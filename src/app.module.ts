@@ -15,6 +15,7 @@ import { BranchModule } from './branch/branch.module';
 import { PositionsModule } from './positions/positions.module';
 import { ExamsModule } from './exams/exams.module';
 import { QuestionsModule } from './questions/questions.module';
+import { OptionsModule } from './options/options.module';
 
 @Module({
     imports: [
@@ -42,6 +43,7 @@ import { QuestionsModule } from './questions/questions.module';
         PositionsModule,
         ExamsModule,
         QuestionsModule,
+        OptionsModule,
     ],
     controllers: [AppController],
     providers: [
