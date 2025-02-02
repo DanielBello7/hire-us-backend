@@ -14,6 +14,7 @@ import { WinstonLoggerModule } from './winston-logger/winston-logger.module';
 import { BranchModule } from './branch/branch.module';
 import { PositionsModule } from './positions/positions.module';
 import { ExamsModule } from './exams/exams.module';
+import { QuestionsModule } from './questions/questions.module';
 
 @Module({
     imports: [
@@ -40,6 +41,7 @@ import { ExamsModule } from './exams/exams.module';
         BranchModule,
         PositionsModule,
         ExamsModule,
+        QuestionsModule,
     ],
     controllers: [AppController],
     providers: [

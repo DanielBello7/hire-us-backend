@@ -1,34 +1,94 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Body,
+    Post,
+    ValidationPipe,
+    ParseIntPipe,
+    NotImplementedException,
+} from '@nestjs/common';
 import { ExamsService } from './exams.service';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 
 @Controller('exams')
 export class ExamsController {
-  constructor(private readonly examsService: ExamsService) {}
+    constructor(private readonly examsService: ExamsService) {}
 
-  @Post()
-  create(@Body() createExamDto: CreateExamDto) {
-    return this.examsService.create(createExamDto);
-  }
+    @Get()
+    findAll() {
+        return this.examsService.findAll();
+    }
 
-  @Get()
-  findAll() {
-    return this.examsService.findAll();
-  }
+    @Get(':id')
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.examsService.findOne(id);
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.examsService.findOne(+id);
-  }
+    @Post()
+    create(@Body(new ValidationPipe()) body: CreateExamDto) {
+        return this.examsService.create(body);
+    }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateExamDto: UpdateExamDto) {
-    return this.examsService.update(+id, updateExamDto);
-  }
+    @Post(':id/submit')
+    submitExam(@Body(new ValidationPipe()) body: CreateExamDto) {
+        /** not yet done */
+        throw new NotImplementedException('NOT YET IMPLEMENTED', body);
+    }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.examsService.remove(+id);
-  }
+    @Patch(':id')
+    update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body(new ValidationPipe()) body: UpdateExamDto,
+    ) {
+        return this.examsService.update(id, body);
+    }
+
+    @Delete(':id')
+    remove(@Param('id', ParseIntPipe) id: number) {
+        return this.examsService.remove(id);
+    }
+
+    @Post(':id/eligible_positions')
+    addEligiblePositions(
+        @Param('id', ParseIntPipe) id: number,
+        @Body(new ValidationPipe()) body: { positions: number[] },
+    ) {
+        return this.examsService.updateEligiblePositions(
+            id,
+            body.positions,
+            [],
+        );
+    }
+
+    @Post(':id/ineligible_employees')
+    addIneligibleEmployees(
+        @Param('id', ParseIntPipe) id: number,
+        @Body(new ValidationPipe()) body: { employees: number[] },
+    ) {
+        return this.examsService.updateIneligibleEmployees(
+            id,
+            body.employees,
+            [],
+        );
+    }
+
+    @Delete(':exam/eligible_positions/:id')
+    removeEligiblePositions(
+        @Param('exam', ParseIntPipe) exam: number,
+        @Param('id', ParseIntPipe) id: number,
+    ) {
+        return this.examsService.updateEligiblePositions(exam, [], [id]);
+    }
+
+    @Delete(':exam/ineligible_employees/:id')
+    removeIneligibleEmployees(
+        @Param('exam', ParseIntPipe) exam: number,
+        @Param('id', ParseIntPipe) id: number,
+    ) {
+        return this.examsService.updateIneligibleEmployees(exam, [], [id]);
+    }
 }

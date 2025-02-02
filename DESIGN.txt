@@ -51,15 +51,15 @@ POSITION
 - DELETE   /api/position/:id/                       delete position               ✅
 ---------------------------------------------------------------------------  
 EXAMS  
-- GET      /api/exams/                              get exams                     ❌
-- GET      /api/exams/:id/                          find exam                     ❌
-- POST     /api/exams/                              create exam                   ❌
-- PATCH    /api/exams/                              update exam                   ❌
-- DELETE   /api/exams/:id/                          delete exam                   ❌
-- POST     /api/exams/:id/eligible_positions/       add eligible_positions        ❌
-- DELETE   /api/exams/eligible_positions/:id/       delete eligible_positions     ❌
-- POST     /api/exams/:id/ineligible_positions/     add ineligible_positions      ❌
-- DELETE   /api/exams/ineligible_positions/:id/     delete ineligible_positions   ❌
+- GET      /api/exams/                              get exams                     ✅
+- GET      /api/exams/:id/                          find exam                     ✅
+- POST     /api/exams/                              create exam                   ✅
+- PATCH    /api/exams/                              update exam                   ✅
+- DELETE   /api/exams/:id/                          delete exam                   ✅
+- POST     /api/exams/:id/eligible_positions/       add eligible_positions        ✅
+- DELETE   /api/exams/:id/eligible_positions/:id/   delete eligible_positions     ✅
+- POST     /api/exams/:id/ineligible_employees/     add ineligible_employees      ✅
+- DELETE   /api/exams/:id/ineligible_employees/:id/ delete ineligible_employees   ✅
 - POST     /api/exams/:id/submit/                   submit exam                   ❌
 ---------------------------------------------------------------------------
 QUESTIONS
