@@ -16,6 +16,8 @@ import { PositionsModule } from './positions/positions.module';
 import { ExamsModule } from './exams/exams.module';
 import { QuestionsModule } from './questions/questions.module';
 import { OptionsModule } from './options/options.module';
+import { ExamStatusModule } from './exam-status/exam-status.module';
+import { PromotionsModule } from './promotions/promotions.module';
 
 @Module({
     imports: [
@@ -44,6 +46,8 @@ import { OptionsModule } from './options/options.module';
         ExamsModule,
         QuestionsModule,
         OptionsModule,
+        ExamStatusModule,
+        PromotionsModule,
     ],
     controllers: [AppController],
     providers: [

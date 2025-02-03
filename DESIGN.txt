@@ -79,14 +79,14 @@ OPTIONS
 - DELETE   /api/options/:id/                        delete options                ✅
 ---------------------------------------------------------------------------
 EXAM STATUS
-- GET      /api/exam_status/                        get exam status               ❌
-- GET      /api/exam_status/employee/:id            find employee exam status     ❌
-- POST     /api/exam_status/                        start exam                    ❌
+- GET      /api/exam_status/                        get exam status               ✅
+- GET      /api/exam_status/employee/:id            find employee exam status     ✅
+- POST     /api/exam_status/                        start exam                    ✅
 ---------------------------------------------------------------------------    
 PROMOTION    
-- GET      /api/promotions/                         get promotions                ❌
-- GET      /api/promotions/employee/:id/            get employee promotions       ❌
-- POST     /api/promotions/                         promote employee              ❌
+- GET      /api/promotions/                         get promotions                ✅
+- GET      /api/promotions/employee/:id/            get employee promotions       ✅
+- POST     /api/promotions/                         promote employee              ✅
 ---------------------------------------------------------------------------    
 DEMOMOTION    
 - GET      /api/demotions/                          get demotions                 ❌
