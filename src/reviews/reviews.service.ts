@@ -1,26 +1,88 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class ReviewsService {
-  create(createReviewDto: CreateReviewDto) {
-    return 'This action adds a new review';
-  }
+    constructor(private readonly database: DatabaseService) {}
+    async create(body: CreateReviewDto) {
+        return this.database.review.create({
+            data: {
+                ...body,
+                createdFor: {
+                    connect: {
+                        id: body.createdFor,
+                    },
+                },
+                createdBy: {
+                    connect: {
+                        id: body.createdBy,
+                    },
+                },
+            },
+            include: {
+                createdBy: true,
+                createdFor: true,
+            },
+        });
+    }
 
-  findAll() {
-    return `This action returns all reviews`;
-  }
+    async findAll() {
+        return this.database.review.findMany({
+            include: {
+                createdBy: true,
+                createdFor: true,
+            },
+        });
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} review`;
-  }
+    async findOne(id: number) {
+        const response = await this.database.review.findFirst({
+            where: {
+                id,
+            },
+            include: {
+                createdBy: true,
+                createdFor: true,
+            },
+        });
+        if (!response) throw new NotFoundException('cannot find review');
+        return response;
+    }
 
-  update(id: number, updateReviewDto: UpdateReviewDto) {
-    return `This action updates a #${id} review`;
-  }
+    async update(id: number, body: UpdateReviewDto) {
+        return this.database.review.update({
+            where: {
+                id,
+            },
+            data: {
+                ...body,
+                createdFor: body.createdFor
+                    ? {
+                          connect: {
+                              id: body.createdFor,
+                          },
+                      }
+                    : undefined,
+                createdBy: body.createdBy
+                    ? {
+                          connect: {
+                              id: body.createdBy,
+                          },
+                      }
+                    : undefined,
+            },
+            include: {
+                createdBy: true,
+                createdFor: true,
+            },
+        });
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} review`;
-  }
+    async remove(id: number) {
+        return this.database.review.delete({
+            where: { id },
+        });
+    }
 }

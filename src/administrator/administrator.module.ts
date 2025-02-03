@@ -5,8 +5,8 @@ import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
     controllers: [AdministratorController],
-    providers: [AdministratorService],
-    imports: [DatabaseModule],
     exports: [AdministratorService],
+    imports: [DatabaseModule],
+    providers: [AdministratorService],
 })
 export class AdministratorModule {}

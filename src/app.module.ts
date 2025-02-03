@@ -21,6 +21,7 @@ import { PromotionsModule } from './promotions/promotions.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
     imports: [
@@ -54,6 +55,7 @@ import { ReviewsModule } from './reviews/reviews.module';
         ConversationsModule,
         MessagesModule,
         ReviewsModule,
+        PaymentsModule,
     ],
     controllers: [AppController],
     providers: [

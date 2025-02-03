@@ -1,13 +1,13 @@
+import { EmployeeModule } from 'src/employee/employee.module';
+import { DatabaseModule } from 'src/database/database.module';
 import { Module } from '@nestjs/common';
 import { BranchService } from './branch.service';
 import { BranchController } from './branch.controller';
-import { DatabaseService } from 'src/database/database.service';
-import { EmployeeService } from 'src/employee/employee.service';
 
 @Module({
     controllers: [BranchController],
     exports: [BranchService],
+    imports: [EmployeeModule, DatabaseModule],
     providers: [BranchService],
-    imports: [DatabaseService, EmployeeService],
 })
 export class BranchModule {}

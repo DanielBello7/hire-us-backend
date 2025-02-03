@@ -1,12 +1,12 @@
+import { OptionsController } from './options.controller';
+import { DatabaseModule } from 'src/database/database.module';
 import { Module } from '@nestjs/common';
 import { OptionsService } from './options.service';
-import { OptionsController } from './options.controller';
-import { DatabaseService } from 'src/database/database.service';
 
 @Module({
     exports: [OptionsService],
     providers: [OptionsService],
-    imports: [DatabaseService],
+    imports: [DatabaseModule],
     controllers: [OptionsController],
 })
 export class OptionsModule {}

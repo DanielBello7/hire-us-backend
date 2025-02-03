@@ -65,27 +65,21 @@ export class PromotionsService {
     }
 
     async update(id: number, body: UpdatePromotionDto) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { employee, exam, ...rest } = body;
         return this.database.promotion.update({
             where: {
                 id,
             },
             data: {
-                ...rest,
+                ...body,
+                exam: body.exam ? { connect: { id: body.exam } } : undefined,
+                employee: body.employee
+                    ? { connect: { id: body.employee } }
+                    : undefined,
                 fromPosition: body.fromPosition
-                    ? {
-                          connect: {
-                              id: body.fromPosition,
-                          },
-                      }
+                    ? { connect: { id: body.fromPosition } }
                     : undefined,
                 toPosition: body.toPosition
-                    ? {
-                          connect: {
-                              id: body.toPosition,
-                          },
-                      }
+                    ? { connect: { id: body.toPosition } }
                     : undefined,
             },
         });

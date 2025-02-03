@@ -1,56 +1,56 @@
 ---------------------------------------------------------------------------
-REGISTER    
+REGISTER
 - POST     /api/register/employee/                  register employee             ✅
 - POST     /api/register/organization/              register organization         ✅
 - POST     /api/register/administrator/             register admin                ✅
----------------------------------------------------------------------------       
-AUTHENTICATION       
+---------------------------------------------------------------------------
+AUTHENTICATION
 - POST     /api/auth/login/                         login user                    ❌
 - POST     /api/auth/logout/                        logout user                   ❌
 - GET      /api/auth/me/                            get current user              ❌
----------------------------------------------------------------------------       
-ACCOUNTS       
+---------------------------------------------------------------------------
+ACCOUNTS
 - GET      /api/accounts/                           get accounts                  ✅
 - GET      /api/accounts/:id/                       find account using id         ✅
 - PUT      /api/accounts/:id/                       update account                ✅
----------------------------------------------------------------------------       
-ADMINISTRATORS       
+---------------------------------------------------------------------------
+ADMINISTRATORS
 - GET      /api/administrators/                     get admins                    ✅
 - GET      /api/administrators/:id/                 find admin using id           ✅
 - PATCH    /api/administrators/:id/                 update admin                  ✅
----------------------------------------------------------------------------       
+---------------------------------------------------------------------------
 ORGANIZATIONS
 - GET      /api/organizations/                      get organizations             ✅
 - GET      /api/organizations/:id/                  find organization using id    ✅
 - PATCH    /api/organizations/:id/                  update organization           ✅
----------------------------------------------------------------------------       
-PERSON       
+---------------------------------------------------------------------------
+PERSON
 - GET      /api/person/                             get persons                   ✅
 - GET      /api/person/:id/                         find person                   ✅
 - PATCH    /api/person/:id/                         update person account         ✅
----------------------------------------------------------------------------       
-EMPLOYEES       
+---------------------------------------------------------------------------
+EMPLOYEES
 - GET      /api/employees/                          get employees                 ✅
 - GET      /api/employees/:id/                      find employee                 ✅
 - PATCH    /api/employees/:id/                      update employee               ✅
 - PATCH    /api/employees/:id/terminate/            layoff an employee            ✅
----------------------------------------------------------------------------  
-BRANCH  
+---------------------------------------------------------------------------
+BRANCH
 - GET      /api/branch/                             get branches                  ✅
 - GET      /api/branch/:id/                         find branch                   ✅
 - POST     /api/branch/                             create branch                 ✅
 - PATCH    /api/branch/:id/                         update branch                 ✅
 - PATCH    /api/branch/:id/manager/                 change branch manager         ✅
 - DELETE   /api/branch/:id/                         delete branch                 ✅
----------------------------------------------------------------------------  
-POSITION  
+---------------------------------------------------------------------------
+POSITION
 - GET      /api/position/                           get positions                 ✅
 - GET      /api/position/:id/                       find position                 ✅
 - POST     /api/position/                           create position               ✅
 - PATCH    /api/position/:id/                       update position               ✅
 - DELETE   /api/position/:id/                       delete position               ✅
----------------------------------------------------------------------------  
-EXAMS  
+---------------------------------------------------------------------------
+EXAMS
 - GET      /api/exams/                              get exams                     ✅
 - GET      /api/exams/:id/                          find exam                     ✅
 - POST     /api/exams/                              create exam                   ✅
@@ -70,8 +70,8 @@ QUESTIONS
 - DELETE   /api/questions/exam/:id/                 delete exam questions         ✅❌
 - PATCH    /api/questions/:id/                      update question               ✅
 - POST     /api/questions/:id/submit/               submit question               ✅❌
----------------------------------------------------------------------------       
-OPTIONS       
+---------------------------------------------------------------------------
+OPTIONS
 - GET      /api/options/                            get options                   ✅
 - GET      /api/options/:id/                        find option                   ✅
 - POST     /api/options/                            create option                 ✅
@@ -82,31 +82,31 @@ EXAM STATUS
 - GET      /api/exam_status/                        get exam status               ✅
 - GET      /api/exam_status/employee/:id            find employee exam status     ✅
 - POST     /api/exam_status/                        start exam                    ✅
----------------------------------------------------------------------------    
-PROMOTION    
+---------------------------------------------------------------------------
+PROMOTION
 - GET      /api/promotions/                         get promotions                ✅
 - GET      /api/promotions/employee/:id/            get employee promotions       ✅
 - POST     /api/promotions/                         promote employee              ✅
----------------------------------------------------------------------------    
-CONVERSATIONS    
+---------------------------------------------------------------------------
+CONVERSATIONS
 - GET      /api/conversations/                      get conversations             ✅
 - GET      /api/conversations/:id/                  find conversation             ✅
 - GET      /api/conversations/:id/messages/         get conversation messages     ✅
 - POST     /api/conversations/                      start conversation            ✅
 - DELETE   /api/conversations/                      delete conversations          ✅
----------------------------------------------------------------------------    
-MESSAGES    
+---------------------------------------------------------------------------
+MESSAGES
 - POST     /api/messages/                           create message                ✅
 - DELETE   /api/messages/                           delete message                ✅
 ---------------------------------------------------------------------------
 REVIEWS
-- GET      /api/reviews/                            get reviews                   ❌
-- GET      /api/reviews/employee/:id/               get employee reviews          ❌ 
-- POST     /api/reviews/                            create review                 ❌
+- GET      /api/reviews/                            get reviews                   ✅
+- GET      /api/reviews/employee/:id/               get employee reviews          ✅
+- POST     /api/reviews/                            create review                 ✅
 ---------------------------------------------------------------------------
 PAYMENTS
-- GET      /api/payments/                           get payments                  ❌
-- GET      /api/payments/:id/                       find payment                  ❌
-- POST     /api/payments/                           pay employee                  ❌
-- POST     /api/payments/salary/                    make employee salary payments ❌
+- GET      /api/payments/                           get payments                  ✅
+- GET      /api/payments/:id/                       find payment                  ✅
+- POST     /api/payments/                           pay employee                  ✅
+- POST     /api/payments/bulk/                      make employee salary payments ✅
 ---------------------------------------------------------------------------

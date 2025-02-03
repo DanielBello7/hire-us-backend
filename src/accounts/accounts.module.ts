@@ -6,8 +6,8 @@ import { PersonModule } from 'src/person/person.module';
 
 @Module({
     controllers: [AccountsController],
-    imports: [DatabaseModule, PersonModule],
-    providers: [AccountsService],
     exports: [AccountsService],
+    providers: [AccountsService],
+    imports: [DatabaseModule, PersonModule],
 })
 export class AccountsModule {}
