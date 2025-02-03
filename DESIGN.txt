@@ -96,8 +96,8 @@ CONVERSATIONS
 - DELETE   /api/conversations/                      delete conversations          ✅
 ---------------------------------------------------------------------------    
 MESSAGES    
-- POST     /api/messages/                           create message                ❌
-- DELETE   /api/messages/                           delete message                ❌
+- POST     /api/messages/                           create message                ✅
+- DELETE   /api/messages/                           delete message                ✅
 ---------------------------------------------------------------------------
 REVIEWS
 - GET      /api/reviews/                            get reviews                   ❌

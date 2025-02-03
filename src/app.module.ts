@@ -20,6 +20,7 @@ import { ExamStatusModule } from './exam-status/exam-status.module';
 import { PromotionsModule } from './promotions/promotions.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
     imports: [
@@ -52,6 +53,7 @@ import { MessagesModule } from './messages/messages.module';
         PromotionsModule,
         ConversationsModule,
         MessagesModule,
+        ReviewsModule,
     ],
     controllers: [AppController],
     providers: [

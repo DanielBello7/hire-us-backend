@@ -204,17 +204,20 @@ model Conversation {
   createdBy   Account   @relation("CreatedBy", fields: [createdById], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  Message     Message[]
 }
 
 model Message {
-  id          Int      @id @default(autoincrement())
-  body        String
-  media       String?
-  mediaType   String?
-  createdById Int
-  createdBy   Account  @relation(fields: [createdById], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             Int          @id @default(autoincrement())
+  body           String
+  media          String?
+  mediaType      String?
+  createdById    Int
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  createdBy      Account      @relation(fields: [createdById], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
 model Review {

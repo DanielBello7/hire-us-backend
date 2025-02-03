@@ -1,26 +1,101 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class MessagesService {
-  create(createMessageDto: CreateMessageDto) {
-    return 'This action adds a new message';
-  }
+    constructor(private readonly database: DatabaseService) {}
+    async create(body: CreateMessageDto) {
+        return this.database.message.create({
+            data: {
+                ...body,
+                createdBy: {
+                    connect: {
+                        id: body.createdBy,
+                    },
+                },
+                conversation: {
+                    connect: {
+                        id: body.conversation,
+                    },
+                },
+            },
+            include: {
+                createdBy: true,
+            },
+        });
+    }
 
-  findAll() {
-    return `This action returns all messages`;
-  }
+    async findAll() {
+        return this.database.message.findMany();
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} message`;
-  }
+    async findConversationMessages(id: number) {
+        return this.database.message.findMany({
+            where: {
+                conversationId: id,
+            },
+            include: {
+                createdBy: true,
+            },
+        });
+    }
 
-  update(id: number, updateMessageDto: UpdateMessageDto) {
-    return `This action updates a #${id} message`;
-  }
+    async findOne(id: number) {
+        const response = await this.database.message.findFirst({
+            where: {
+                id,
+            },
+            include: {
+                createdBy: true,
+            },
+        });
+        if (!response) throw new NotFoundException('cannot find message');
+        return response;
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} message`;
-  }
+    async update(id: number, body: UpdateMessageDto) {
+        return this.database.message.update({
+            where: {
+                id,
+            },
+            data: {
+                ...body,
+                conversation: body.conversation
+                    ? {
+                          connect: {
+                              id: body.conversation,
+                          },
+                      }
+                    : undefined,
+                createdBy: body.createdBy
+                    ? {
+                          connect: {
+                              id: body.createdBy,
+                          },
+                      }
+                    : undefined,
+            },
+            include: {
+                createdBy: true,
+            },
+        });
+    }
+
+    async remove(id: number) {
+        return this.database.message.delete({
+            where: {
+                id,
+            },
+        });
+    }
+
+    async deleteMany(conversation: number) {
+        return this.database.message.deleteMany({
+            where: {
+                conversationId: conversation,
+            },
+        });
+    }
 }
