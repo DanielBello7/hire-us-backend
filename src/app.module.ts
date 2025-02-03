@@ -18,6 +18,8 @@ import { QuestionsModule } from './questions/questions.module';
 import { OptionsModule } from './options/options.module';
 import { ExamStatusModule } from './exam-status/exam-status.module';
 import { PromotionsModule } from './promotions/promotions.module';
+import { ConversationsModule } from './conversations/conversations.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
     imports: [
@@ -48,6 +50,8 @@ import { PromotionsModule } from './promotions/promotions.module';
         OptionsModule,
         ExamStatusModule,
         PromotionsModule,
+        ConversationsModule,
+        MessagesModule,
     ],
     controllers: [AppController],
     providers: [

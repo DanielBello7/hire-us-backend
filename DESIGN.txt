@@ -88,17 +88,12 @@ PROMOTION
 - GET      /api/promotions/employee/:id/            get employee promotions       ✅
 - POST     /api/promotions/                         promote employee              ✅
 ---------------------------------------------------------------------------    
-DEMOMOTION    
-- GET      /api/demotions/                          get demotions                 ❌
-- GET      /api/demotions/employee/:id/             get employee demotions        ❌
-- POST     /api/demotions/                          demote employee               ❌
----------------------------------------------------------------------------    
 CONVERSATIONS    
-- GET      /api/conversations/                      get conversations             ❌
-- GET      /api/conversations/:id/                  find conversation             ❌
-- GET      /api/conversations/:id/messages/         get conversation messages     ❌
-- POST     /api/conversations/                      start conversation            ❌
-- DELETE   /api/conversations/                      delete conversations          ❌
+- GET      /api/conversations/                      get conversations             ✅
+- GET      /api/conversations/:id/                  find conversation             ✅
+- GET      /api/conversations/:id/messages/         get conversation messages     ✅
+- POST     /api/conversations/                      start conversation            ✅
+- DELETE   /api/conversations/                      delete conversations          ✅
 ---------------------------------------------------------------------------    
 MESSAGES    
 - POST     /api/messages/                           create message                ❌
