@@ -3,7 +3,7 @@ import * as winston from 'winston';
 import * as path from 'path';
 
 @Injectable()
-export class WinstonLoggerService extends ConsoleLogger {
+export class WinstonService extends ConsoleLogger {
     private readonly logger: winston.Logger = winston.createLogger({
         format: winston.format.combine(
             winston.format.json(),

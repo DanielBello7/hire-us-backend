@@ -7,6 +7,7 @@ import { PersonService } from 'src/person/person.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 import bcrypt from 'bcrypt';
 
 @Injectable()
@@ -16,7 +17,7 @@ export class AccountsService {
         private readonly person: PersonService,
     ) {}
 
-    async checkIfAccountExists(email: string) {
+    async isEmailRegistered(email: string) {
         const response = await this.database.account.findFirst({
             where: {
                 email,
@@ -25,16 +26,18 @@ export class AccountsService {
         return !response;
     }
 
-    async getAccounts(isEmailVerified?: boolean) {
-        if (isEmailVerified) {
-            return this.database.account.findMany({
-                where: {
-                    isEmailVerified,
-                },
-            });
-        } else {
-            return this.database.account.findMany();
-        }
+    async getAccounts(query?: ExpressQuery) {
+        const { page, pick, ...rest }: any = query;
+        const pageNum = Number(page ?? 1);
+        const pickNum = Number(pick ?? 5);
+
+        const skip = pickNum * (pageNum - 1);
+        return this.database.account.findMany({
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            where: rest,
+            skip,
+            take: pickNum,
+        });
     }
 
     async findAccount(id: number) {
@@ -48,17 +51,10 @@ export class AccountsService {
     }
 
     async createAccount(data: CreateAccountDto) {
-        if (!(await this.checkIfAccountExists(data.email))) {
+        if (!(await this.isEmailRegistered(data.email))) {
             throw new BadRequestException('Email already registered');
         }
-        return this.database.account.create({
-            data: {
-                email: data.email,
-                name: data.name,
-                role: data.role,
-                password: bcrypt.hashSync(data.password, 10),
-            },
-        });
+        return this.create(data);
     }
 
     async updateAccount(id: number, updates: UpdateAccountDto) {
@@ -75,11 +71,30 @@ export class AccountsService {
             const hashed = bcrypt.hashSync(rest.password, 10);
             body.password = hashed;
         }
-        return this.database.account.update({
-            where: {
-                id,
+        return this.update(id, updates);
+    }
+
+    async create(data: CreateAccountDto) {
+        return this.database.account.create({
+            data: {
+                email: data.email,
+                name: data.name,
+                role: data.role,
+                password: bcrypt.hashSync(data.password, 10),
             },
-            data: body,
         });
+    }
+
+    async update(id: number, updates: UpdateAccountDto) {
+        try {
+            return this.database.account.update({
+                where: {
+                    id,
+                },
+                data: updates,
+            });
+        } catch {
+            throw new NotFoundException('error updating account');
+        }
     }
 }

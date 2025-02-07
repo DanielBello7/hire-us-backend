@@ -3,7 +3,6 @@ import {
     Controller,
     Get,
     Param,
-    ParseBoolPipe,
     ParseIntPipe,
     Put,
     Query,
@@ -11,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { AccountsService } from './accounts.service';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
 
 @Controller('accounts')
@@ -19,8 +19,8 @@ export class AccountsController {
 
     @SkipThrottle({ default: false })
     @Get()
-    getAccounts(@Query('isVerified', ParseBoolPipe) isVerified?: boolean) {
-        return this.accountService.getAccounts(isVerified);
+    getAccounts(@Query() query: ExpressQuery) {
+        return this.accountService.getAccounts(query);
     }
 
     @Throttle({ short: { ttl: 1000, limit: 1 } })

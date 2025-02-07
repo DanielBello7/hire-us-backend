@@ -1,4 +1,11 @@
-import { Controller, Get, Body, Patch, Param } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Patch,
+    Param,
+    Body,
+    ParseIntPipe,
+} from '@nestjs/common';
 import { AdministratorService } from './administrator.service';
 import { UpdateAdministratorDto } from './dto/update-administrator.dto';
 
@@ -12,15 +19,18 @@ export class AdministratorController {
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.administratorService.findOne(+id);
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.administratorService.findOne(id);
     }
 
     @Patch(':id')
     update(
-        @Param('id') id: string,
+        @Param('id', ParseIntPipe) id: number,
         @Body() updateAdministratorDto: UpdateAdministratorDto,
     ) {
-        return this.administratorService.update(+id, updateAdministratorDto);
+        return this.administratorService.updateAdmin(
+            id,
+            updateAdministratorDto,
+        );
     }
 }

@@ -10,7 +10,7 @@ import { RegisterModule } from './register/register.module';
 import { AdministratorModule } from './administrator/administrator.module';
 import { EmployeeModule } from './employee/employee.module';
 import { OrganizationModule } from './organization/organization.module';
-import { WinstonLoggerModule } from './winston-logger/winston-logger.module';
+import { WinstonModule } from './winston/winston.module';
 import { BranchModule } from './branch/branch.module';
 import { PositionsModule } from './positions/positions.module';
 import { ExamsModule } from './exams/exams.module';
@@ -44,7 +44,7 @@ import { PaymentsModule } from './payments/payments.module';
         RegisterModule,
         PersonModule,
         EmployeeModule,
-        WinstonLoggerModule,
+        WinstonModule,
         BranchModule,
         PositionsModule,
         ExamsModule,

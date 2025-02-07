@@ -38,7 +38,7 @@ export class RegisterService {
             ...body,
             isEmailVerified: false,
         });
-        return this.admin.create({
+        return this.admin.createAdmin({
             ...body,
             account: account.id,
         });

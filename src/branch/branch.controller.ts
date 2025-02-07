@@ -13,14 +13,16 @@ import {
 import { BranchService } from './branch.service';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
+import { Query as ExpressQuery } from 'express-serve-static-core';
+import { UpdateBranchManagerDto } from './dto/update-branch-manager.dto';
 
 @Controller('branch')
 export class BranchController {
     constructor(private readonly branchService: BranchService) {}
 
     @Get()
-    findAll(@Query('organization', ParseIntPipe) organization: number) {
-        return this.branchService.findAll(organization);
+    findAll(@Query() query: ExpressQuery) {
+        return this.branchService.findAll(query);
     }
 
     @Get(':id')
@@ -30,7 +32,7 @@ export class BranchController {
 
     @Post()
     create(@Body(new ValidationPipe()) body: CreateBranchDto) {
-        return this.branchService.create(body);
+        return this.branchService.createBranch(body);
     }
 
     @Patch(':id')
@@ -38,19 +40,19 @@ export class BranchController {
         @Param('id', ParseIntPipe) id: number,
         @Body(new ValidationPipe()) body: UpdateBranchDto,
     ) {
-        return this.branchService.update(id, body);
+        return this.branchService.updateBranch(id, body);
     }
 
-    @Patch(':id/manager')
+    @Patch(':id/manager/')
     changeManager(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) body: { manager: number },
+        @Body(new ValidationPipe()) body: UpdateBranchManagerDto,
     ) {
         return this.branchService.updateManager(id, body.manager);
     }
 
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
-        return this.branchService.remove(id);
+        return this.branchService.removeBranch(id);
     }
 }

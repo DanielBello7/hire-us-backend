@@ -12,13 +12,13 @@ import { RoleGuard } from 'src/role/role.guard';
 import { CreateRegisterAdministratorDto } from './dto/create-register-administrator.dto';
 import { CreateRegisterEmployeeDto } from './dto/create-register-employee.dto';
 import { CreateRegisterOrganizationDto } from './dto/create-register-organization.dto';
-import { WinstonLoggerService } from 'src/winston-logger/winston-logger.service';
+import { WinstonService } from 'src/winston/winston.service';
 
 @SkipThrottle()
 @Controller('register')
 export class RegisterController {
     constructor(private readonly register: RegisterService) {}
-    private readonly logger = new WinstonLoggerService(RegisterController.name);
+    private readonly logger = new WinstonService(RegisterController.name);
 
     @Post('administrator')
     createAdministrator(
