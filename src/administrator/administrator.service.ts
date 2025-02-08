@@ -3,6 +3,7 @@ import { CreateAdministratorDto } from './dto/create-administrator.dto';
 import { UpdateAdministratorDto } from './dto/update-administrator.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class AdministratorService {
@@ -14,18 +15,41 @@ export class AdministratorService {
                 email,
             },
         });
-        return !response;
+        return !!response;
     }
 
     async findAll(query?: ExpressQuery) {
-        const { page, pick, ...rest }: any = query;
-        const pageNum = Number(page ?? 1);
-        const pickNum = Number(pick ?? 5);
+        let pageNum = 1;
+        let pickNum = 5;
 
-        const skip = pickNum * (pageNum - 1);
+        let options = {};
+
+        let skip = pickNum * (pageNum - 1);
+
+        if (query) {
+            const { page, pick } = query;
+            pageNum = Number(page ?? 1);
+            pickNum = Number(pick ?? 5);
+            skip = pickNum * (pageNum - 1);
+            options = {
+                ...options,
+                ...Object.fromEntries(
+                    Object.entries(query).filter(([key]) =>
+                        [
+                            'id',
+                            'name',
+                            'accountId',
+                            'email',
+                            'createdAt',
+                            'updatedAt',
+                        ].includes(key),
+                    ),
+                ),
+            };
+        }
+
         return this.database.administrator.findMany({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            where: rest,
+            where: options,
             skip,
             take: pickNum,
         });
@@ -43,10 +67,14 @@ export class AdministratorService {
     }
 
     async createAdmin(body: CreateAdministratorDto) {
-        if (!(await this.isEmailRegistered(body.email))) {
+        const data = plainToInstance(CreateAdministratorDto, body, {
+            excludeExtraneousValues: true,
+        });
+        console.log({ data, body });
+        if (await this.isEmailRegistered(body.email)) {
             throw new NotFoundException('email already registered');
         }
-        return this.create(body);
+        return this.create(data);
     }
 
     async updateAdmin(id: number, body: UpdateAdministratorDto) {

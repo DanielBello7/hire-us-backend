@@ -8,7 +8,7 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AccountsService {
@@ -23,18 +23,43 @@ export class AccountsService {
                 email,
             },
         });
-        return !response;
+        return !!response;
     }
 
     async getAccounts(query?: ExpressQuery) {
-        const { page, pick, ...rest }: any = query;
-        const pageNum = Number(page ?? 1);
-        const pickNum = Number(pick ?? 5);
+        let pageNum = 1;
+        let pickNum = 5;
 
-        const skip = pickNum * (pageNum - 1);
+        let options = {};
+
+        let skip = pickNum * (pageNum - 1);
+
+        if (query) {
+            const { page, pick } = query;
+            pageNum = Number(page ?? 1);
+            pickNum = Number(pick ?? 5);
+            skip = pickNum * (pageNum - 1);
+            options = {
+                ...options,
+                ...Object.fromEntries(
+                    Object.entries(query).filter(([key]) =>
+                        [
+                            'id',
+                            'name',
+                            'email',
+                            'role',
+                            'lastLogin',
+                            'isEmailVerified',
+                            'createdAt',
+                            'updatedAt',
+                        ].includes(key),
+                    ),
+                ),
+            };
+        }
+
         return this.database.account.findMany({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            where: rest,
+            where: options,
             skip,
             take: pickNum,
         });
@@ -51,7 +76,7 @@ export class AccountsService {
     }
 
     async createAccount(data: CreateAccountDto) {
-        if (!(await this.isEmailRegistered(data.email))) {
+        if (await this.isEmailRegistered(data.email)) {
             throw new BadRequestException('Email already registered');
         }
         return this.create(data);

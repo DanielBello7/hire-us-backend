@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export enum QuestionType {
+export enum QuestionTypeEnum {
     SINGLE_CHOICE_QUESTION = 'SINGLE_CHOICE_QUESTION',
     MULTIPLE_CHOICE_QUESTION = 'MULTIPLE_CHOICE_QUESTION',
     ESSAY_QUESTION = 'ESSAY_QUESTION',
@@ -20,6 +20,6 @@ export class CreateQuestionDto
 
     @IsNotEmpty()
     @IsString()
-    @IsEnum(QuestionType)
+    @IsEnum(QuestionTypeEnum)
     type: string;
 }

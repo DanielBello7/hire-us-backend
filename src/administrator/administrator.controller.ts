@@ -5,17 +5,19 @@ import {
     Param,
     Body,
     ParseIntPipe,
+    Query,
 } from '@nestjs/common';
 import { AdministratorService } from './administrator.service';
 import { UpdateAdministratorDto } from './dto/update-administrator.dto';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Controller('administrators')
 export class AdministratorController {
     constructor(private readonly administratorService: AdministratorService) {}
 
     @Get()
-    findAll() {
-        return this.administratorService.findAll();
+    findAll(@Query() query: ExpressQuery) {
+        return this.administratorService.findAll(query);
     }
 
     @Get(':id')

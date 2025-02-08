@@ -35,14 +35,38 @@ export class OptionsService {
     }
 
     async findAll(query?: ExpressQuery) {
-        const { page, pick, ...rest }: any = query;
-        const pageNum = Number(page ?? 1);
-        const pickNum = Number(pick ?? 5);
+        let pageNum = 1;
+        let pickNum = 5;
 
-        const skip = pickNum * (pageNum - 1);
+        let options = {};
+
+        let skip = pickNum * (pageNum - 1);
+
+        if (query) {
+            const { page, pick } = query;
+            pageNum = Number(page ?? 1);
+            pickNum = Number(pick ?? 5);
+            skip = pickNum * (pageNum - 1);
+            options = {
+                ...options,
+                ...Object.fromEntries(
+                    Object.entries(query).filter(([key]) =>
+                        [
+                            'id',
+                            'questionId',
+                            'body',
+                            'description',
+                            'isCorrect',
+                            'createdAt',
+                            'updatedAt',
+                        ].includes(key),
+                    ),
+                ),
+            };
+        }
+
         return this.database.option.findMany({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            where: rest,
+            where: options,
             skip,
             take: pickNum,
         });
