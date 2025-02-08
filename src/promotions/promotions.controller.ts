@@ -5,8 +5,10 @@ import {
     Post,
     Body,
     ParseIntPipe,
+    Query,
 } from '@nestjs/common';
 import { PromotionsService } from './promotions.service';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 
 @Controller('promotions')
@@ -14,8 +16,8 @@ export class PromotionsController {
     constructor(private readonly promotionsService: PromotionsService) {}
 
     @Get()
-    findAll() {
-        return this.promotionsService.findAll();
+    findAll(@Query() query: ExpressQuery) {
+        return this.promotionsService.findAll(query);
     }
 
     @Get('employee/:id')

@@ -6,12 +6,13 @@ import {
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class EmployeeService {
     constructor(private readonly database: DatabaseService) {}
 
-    async checkIfEmployeeExists(personId: number, organizationId: number) {
+    async isEmployeeRegistered(personId: number, organizationId: number) {
         const response = await this.database.employee.findFirst({
             where: {
                 personId,
@@ -21,30 +22,30 @@ export class EmployeeService {
         return !response;
     }
 
-    async create(body: CreateEmployeeDto) {
-        if (
-            !(await this.checkIfEmployeeExists(body.person, body.organization))
-        ) {
+    async createEmployee(body: CreateEmployeeDto) {
+        const isRegistered = await this.isEmployeeRegistered(
+            body.person,
+            body.organization,
+        );
+        if (isRegistered) {
             throw new BadRequestException('Employee already exists');
+        } else {
+            return this.create(body);
         }
-        return this.database.employee.create({
-            data: {
-                ...body,
-                person: {
-                    connect: { id: body.person },
-                },
-                organization: {
-                    connect: { id: body.organization },
-                },
-                position: {
-                    connect: { id: body.position },
-                },
-            },
-        });
     }
 
-    async findAll() {
-        return this.database.employee.findMany();
+    async findAll(query?: ExpressQuery) {
+        const { page, pick, ...rest }: any = query;
+        const pageNum = Number(page ?? 1);
+        const pickNum = Number(pick ?? 5);
+
+        const skip = pickNum * (pageNum - 1);
+        return this.database.employee.findMany({
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            where: rest,
+            skip,
+            take: pickNum,
+        });
     }
 
     async findOne(id: number) {
@@ -57,22 +58,10 @@ export class EmployeeService {
         return response;
     }
 
-    async update(id: number, body: UpdateEmployeeDto) {
+    async updateEmployee(id: number, body: UpdateEmployeeDto) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { organization, person, ...rest } = body;
-        return this.database.employee.update({
-            where: { id },
-            data: {
-                ...rest,
-                position: rest.position
-                    ? {
-                          connect: {
-                              id: rest.position,
-                          },
-                      }
-                    : undefined,
-            },
-        });
+        return this.update(id, rest);
     }
 
     async layoffEmployee(id: number) {
@@ -82,6 +71,67 @@ export class EmployeeService {
             },
             data: {
                 isTerminated: true,
+            },
+        });
+    }
+
+    async delete(id: number) {
+        return this.database.employee.delete({
+            where: {
+                id,
+            },
+        });
+    }
+
+    async create(body: CreateEmployeeDto) {
+        return this.database.employee.create({
+            data: {
+                ...body,
+                person: {
+                    connect: {
+                        id: body.person,
+                    },
+                },
+                organization: {
+                    connect: {
+                        id: body.organization,
+                    },
+                },
+                position: {
+                    connect: {
+                        id: body.position,
+                    },
+                },
+            },
+        });
+    }
+
+    async update(id: number, body: UpdateEmployeeDto) {
+        return this.database.employee.update({
+            where: { id },
+            data: {
+                ...body,
+                position: body.position
+                    ? {
+                          connect: {
+                              id: body.position,
+                          },
+                      }
+                    : undefined,
+                person: body.person
+                    ? {
+                          connect: {
+                              id: body.person,
+                          },
+                      }
+                    : undefined,
+                organization: body.organization
+                    ? {
+                          connect: {
+                              id: body.organization,
+                          },
+                      }
+                    : undefined,
             },
         });
     }

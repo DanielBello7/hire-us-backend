@@ -1,3 +1,4 @@
+import { Query as ExpressQuery } from 'express-serve-static-core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
@@ -27,14 +28,24 @@ export class MessagesService {
         });
     }
 
-    async findAll() {
-        return this.database.message.findMany();
+    async findAll(query?: ExpressQuery) {
+        const { page, pick, ...rest }: any = query;
+        const pageNum = Number(page ?? 1);
+        const pickNum = Number(pick ?? 5);
+
+        const skip = pickNum * (pageNum - 1);
+        return this.database.message.findMany({
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            where: rest,
+            skip,
+            take: pickNum,
+        });
     }
 
-    async findConversationMessages(id: number) {
+    async findConversationMessages(convoId: number) {
         return this.database.message.findMany({
             where: {
-                conversationId: id,
+                conversationId: convoId,
             },
             include: {
                 createdBy: true,

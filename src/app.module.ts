@@ -16,7 +16,7 @@ import { PositionsModule } from './positions/positions.module';
 import { ExamsModule } from './exams/exams.module';
 import { QuestionsModule } from './questions/questions.module';
 import { OptionsModule } from './options/options.module';
-import { ExamStatusModule } from './exam-status/exam-status.module';
+import { ProgressModule } from './progress/progress.module';
 import { PromotionsModule } from './promotions/promotions.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
@@ -50,7 +50,7 @@ import { PaymentsModule } from './payments/payments.module';
         ExamsModule,
         QuestionsModule,
         OptionsModule,
-        ExamStatusModule,
+        ProgressModule,
         PromotionsModule,
         ConversationsModule,
         MessagesModule,

@@ -6,6 +6,7 @@ import {
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class PromotionsService {
@@ -50,8 +51,18 @@ export class PromotionsService {
         });
     }
 
-    async findAll() {
-        return this.database.promotion.findMany();
+    async findAll(query?: ExpressQuery) {
+        const { page, pick, ...rest }: any = query;
+        const pageNum = Number(page ?? 1);
+        const pickNum = Number(pick ?? 5);
+
+        const skip = pickNum * (pageNum - 1);
+        return this.database.promotion.findMany({
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            where: rest,
+            skip,
+            take: pickNum,
+        });
     }
 
     async findOne(id: number) {

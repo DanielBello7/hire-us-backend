@@ -8,18 +8,20 @@ import {
     ValidationPipe,
     Param,
     Patch,
+    Query,
 } from '@nestjs/common';
 import { PositionsService } from './positions.service';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Controller('positions')
 export class PositionsController {
     constructor(private readonly positionsService: PositionsService) {}
 
     @Get()
-    findAll() {
-        return this.positionsService.findAll();
+    findAll(@Query() query: ExpressQuery) {
+        return this.positionsService.findAll(query);
     }
 
     @Get(':id')
@@ -37,7 +39,7 @@ export class PositionsController {
         @Param('id', ParseIntPipe) id: number,
         @Body(new ValidationPipe()) body: UpdatePositionDto,
     ) {
-        return this.positionsService.update(id, body);
+        return this.positionsService.updatePosition(id, body);
     }
 
     @Delete(':id')

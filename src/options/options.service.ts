@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOptionDto } from './dto/create-option.dto';
 import { UpdateOptionDto } from './dto/update-option.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class OptionsService {
@@ -33,8 +34,18 @@ export class OptionsService {
         });
     }
 
-    async findAll() {
-        return this.database.option.findMany();
+    async findAll(query?: ExpressQuery) {
+        const { page, pick, ...rest }: any = query;
+        const pageNum = Number(page ?? 1);
+        const pickNum = Number(pick ?? 5);
+
+        const skip = pickNum * (pageNum - 1);
+        return this.database.option.findMany({
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            where: rest,
+            skip,
+            take: pickNum,
+        });
     }
 
     async findOne(id: number) {
@@ -47,15 +58,26 @@ export class OptionsService {
         return response;
     }
 
-    async update(id: number, body: UpdateOptionDto) {
+    async updateOption(id: number, body: UpdateOptionDto) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { question, ...rest } = body;
+        return this.update(id, rest);
+    }
+
+    async update(id: number, body: UpdateOptionDto) {
         return this.database.option.update({
             where: {
                 id,
             },
             data: {
-                ...rest,
+                ...body,
+                question: body.question
+                    ? {
+                          connect: {
+                              id: body.question,
+                          },
+                      }
+                    : undefined,
             },
         });
     }

@@ -1,5 +1,5 @@
-import { ExamStatus as PrismaExamStatus } from '@prisma/client';
-export class ExamStatus implements PrismaExamStatus {
+import { Progress as PrismaProgress } from '@prisma/client';
+export class Progress implements PrismaProgress {
     id: number;
     employeeId: number;
     score: number | null;

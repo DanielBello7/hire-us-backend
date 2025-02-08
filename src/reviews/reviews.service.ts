@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class ReviewsService {
@@ -28,8 +29,17 @@ export class ReviewsService {
         });
     }
 
-    async findAll() {
+    async findAll(query?: ExpressQuery) {
+        const { page, pick, ...rest }: any = query;
+        const pageNum = Number(page ?? 1);
+        const pickNum = Number(pick ?? 5);
+
+        const skip = pickNum * (pageNum - 1);
         return this.database.review.findMany({
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            where: rest,
+            skip,
+            take: pickNum,
             include: {
                 createdBy: true,
                 createdFor: true,

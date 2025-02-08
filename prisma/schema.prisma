@@ -92,7 +92,7 @@ model Employee {
   Branch         Branch[]
   Exam           Exam?        @relation(fields: [examId], references: [id])
   examId         Int?
-  ExamStatus     ExamStatus[]
+  Progress       Progress[]
   Promotion      Promotion[]
   CreatedBy      Review[]     @relation("CreatedBy")
   CreatedFor     Review[]     @relation("CreatedFor")
@@ -148,14 +148,14 @@ model Exam {
 }
 
 model Question {
-  id         Int          @id @default(autoincrement())
-  examId     Int
-  type       String
-  body       String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  Options    Option[]
-  ExamStatus ExamStatus[]
+  id        Int        @id @default(autoincrement())
+  examId    Int
+  type      String
+  body      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Options   Option[]
+  Progress  Progress[]
 }
 
 model Option {
@@ -169,7 +169,7 @@ model Option {
   updatedAt   DateTime @updatedAt
 }
 
-model ExamStatus {
+model Progress {
   id             Int       @id @default(autoincrement())
   employeeId     Int
   employee       Employee  @relation(fields: [employeeId], references: [id])

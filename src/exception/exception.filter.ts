@@ -3,15 +3,12 @@ import { WinstonService } from 'src/winston/winston.service';
 import { BaseExceptionFilter } from '@nestjs/core';
 
 @Catch()
-export class ExceptionFilterFilter extends BaseExceptionFilter {
+export class ExceptionFilter extends BaseExceptionFilter {
     private readonly logger: WinstonService = new WinstonService(
-        ExceptionFilterFilter.name,
+        ExceptionFilter.name,
     );
     catch(exception: unknown, host: ArgumentsHost) {
-        this.logger.error(
-            (exception as Error).message,
-            ExceptionFilterFilter.name,
-        );
+        this.logger.error((exception as Error).message, ExceptionFilter.name);
         super.catch(exception, host);
     }
 }

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpAdapterHost } from '@nestjs/core';
-import { ExceptionFilterFilter } from './exception-filter/exception-filter.filter';
+import { ExceptionFilter } from './exception/exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
@@ -13,7 +13,7 @@ async function bootstrap() {
      */
     const app = await NestFactory.create(AppModule);
     const { httpAdapter } = app.get(HttpAdapterHost);
-    app.useGlobalFilters(new ExceptionFilterFilter(httpAdapter));
+    app.useGlobalFilters(new ExceptionFilter(httpAdapter));
     app.useGlobalPipes(new ValidationPipe());
     app.setGlobalPrefix('api');
     app.enableCors();

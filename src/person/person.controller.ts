@@ -6,8 +6,10 @@ import {
     Get,
     ParseIntPipe,
     Body,
+    Query,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 import { UpdatePersonDto } from './dto/update-person.dto';
 
 @Controller('person')
@@ -15,20 +17,20 @@ export class PersonController {
     constructor(private readonly person: PersonService) {}
 
     @Get()
-    findAll() {
-        return this.person.findAll();
+    findAll(@Query() query: ExpressQuery) {
+        return this.person.findAll(query);
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.person.findOne(+id);
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.person.findOne(id);
     }
 
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) updatePersonDto: UpdatePersonDto,
+        @Body(new ValidationPipe()) body: UpdatePersonDto,
     ) {
-        return this.person.update(id, updatePersonDto);
+        return this.person.updatePerson(id, body);
     }
 }

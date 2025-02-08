@@ -6,32 +6,39 @@ import {
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class PersonService {
     constructor(private readonly database: DatabaseService) {}
 
-    async create(body: CreatePersonDto) {
+    async isEmailRegistered(email: string) {
         const check = await this.database.person.findFirst({
             where: {
-                email: body.email,
+                email,
             },
         });
-        if (check) throw new BadRequestException('Email already registered');
-        return this.database.person.create({
-            data: {
-                ...body,
-                account: {
-                    connect: {
-                        id: body.account,
-                    },
-                },
-            },
-        });
+        return !check;
     }
 
-    async findAll() {
-        return this.database.person.findMany();
+    async createPerson(body: CreatePersonDto) {
+        if (await this.isEmailRegistered(body.email))
+            throw new BadRequestException('Email already registered');
+        return this.create(body);
+    }
+
+    async findAll(query?: ExpressQuery) {
+        const { page, pick, ...rest }: any = query;
+        const pageNum = Number(page ?? 1);
+        const pickNum = Number(pick ?? 5);
+
+        const skip = pickNum * (pageNum - 1);
+        return this.database.person.findMany({
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            where: rest,
+            skip,
+            take: pickNum,
+        });
     }
 
     async findOne(id: number) {
@@ -44,19 +51,47 @@ export class PersonService {
         return check;
     }
 
-    async update(id: number, body: Omit<UpdatePersonDto, 'account'>) {
-        return this.database.person.update({
-            where: {
-                id,
-            },
-            data: body,
-        });
+    async updatePerson(id: number, body: UpdatePersonDto) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { account, ...rest } = body;
+        return this.update(id, rest);
     }
 
     async remove(id: number) {
         return this.database.person.delete({
             where: {
                 id,
+            },
+        });
+    }
+
+    async create(body: CreatePersonDto) {
+        return this.database.person.create({
+            data: {
+                ...body,
+                account: {
+                    connect: {
+                        id: body.account,
+                    },
+                },
+            },
+        });
+    }
+
+    async update(id: number, body: UpdatePersonDto) {
+        return this.database.person.update({
+            where: {
+                id,
+            },
+            data: {
+                ...body,
+                account: body.account
+                    ? {
+                          connect: {
+                              id: body.account,
+                          },
+                      }
+                    : undefined,
             },
         });
     }

@@ -23,11 +23,11 @@ export class RegisterService {
             ...body,
             isEmailVerified: false,
         });
-        const person = await this.person.create({
+        const person = await this.person.createPerson({
             ...body,
             account: account.id,
         });
-        return this.employee.create({
+        return this.employee.createEmployee({
             ...body,
             person: person.id,
         });
@@ -49,7 +49,7 @@ export class RegisterService {
             ...body,
             isEmailVerified: false,
         });
-        return this.organization.create({
+        return this.organization.createOrganization({
             ...body,
             account: account.id,
         });

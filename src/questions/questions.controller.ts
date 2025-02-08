@@ -45,7 +45,7 @@ export class QuestionsController {
         @Param('id', ParseIntPipe) id: number,
         @Body(new ValidationPipe()) body: UpdateQuestionDto,
     ) {
-        return this.questionsService.update(id, body);
+        return this.questionsService.updateQuestion(id, body);
     }
 
     @Delete(':id')

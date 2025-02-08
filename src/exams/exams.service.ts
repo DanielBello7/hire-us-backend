@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class ExamsService {
@@ -35,8 +36,18 @@ export class ExamsService {
         });
     }
 
-    async findAll() {
-        return this.database.exam.findMany();
+    async findAll(query?: ExpressQuery) {
+        const { page, pick, ...rest }: any = query;
+        const pageNum = Number(page ?? 1);
+        const pickNum = Number(pick ?? 5);
+
+        const skip = pickNum * (pageNum - 1);
+        return this.database.exam.findMany({
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            where: rest,
+            skip,
+            take: pickNum,
+        });
     }
 
     async findOne(id: number) {
@@ -49,18 +60,33 @@ export class ExamsService {
         return response;
     }
 
-    async update(id: number, body: UpdateExamDto) {
+    async updateExam(id: number, body: UpdateExamDto) {
         const {
             organization,
             eligiblePositions,
             ineligibleEmployees,
             ...rest
         } = body;
+        return this.update(id, rest);
+    }
+
+    async update(id: number, body: UpdateExamDto) {
         return this.database.exam.update({
             where: {
                 id,
             },
-            data: rest,
+            data: {
+                ...body,
+                organization: body.organization
+                    ? {
+                          connect: {
+                              id: body.organization,
+                          },
+                      }
+                    : undefined,
+                eligiblePositions: undefined,
+                ineligibleEmployees: undefined,
+            },
         });
     }
 

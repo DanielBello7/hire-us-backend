@@ -62,7 +62,7 @@ export class AccountsService {
         const { role, ...rest } = updates;
         const body = rest;
         if (body.email || body.name) {
-            await this.person.update(id, {
+            await this.person.updatePerson(id, {
                 email: updates.email,
                 name: updates.name,
             });

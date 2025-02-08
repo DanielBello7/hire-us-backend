@@ -9,18 +9,20 @@ import {
     ValidationPipe,
     ParseIntPipe,
     NotImplementedException,
+    Query,
 } from '@nestjs/common';
 import { ExamsService } from './exams.service';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Controller('exams')
 export class ExamsController {
     constructor(private readonly examsService: ExamsService) {}
 
     @Get()
-    findAll() {
-        return this.examsService.findAll();
+    findAll(@Query() query: ExpressQuery) {
+        return this.examsService.findAll(query);
     }
 
     @Get(':id')
@@ -44,7 +46,7 @@ export class ExamsController {
         @Param('id', ParseIntPipe) id: number,
         @Body(new ValidationPipe()) body: UpdateExamDto,
     ) {
-        return this.examsService.update(id, body);
+        return this.examsService.updateExam(id, body);
     }
 
     @Delete(':id')

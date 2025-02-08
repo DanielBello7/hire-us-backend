@@ -1,15 +1,15 @@
 import { Prisma } from '@prisma/client';
 import { IsNotEmpty, IsNumber, Matches } from 'class-validator';
 
-export enum ExamStatusEnum {
+export enum ProgressEnum {
     ONGOING = 'ONGOING',
     COMPLETED = 'COMPLETED',
 }
 
-export class CreateExamStatusDto
-    implements Omit<Prisma.ExamStatusCreateInput, 'employee'>
+export class CreateProgressDto
+    implements Omit<Prisma.ProgressCreateInput, 'employee'>
 {
-    @Matches(ExamStatusEnum.ONGOING)
+    @Matches(ProgressEnum.ONGOING)
     @IsNotEmpty()
     status: string;
 
