@@ -4,18 +4,39 @@ import { UpdatePositionDto } from './dto/update-position.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
+import { Position } from './entities/position.entity';
 
 @Injectable()
 export class PositionsService {
     constructor(private readonly database: DatabaseService) {}
 
+    async alreadyCreated(title: string, id: number): Promise<Position | false> {
+        const response: Position[] = await this.database.$queryRaw`
+            SELECT * FROM position 
+            WHERE LOWER(title) = LOWER(${title}) 
+            AND organizationId = ${id}
+        `;
+        if (response.length > 0) return response[0];
+        return false;
+    }
+
+    async recordPosition(
+        body: CreatePositionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const response = await this.alreadyCreated(
+            body.title,
+            body.organization,
+        );
+        if (response) return response;
+        return this.create(body, database);
+    }
+
     async create(
         body: CreatePositionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        let db: DatabaseService | PrismaDatabaseService;
-        if (database) db = database;
-        else db = this.database;
+        const db = database ?? this.database;
         return db.position.create({
             data: {
                 ...body,

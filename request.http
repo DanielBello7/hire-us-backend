@@ -10,6 +10,9 @@ GET http://localhost:3000/api/employees/
 ### GET ORGANIZATIONS
 GET http://localhost:3000/api/organizations/
 
+### GET POSITIONS
+GET http://localhost:3000/api/positions/
+
 #### REGISTER ADMINISTRATOR
 POST http://localhost:3000/api/register/administrator/
 Content-Type: application/json
@@ -18,12 +21,14 @@ Accept: application/json
 {
     "role": "administrator",
     "password": "Admin1234567890$",
-    "name": "Daniel Bello",
-    "email": "daniel@example.com"
+    "name": "David Bello",
+    "email": "david@example.com"
 }
 
 #### REGISTER ORGANIZATION
 POST http://localhost:3000/api/register/organization/
+Content-Type: application/json
+Accept: application/json
 
 {
     "role": "organization",
@@ -38,8 +43,33 @@ POST http://localhost:3000/api/register/organization/
 }
 
 #### REGISTER EMPLOYEE
-POST http://localhost:3000/api/register/localhost:3000/api/employees/
+POST http://localhost:3000/api/register/employee/
+Content-Type: application/json
+Accept: application/json
 
 {
+    "role": "employee",
+    "taxId": "0987654321",
+    "username": "oluchibello",
+    "country": "united-states",
+    "address": "6033 Beachview Drive Apt 450",
+    "gender": "female",
+    "position": 1,
+    "organization": 1,
+    "password": "Admin1234567890$",
+    "name": "Oluchi Bello",
+    "email": "oluchi@example.com"
+}
 
+#### ADD POSITION
+POST http://localhost:3000/api/positions/
+Content-Type: application/json
+Accept: application/json
+
+{
+    "description": "Develops and executes social media strategies to enhance brand awareness, engagement, and growth. They create and schedule content, analyze performance metrics, manage community interactions, and stay updated on trends to optimize campaigns. Strong creativity, communication, and analytical skills are essential for driving audience engagement and business success.",
+    "title": "Social Media Manager",
+    "salary": 5000,
+    "currency": "USD",
+    "organization": 1
 }

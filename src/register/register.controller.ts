@@ -1,7 +1,6 @@
 import {
     Controller,
     Post,
-    Ip,
     Body,
     UseGuards,
     ValidationPipe,
@@ -37,14 +36,23 @@ export class RegisterController {
         return this.register.registerEmployee(data);
     }
 
+    /**
     @Post('organization')
-    @UseGuards(RoleGuard)
     createOrganization(
         @Ip() ip: string,
-        @Body(new ValidationPipe({ forbidUnknownValues: true }))
+        @Body(new ValidationPipe())
         data: CreateRegisterOrganizationDto,
     ) {
         this.logger.log(`request made from ${ip}`);
+        return this.register.registerOrganization(data);
+    }
+    */
+
+    @Post('organization')
+    createOrganization(
+        @Body(new ValidationPipe())
+        data: CreateRegisterOrganizationDto,
+    ) {
         return this.register.registerOrganization(data);
     }
 }

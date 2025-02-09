@@ -27,13 +27,13 @@ export class CreateRegisterOrganizationDto
     address: string;
 
     @Expose()
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
     title: string;
 
     @Expose()
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
     taxId: string;
 
     @Expose()

@@ -31,7 +31,7 @@ export class PositionsController {
 
     @Post()
     create(@Body(new ValidationPipe()) body: CreatePositionDto) {
-        return this.positionsService.create(body);
+        return this.positionsService.recordPosition(body);
     }
 
     @Patch(':id')

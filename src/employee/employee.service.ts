@@ -74,6 +74,10 @@ export class EmployeeService {
             where: options,
             skip,
             take: pickNum,
+            include: {
+                person: true,
+                position: true,
+            },
         });
     }
 
@@ -81,6 +85,10 @@ export class EmployeeService {
         const response = await this.database.employee.findFirst({
             where: {
                 id,
+            },
+            include: {
+                person: true,
+                position: true,
             },
         });
         if (!response) throw new NotFoundException('employee not found');
@@ -109,6 +117,10 @@ export class EmployeeService {
             data: {
                 isTerminated: true,
             },
+            include: {
+                person: true,
+                position: true,
+            },
         });
     }
 
@@ -120,6 +132,10 @@ export class EmployeeService {
         return db.employee.delete({
             where: {
                 id,
+            },
+            include: {
+                person: true,
+                position: true,
             },
         });
     }
@@ -147,6 +163,10 @@ export class EmployeeService {
                         id: body.position,
                     },
                 },
+            },
+            include: {
+                person: true,
+                position: true,
             },
         });
     }
@@ -182,6 +202,10 @@ export class EmployeeService {
                           },
                       }
                     : undefined,
+            },
+            include: {
+                person: true,
+                position: true,
             },
         });
     }
