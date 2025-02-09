@@ -7,6 +7,7 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class EmployeeService {
@@ -22,7 +23,10 @@ export class EmployeeService {
         return !!response;
     }
 
-    async createEmployee(body: CreateEmployeeDto) {
+    async createEmployee(
+        body: CreateEmployeeDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         const isRegistered = await this.isEmployeeRegistered(
             body.person,
             body.organization,
@@ -30,7 +34,7 @@ export class EmployeeService {
         if (isRegistered) {
             throw new BadRequestException('Employee already exists');
         } else {
-            return this.create(body);
+            return this.create(body, database);
         }
     }
 
@@ -83,14 +87,22 @@ export class EmployeeService {
         return response;
     }
 
-    async updateEmployee(id: number, body: UpdateEmployeeDto) {
+    async updateEmployee(
+        id: number,
+        body: UpdateEmployeeDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { organization, person, ...rest } = body;
-        return this.update(id, rest);
+        return this.update(id, rest, database);
     }
 
-    async layoffEmployee(id: number) {
-        return this.database.employee.update({
+    async layoffEmployee(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.employee.update({
             where: {
                 id,
             },
@@ -100,16 +112,24 @@ export class EmployeeService {
         });
     }
 
-    async delete(id: number) {
-        return this.database.employee.delete({
+    async delete(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.employee.delete({
             where: {
                 id,
             },
         });
     }
 
-    async create(body: CreateEmployeeDto) {
-        return this.database.employee.create({
+    async create(
+        body: CreateEmployeeDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.employee.create({
             data: {
                 ...body,
                 person: {
@@ -131,8 +151,13 @@ export class EmployeeService {
         });
     }
 
-    async update(id: number, body: UpdateEmployeeDto) {
-        return this.database.employee.update({
+    async update(
+        id: number,
+        body: UpdateEmployeeDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.employee.update({
             where: { id },
             data: {
                 ...body,

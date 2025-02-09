@@ -4,6 +4,7 @@ import { UpdateAdministratorDto } from './dto/update-administrator.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { plainToInstance } from 'class-transformer';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class AdministratorService {
@@ -66,25 +67,37 @@ export class AdministratorService {
         return response;
     }
 
-    async createAdmin(body: CreateAdministratorDto) {
+    async createAdmin(
+        body: CreateAdministratorDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         const data = plainToInstance(CreateAdministratorDto, body, {
             excludeExtraneousValues: true,
         });
-        console.log({ data, body });
         if (await this.isEmailRegistered(body.email)) {
             throw new NotFoundException('email already registered');
         }
-        return this.create(data);
+        return this.create(data, database);
     }
 
-    async updateAdmin(id: number, body: UpdateAdministratorDto) {
+    async updateAdmin(
+        id: number,
+        body: UpdateAdministratorDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { account, ...rest } = body;
-        return this.update(id, rest);
+        return this.update(id, rest, database);
     }
 
-    async create(body: CreateAdministratorDto) {
-        return this.database.administrator.create({
+    async create(
+        body: CreateAdministratorDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.administrator.create({
             data: {
                 ...body,
                 account: {
@@ -96,8 +109,15 @@ export class AdministratorService {
         });
     }
 
-    async update(id: number, body: UpdateAdministratorDto) {
-        return this.database.administrator.update({
+    async update(
+        id: number,
+        body: UpdateAdministratorDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.administrator.update({
             where: {
                 id,
             },

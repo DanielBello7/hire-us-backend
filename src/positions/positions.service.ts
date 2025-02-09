@@ -3,13 +3,20 @@ import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class PositionsService {
     constructor(private readonly database: DatabaseService) {}
 
-    async create(body: CreatePositionDto) {
-        return this.database.position.create({
+    async create(
+        body: CreatePositionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.position.create({
             data: {
                 ...body,
                 fromPosition: body.fromPosition
@@ -88,20 +95,37 @@ export class PositionsService {
         return response;
     }
 
-    async updatePosition(id: number, body: UpdatePositionDto) {
+    async updatePosition(
+        id: number,
+        body: UpdatePositionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { organization, ...rest } = body;
-        return this.update(id, rest);
+        return this.update(id, rest, database);
     }
 
-    async remove(id: number) {
-        return this.database.position.delete({
+    async remove(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.position.delete({
             where: { id },
         });
     }
 
-    async update(id: number, body: UpdatePositionDto) {
-        return this.database.position.update({
+    async update(
+        id: number,
+        body: UpdatePositionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.position.update({
             where: {
                 id,
             },

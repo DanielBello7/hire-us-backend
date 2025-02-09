@@ -22,8 +22,8 @@ Accept: application/json
 {
     "role": "administrator",
     "password": "Admin1234567890$",
-    "name": "Daniel Bello",
-    "email": "daniel@example.com"
+    "name": "David Bello",
+    "email": "david@example.com"
 }
 
 #### REGISTER ORGANIZATION

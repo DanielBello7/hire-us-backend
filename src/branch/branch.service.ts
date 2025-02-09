@@ -4,6 +4,7 @@ import { UpdateBranchDto } from './dto/update-branch.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { EmployeeService } from 'src/employee/employee.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class BranchService {
@@ -12,8 +13,11 @@ export class BranchService {
         private readonly employee: EmployeeService,
     ) {}
 
-    async createBranch(body: CreateBranchDto) {
-        return this.create(body);
+    async createBranch(
+        body: CreateBranchDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        return this.create(body, database);
     }
 
     async findAll(query?: ExpressQuery) {
@@ -64,39 +68,62 @@ export class BranchService {
         return selected;
     }
 
-    async updateBranch(id: number, updates: UpdateBranchDto) {
+    async updateBranch(
+        id: number,
+        updates: UpdateBranchDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { organization, manager, ...rest } = updates;
-        return this.update(id, rest);
+        return this.update(id, rest, database);
     }
 
-    async updateManager(id: number, manager: number) {
+    async updateManager(
+        id: number,
+        manager: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         await this.employee.findOne(id);
-        return this.update(id, { manager });
+        return this.update(id, { manager }, database);
     }
 
-    async removeBranch(id: number) {
-        return this.delete(id);
+    async removeBranch(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        return this.delete(id, database);
     }
 
-    async removeManyUsingOrganizationId(organization: number) {
-        return this.database.branch.deleteMany({
+    async removeManyUsingOrganizationId(
+        organization: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.branch.deleteMany({
             where: {
                 organizationId: organization,
             },
         });
     }
 
-    async removeMany(ids: number[]) {
-        return this.database.branch.deleteMany({
+    async removeMany(
+        ids: number[],
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.branch.deleteMany({
             where: {
                 id: { in: ids },
             },
         });
     }
 
-    async create(body: CreateBranchDto) {
-        return this.database.branch.create({
+    async create(
+        body: CreateBranchDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.branch.create({
             data: {
                 ...body,
                 organization: {
@@ -115,8 +142,15 @@ export class BranchService {
         });
     }
 
-    async update(id: number, body: UpdateBranchDto) {
-        return this.database.branch.update({
+    async update(
+        id: number,
+        body: UpdateBranchDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.branch.update({
             where: {
                 id,
             },
@@ -140,8 +174,12 @@ export class BranchService {
         });
     }
 
-    async delete(id: number) {
-        return this.database.branch.delete({
+    async delete(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.branch.delete({
             where: {
                 id,
             },

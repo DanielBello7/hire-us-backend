@@ -4,13 +4,18 @@ import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class ExamsService {
     constructor(private readonly database: DatabaseService) {}
 
-    async create(body: CreateExamDto) {
-        return this.database.exam.create({
+    async create(
+        body: CreateExamDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.exam.create({
             data: {
                 ...body,
                 organization: {
@@ -86,18 +91,27 @@ export class ExamsService {
         return response;
     }
 
-    async updateExam(id: number, body: UpdateExamDto) {
+    async updateExam(
+        id: number,
+        body: UpdateExamDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         const {
             organization,
             eligiblePositions,
             ineligibleEmployees,
             ...rest
         } = body;
-        return this.update(id, rest);
+        return this.update(id, rest, database);
     }
 
-    async update(id: number, body: UpdateExamDto) {
-        return this.database.exam.update({
+    async update(
+        id: number,
+        body: UpdateExamDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.exam.update({
             where: {
                 id,
             },
@@ -120,8 +134,10 @@ export class ExamsService {
         id: number,
         addPositions: number[] = [],
         removePositions: number[] = [],
+        database?: DatabaseService | PrismaDatabaseService,
     ) {
-        return this.database.exam.update({
+        const db = database ?? this.database;
+        return db.exam.update({
             where: {
                 id,
             },
@@ -138,8 +154,10 @@ export class ExamsService {
         id: number,
         addPositions: number[] = [],
         removePositions: number[] = [],
+        database?: DatabaseService | PrismaDatabaseService,
     ) {
-        return this.database.exam.update({
+        const db = database ?? this.database;
+        return db.exam.update({
             where: {
                 id,
             },
@@ -152,8 +170,12 @@ export class ExamsService {
         });
     }
 
-    async remove(id: number) {
-        await this.database.exam.delete({
+    async remove(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        await db.exam.delete({
             where: {
                 id,
             },

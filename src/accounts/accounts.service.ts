@@ -9,6 +9,7 @@ import { UpdateAccountDto } from './dto/update-account.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import * as bcrypt from 'bcrypt';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class AccountsService {
@@ -75,14 +76,21 @@ export class AccountsService {
         throw new NotFoundException('account not found');
     }
 
-    async createAccount(data: CreateAccountDto) {
+    async createAccount(
+        data: CreateAccountDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         if (await this.isEmailRegistered(data.email)) {
             throw new BadRequestException('Email already registered');
         }
-        return this.create(data);
+        return this.create(data, database);
     }
 
-    async updateAccount(id: number, updates: UpdateAccountDto) {
+    async updateAccount(
+        id: number,
+        updates: UpdateAccountDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { role, ...rest } = updates;
         const body = rest;
@@ -96,11 +104,17 @@ export class AccountsService {
             const hashed = bcrypt.hashSync(rest.password, 10);
             body.password = hashed;
         }
-        return this.update(id, updates);
+        return this.update(id, updates, database);
     }
 
-    async create(data: CreateAccountDto) {
-        return this.database.account.create({
+    async create(
+        data: CreateAccountDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.account.create({
             data: {
                 email: data.email,
                 name: data.name,
@@ -110,9 +124,16 @@ export class AccountsService {
         });
     }
 
-    async update(id: number, updates: UpdateAccountDto) {
+    async update(
+        id: number,
+        updates: UpdateAccountDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         try {
-            return this.database.account.update({
+            let db: DatabaseService | PrismaDatabaseService;
+            if (database) db = database;
+            else db = this.database;
+            return db.account.update({
                 where: {
                     id,
                 },

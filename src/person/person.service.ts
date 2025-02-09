@@ -7,6 +7,7 @@ import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class PersonService {
@@ -21,10 +22,13 @@ export class PersonService {
         return !!check;
     }
 
-    async createPerson(body: CreatePersonDto) {
+    async createPerson(
+        body: CreatePersonDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         if (await this.isEmailRegistered(body.email))
             throw new BadRequestException('Email already registered');
-        return this.create(body);
+        return this.create(body, database);
     }
 
     async findAll(query?: ExpressQuery) {
@@ -80,22 +84,38 @@ export class PersonService {
         return check;
     }
 
-    async updatePerson(id: number, body: UpdatePersonDto) {
+    async updatePerson(
+        id: number,
+        body: UpdatePersonDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { account, ...rest } = body;
-        return this.update(id, rest);
+        return this.update(id, rest, database);
     }
 
-    async remove(id: number) {
-        return this.database.person.delete({
+    async remove(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.person.delete({
             where: {
                 id,
             },
         });
     }
 
-    async create(body: CreatePersonDto) {
-        return this.database.person.create({
+    async create(
+        body: CreatePersonDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.person.create({
             data: {
                 ...body,
                 account: {
@@ -107,8 +127,15 @@ export class PersonService {
         });
     }
 
-    async update(id: number, body: UpdatePersonDto) {
-        return this.database.person.update({
+    async update(
+        id: number,
+        body: UpdatePersonDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.person.update({
             where: {
                 id,
             },

@@ -3,12 +3,18 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class MessagesService {
     constructor(private readonly database: DatabaseService) {}
-    async create(body: CreateMessageDto) {
-        return this.database.message.create({
+
+    async create(
+        body: CreateMessageDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.message.create({
             data: {
                 ...body,
                 createdBy: {
@@ -91,8 +97,13 @@ export class MessagesService {
         return response;
     }
 
-    async update(id: number, body: UpdateMessageDto) {
-        return this.database.message.update({
+    async update(
+        id: number,
+        body: UpdateMessageDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.message.update({
             where: {
                 id,
             },
@@ -119,16 +130,24 @@ export class MessagesService {
         });
     }
 
-    async remove(id: number) {
-        return this.database.message.delete({
+    async remove(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.message.delete({
             where: {
                 id,
             },
         });
     }
 
-    async deleteMany(conversation: number) {
-        return this.database.message.deleteMany({
+    async deleteMany(
+        conversation: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.message.deleteMany({
             where: {
                 conversationId: conversation,
             },

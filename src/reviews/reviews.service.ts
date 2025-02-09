@@ -3,12 +3,21 @@ import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class ReviewsService {
     constructor(private readonly database: DatabaseService) {}
-    async create(body: CreateReviewDto) {
-        return this.database.review.create({
+
+    async create(
+        body: CreateReviewDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+
+        return db.review.create({
             data: {
                 ...body,
                 createdFor: {
@@ -81,8 +90,15 @@ export class ReviewsService {
         return response;
     }
 
-    async update(id: number, body: UpdateReviewDto) {
-        return this.database.review.update({
+    async update(
+        id: number,
+        body: UpdateReviewDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.review.update({
             where: {
                 id,
             },
@@ -110,8 +126,14 @@ export class ReviewsService {
         });
     }
 
-    async remove(id: number) {
-        return this.database.review.delete({
+    async remove(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.review.delete({
             where: { id },
         });
     }

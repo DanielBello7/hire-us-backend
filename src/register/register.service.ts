@@ -49,11 +49,13 @@ export class RegisterService {
         if (checks.includes(true))
             throw new BadRequestException('email already registered');
 
-        const account = await this.account.createAccount({
-            ...body,
-            isEmailVerified: false,
+        return this.database.$transaction(async (tx) => {
+            const account = await this.account.createAccount(
+                { ...body, isEmailVerified: false },
+                tx,
+            );
+            return this.admin.createAdmin({ ...body, account: account.id }, tx);
         });
-        return this.admin.createAdmin({ ...body, account: account.id });
     }
 
     async registerOrganization(body: CreateRegisterOrganizationDto) {

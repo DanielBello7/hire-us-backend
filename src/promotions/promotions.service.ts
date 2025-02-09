@@ -7,6 +7,7 @@ import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class PromotionsService {
@@ -21,8 +22,14 @@ export class PromotionsService {
         throw new NotImplementedException('not done yet');
     }
 
-    async create(body: CreatePromotionDto) {
-        return this.database.promotion.create({
+    async create(
+        body: CreatePromotionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.promotion.create({
             data: {
                 ...body,
                 fromPosition: {
@@ -100,8 +107,15 @@ export class PromotionsService {
         return response;
     }
 
-    async update(id: number, body: UpdatePromotionDto) {
-        return this.database.promotion.update({
+    async update(
+        id: number,
+        body: UpdatePromotionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.promotion.update({
             where: {
                 id,
             },
@@ -121,8 +135,14 @@ export class PromotionsService {
         });
     }
 
-    async remove(id: number) {
-        return this.database.promotion.delete({
+    async remove(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.promotion.delete({
             where: {
                 id,
             },

@@ -7,6 +7,7 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class PaymentsService {
@@ -18,8 +19,12 @@ export class PaymentsService {
         throw new NotImplementedException('not done');
     }
 
-    async create(body: CreatePaymentDto) {
-        return this.database.payment.create({
+    async create(
+        body: CreatePaymentDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.payment.create({
             data: {
                 ...body,
                 organization: {
@@ -36,8 +41,12 @@ export class PaymentsService {
         });
     }
 
-    async createMany(body: CreatePaymentDto[]) {
-        return this.database.payment.createMany({
+    async createMany(
+        body: CreatePaymentDto[],
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.payment.createMany({
             data: body.map((payment) => ({
                 ...payment,
                 employeeId: payment.employee,
@@ -95,8 +104,13 @@ export class PaymentsService {
         return response;
     }
 
-    async update(id: number, body: UpdatePaymentDto) {
-        return this.database.payment.update({
+    async update(
+        id: number,
+        body: UpdatePaymentDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.payment.update({
             where: {
                 id,
             },
@@ -116,8 +130,12 @@ export class PaymentsService {
         });
     }
 
-    async remove(id: number) {
-        return this.database.payment.delete({
+    async remove(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.payment.delete({
             where: { id },
         });
     }

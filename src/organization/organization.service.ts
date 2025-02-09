@@ -7,6 +7,7 @@ import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class OrganizationService {
@@ -21,11 +22,14 @@ export class OrganizationService {
         return !!response;
     }
 
-    async createOrganization(body: CreateOrganizationDto) {
+    async createOrganization(
+        body: CreateOrganizationDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         if (await this.isOrganizationRegistered(body.email, body.taxId)) {
             throw new BadRequestException('account already registered');
         }
-        return this.create(body);
+        return this.create(body, database);
     }
 
     async findAll(query?: ExpressQuery) {
@@ -80,20 +84,32 @@ export class OrganizationService {
         return response;
     }
 
-    async updateOrganization(id: number, body: UpdateOrganizationDto) {
+    async updateOrganization(
+        id: number,
+        body: UpdateOrganizationDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { taxId, account, address, ...rest } = body;
-        return this.update(id, rest);
+        return this.update(id, rest, database);
     }
 
-    async remove(id: number) {
-        return this.database.organization.delete({
+    async remove(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.organization.delete({
             where: { id },
         });
     }
 
-    async create(body: CreateOrganizationDto) {
-        return this.database.organization.create({
+    async create(
+        body: CreateOrganizationDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.organization.create({
             data: {
                 ...body,
                 account: {
@@ -105,8 +121,13 @@ export class OrganizationService {
         });
     }
 
-    async update(id: number, body: UpdateOrganizationDto) {
-        return this.database.organization.update({
+    async update(
+        id: number,
+        body: UpdateOrganizationDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.organization.update({
             where: {
                 id,
             },

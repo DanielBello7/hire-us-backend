@@ -7,13 +7,17 @@ import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class ConversationsService {
     constructor(private readonly database: DatabaseService) {}
 
-    async createConversation(body: CreateConversationDto) {
-        return this.create(body);
+    async createConversation(
+        body: CreateConversationDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        return this.create(body, database);
     }
 
     findMessages(id: number) {
@@ -63,14 +67,23 @@ export class ConversationsService {
         return response;
     }
 
-    async updateConversation(id: number, body: UpdateConversationDto) {
+    async updateConversation(
+        id: number,
+        body: UpdateConversationDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { members, createdBy, ...rest } = body;
-        return this.update(id, rest);
+        return this.update(id, rest, database);
     }
 
-    async removeMember(id: number, members: number[]) {
-        return this.database.conversation.update({
+    async removeMember(
+        id: number,
+        members: number[],
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.conversation.update({
             where: {
                 id,
             },
@@ -87,8 +100,13 @@ export class ConversationsService {
         });
     }
 
-    async addMember(id: number, members: number[]) {
-        return this.database.conversation.update({
+    async addMember(
+        id: number,
+        members: number[],
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.conversation.update({
             where: {
                 id,
             },
@@ -105,28 +123,43 @@ export class ConversationsService {
         });
     }
 
-    async remove(id: number) {
-        return this.delete(id);
+    async remove(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        return this.delete(id, database);
     }
 
-    async removeMany(createdBy: number) {
-        return this.database.conversation.deleteMany({
+    async removeMany(
+        createdBy: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.conversation.deleteMany({
             where: {
                 createdById: createdBy,
             },
         });
     }
 
-    async delete(id: number) {
-        return this.database.conversation.delete({
+    async delete(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.conversation.delete({
             where: {
                 id,
             },
         });
     }
 
-    async create(body: CreateConversationDto) {
-        return this.database.conversation.create({
+    async create(
+        body: CreateConversationDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.conversation.create({
             data: {
                 ...body,
                 createdBy: {
@@ -143,8 +176,13 @@ export class ConversationsService {
         });
     }
 
-    async update(id: number, body: UpdateConversationDto) {
-        return this.database.conversation.update({
+    async update(
+        id: number,
+        body: UpdateConversationDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.conversation.update({
             where: {
                 id,
             },

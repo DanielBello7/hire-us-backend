@@ -7,6 +7,7 @@ import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
 export class QuestionsService {
@@ -26,8 +27,14 @@ export class QuestionsService {
         throw new NotImplementedException('not yet complete');
     }
 
-    async create(body: CreateQuestionDto) {
-        return this.database.question.create({
+    async create(
+        body: CreateQuestionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.question.create({
             data: {
                 ...body,
             },
@@ -81,14 +88,25 @@ export class QuestionsService {
         return response;
     }
 
-    async updateQuestion(id: number, body: UpdateQuestionDto) {
+    async updateQuestion(
+        id: number,
+        body: UpdateQuestionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { examId, ...rest } = body;
-        return this.update(id, rest);
+        return this.update(id, rest, database);
     }
 
-    async update(id: number, body: UpdateQuestionDto) {
-        return this.database.question.update({
+    async update(
+        id: number,
+        body: UpdateQuestionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.question.update({
             where: {
                 id,
             },
@@ -96,8 +114,14 @@ export class QuestionsService {
         });
     }
 
-    async remove(id: number) {
-        return this.database.question.delete({
+    async remove(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let db: DatabaseService | PrismaDatabaseService;
+        if (database) db = database;
+        else db = this.database;
+        return db.question.delete({
             where: {
                 id,
             },
