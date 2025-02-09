@@ -8,6 +8,12 @@ import { CreateRegisterAdministratorDto } from './dto/create-register-administra
 import { CreateRegisterOrganizationDto } from './dto/create-register-organization.dto';
 import { AdministratorService } from 'src/administrator/administrator.service';
 import { DatabaseService } from 'src/database/database.service';
+import { plainToInstance } from 'class-transformer';
+import { CreateAdministratorDto } from 'src/administrator/dto/create-administrator.dto';
+import { CreatePersonDto } from 'src/person/dto/create-person.dto';
+import { CreateEmployeeDto } from 'src/employee/dto/create-employee.dto';
+import { CreateOrganizationDto } from 'src/organization/dto/create-organization.dto';
+import { CreateAccountDto } from 'src/accounts/dto/create-account.dto';
 
 @Injectable()
 export class RegisterService {
@@ -27,17 +33,36 @@ export class RegisterService {
         ]);
 
         if (checks.includes(true))
-            throw new BadRequestException('email already registered');
+            throw new BadRequestException('Employee already registered');
 
-        const account = await this.account.createAccount({
-            ...body,
-            isEmailVerified: false,
+        return this.database.$transaction(async (tx) => {
+            const account = await this.account.createAccount(
+                {
+                    ...body,
+                    isEmailVerified: false,
+                },
+                tx,
+            );
+
+            const person = await this.person.createPerson(
+                {
+                    ...plainToInstance(CreatePersonDto, body, {
+                        excludeExtraneousValues: true,
+                    }),
+                    account: account.id,
+                },
+                tx,
+            );
+            return this.employee.createEmployee(
+                {
+                    ...plainToInstance(CreateEmployeeDto, body, {
+                        excludeExtraneousValues: true,
+                    }),
+                    person: person.id,
+                },
+                tx,
+            );
         });
-        const person = await this.person.createPerson({
-            ...body,
-            account: account.id,
-        });
-        return this.employee.createEmployee({ ...body, person: person.id });
     }
 
     async registerAdministrator(body: CreateRegisterAdministratorDto) {
@@ -47,14 +72,22 @@ export class RegisterService {
         ]);
 
         if (checks.includes(true))
-            throw new BadRequestException('email already registered');
+            throw new BadRequestException('Account already registered');
 
         return this.database.$transaction(async (tx) => {
             const account = await this.account.createAccount(
                 { ...body, isEmailVerified: false },
                 tx,
             );
-            return this.admin.createAdmin({ ...body, account: account.id }, tx);
+            return this.admin.createAdmin(
+                {
+                    ...plainToInstance(CreateAdministratorDto, body, {
+                        excludeExtraneousValues: true,
+                    }),
+                    account: account.id,
+                },
+                tx,
+            );
         });
     }
 
@@ -65,15 +98,27 @@ export class RegisterService {
         ]);
 
         if (checks.includes(true))
-            throw new BadRequestException('email already registered');
+            throw new BadRequestException('Account already registered');
 
-        const account = await this.account.createAccount({
-            ...body,
-            isEmailVerified: false,
-        });
-        return this.organization.createOrganization({
-            ...body,
-            account: account.id,
+        return this.database.$transaction(async (tx) => {
+            const account = await this.account.createAccount(
+                {
+                    ...plainToInstance(CreateAccountDto, body, {
+                        excludeExtraneousValues: true,
+                    }),
+                    isEmailVerified: false,
+                },
+                tx,
+            );
+            return this.organization.createOrganization(
+                {
+                    ...plainToInstance(CreateOrganizationDto, body, {
+                        excludeExtraneousValues: true,
+                    }),
+                    account: account.id,
+                },
+                tx,
+            );
         });
     }
 }

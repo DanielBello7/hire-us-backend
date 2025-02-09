@@ -41,7 +41,8 @@ export class RegisterController {
     @UseGuards(RoleGuard)
     createOrganization(
         @Ip() ip: string,
-        @Body(new ValidationPipe()) data: CreateRegisterOrganizationDto,
+        @Body(new ValidationPipe({ forbidUnknownValues: true }))
+        data: CreateRegisterOrganizationDto,
     ) {
         this.logger.log(`request made from ${ip}`);
         return this.register.registerOrganization(data);

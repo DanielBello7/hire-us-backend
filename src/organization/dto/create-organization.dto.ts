@@ -1,5 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Prisma } from '@prisma/client';
+import { Expose } from 'class-transformer';
 
 export class CreateOrganizationDto
     implements
@@ -8,30 +9,37 @@ export class CreateOrganizationDto
             'Employee' | 'Position' | 'Branch' | 'Exam' | 'Payment' | 'account'
         >
 {
+    @Expose()
     @IsNotEmpty()
     @IsString()
     title: string;
 
+    @Expose()
     @IsNotEmpty()
     @IsString()
     @IsEmail()
     email: string;
 
+    @Expose()
     @IsNotEmpty()
     @IsString()
     country: string;
 
+    @Expose()
     @IsNotEmpty()
     @IsString()
     taxId: string;
 
+    @Expose()
     @IsNotEmpty()
     @IsString()
     address: string;
 
+    @Expose()
     @IsNotEmpty()
     account: number;
 
+    @Expose()
     @IsString()
     brief?: string | null | undefined;
 }

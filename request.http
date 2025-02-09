@@ -1,18 +1,14 @@
 ### GET ACCOUNTS
 GET http://localhost:3000/api/accounts/
 
-
 ### GET ADMINSTRATORS
 GET http://localhost:3000/api/administrators/
-
 
 ### GET EMPLOYEES
 GET http://localhost:3000/api/employees/
 
-
 ### GET ORGANIZATIONS
 GET http://localhost:3000/api/organizations/
-
 
 #### REGISTER ADMINISTRATOR
 POST http://localhost:3000/api/register/administrator/
@@ -22,9 +18,28 @@ Accept: application/json
 {
     "role": "administrator",
     "password": "Admin1234567890$",
-    "name": "David Bello",
-    "email": "david@example.com"
+    "name": "Daniel Bello",
+    "email": "daniel@example.com"
 }
 
 #### REGISTER ORGANIZATION
 POST http://localhost:3000/api/register/organization/
+
+{
+    "role": "organization",
+    "country": "united-states",
+    "address": "5673 Breakpoint Drive No. 98",
+    "title": "Benny's Place",
+    "taxId": "1234567890",
+    "brief": "We provide expert legal representation, ensuring clients receive top-tier advocacy in corporate, criminal, and civil matters. Our experienced attorneys deliver strategic solutions, protecting your rights with professionalism and integrity. Whether in negotiations or courtrooms, we are committed to achieving the best outcomes for individuals and businesses alike",
+    "password": "Admin1234567890$",
+    "name": "Benny's Place",
+    "email": "benny@example.com"
+}
+
+#### REGISTER EMPLOYEE
+POST http://localhost:3000/api/register/localhost:3000/api/employees/
+
+{
+
+}

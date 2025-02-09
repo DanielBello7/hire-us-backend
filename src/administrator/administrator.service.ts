@@ -3,7 +3,6 @@ import { CreateAdministratorDto } from './dto/create-administrator.dto';
 import { UpdateAdministratorDto } from './dto/update-administrator.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import { plainToInstance } from 'class-transformer';
 import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
 
 @Injectable()
@@ -71,13 +70,10 @@ export class AdministratorService {
         body: CreateAdministratorDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const data = plainToInstance(CreateAdministratorDto, body, {
-            excludeExtraneousValues: true,
-        });
         if (await this.isEmailRegistered(body.email)) {
             throw new NotFoundException('email already registered');
         }
-        return this.create(data, database);
+        return this.create(body, database);
     }
 
     async updateAdmin(

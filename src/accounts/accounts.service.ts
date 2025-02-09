@@ -27,6 +27,22 @@ export class AccountsService {
         return !!response;
     }
 
+    async comparePassword(idOrEmail: number | string, password: string) {
+        const account = await this.database.account.findFirst({
+            where:
+                typeof idOrEmail === 'string'
+                    ? {
+                          email: idOrEmail,
+                      }
+                    : {
+                          id: idOrEmail,
+                      },
+        });
+        if (!account) throw new NotFoundException('account not found');
+        const isPositive = bcrypt.compareSync(password, account.password);
+        return !!isPositive;
+    }
+
     async getAccounts(query?: ExpressQuery) {
         let pageNum = 1;
         let pickNum = 5;
@@ -63,6 +79,9 @@ export class AccountsService {
             where: options,
             skip,
             take: pickNum,
+            omit: {
+                password: true,
+            },
         });
     }
 
@@ -70,6 +89,9 @@ export class AccountsService {
         const account = await this.database.account.findFirst({
             where: {
                 id,
+            },
+            omit: {
+                password: true,
             },
         });
         if (account) return account;

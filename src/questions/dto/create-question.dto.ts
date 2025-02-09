@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { Expose } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export enum QuestionTypeEnum {
@@ -10,14 +11,17 @@ export enum QuestionTypeEnum {
 export class CreateQuestionDto
     implements Omit<Prisma.QuestionCreateInput, 'ExamStatus' | 'Options'>
 {
+    @Expose()
     @IsNotEmpty()
     @IsNumber()
     examId: number;
 
+    @Expose()
     @IsNotEmpty()
     @IsString()
     body: string;
 
+    @Expose()
     @IsNotEmpty()
     @IsString()
     @IsEnum(QuestionTypeEnum)

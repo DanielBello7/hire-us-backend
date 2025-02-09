@@ -4,10 +4,9 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class RoleGuard implements CanActivate {
     canActivate(
-        context: ExecutionContext,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _context: ExecutionContext,
     ): boolean | Promise<boolean> | Observable<boolean> {
-        const request: Request = context.switchToHttp().getRequest();
-        if (request.url === '/accounts/k') return true;
-        return false;
+        return true;
     }
 }
