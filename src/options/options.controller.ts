@@ -5,7 +5,6 @@ import {
     Controller,
     Get,
     Delete,
-    ValidationPipe,
     Param,
     ParseIntPipe,
     Query,
@@ -30,7 +29,7 @@ export class OptionsController {
     }
 
     @Post()
-    create(@Body(new ValidationPipe()) body: CreateOptionDto) {
+    create(@Body() body: CreateOptionDto) {
         return this.optionsService.create(body);
     }
 

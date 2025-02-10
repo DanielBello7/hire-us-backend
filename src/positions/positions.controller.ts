@@ -5,7 +5,6 @@ import {
     Post,
     ParseIntPipe,
     Body,
-    ValidationPipe,
     Param,
     Patch,
     Query,
@@ -30,14 +29,14 @@ export class PositionsController {
     }
 
     @Post()
-    create(@Body(new ValidationPipe()) body: CreatePositionDto) {
+    create(@Body() body: CreatePositionDto) {
         return this.positionsService.recordPosition(body);
     }
 
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) body: UpdatePositionDto,
+        @Body() body: UpdatePositionDto,
     ) {
         return this.positionsService.updatePosition(id, body);
     }

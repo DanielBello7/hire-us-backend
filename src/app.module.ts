@@ -22,40 +22,34 @@ import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { PaymentsModule } from './payments/payments.module';
+import { ResponseModule } from './response/response.module';
 
 @Module({
     imports: [
         ThrottlerModule.forRoot([
-            {
-                ttl: 1000,
-                limit: 3,
-                name: 'short',
-            },
-            {
-                ttl: 60000,
-                limit: 100,
-                name: 'long',
-            },
+            { ttl: 1000, limit: 1, name: 'typeA' },
+            { ttl: 6000, limit: 3, name: 'typeB' },
         ]),
-        AccountsModule,
-        AdministratorModule,
-        OrganizationModule,
+        ProgressModule,
+        PromotionsModule,
         DatabaseModule,
-        RegisterModule,
-        PersonModule,
         EmployeeModule,
+        OrganizationModule,
         WinstonModule,
         BranchModule,
         PositionsModule,
         ExamsModule,
+        AccountsModule,
+        RegisterModule,
         QuestionsModule,
-        OptionsModule,
-        ProgressModule,
-        PromotionsModule,
-        ConversationsModule,
         MessagesModule,
+        PersonModule,
+        AdministratorModule,
+        ConversationsModule,
+        OptionsModule,
         ReviewsModule,
         PaymentsModule,
+        ResponseModule,
     ],
     controllers: [AppController],
     providers: [

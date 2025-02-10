@@ -5,12 +5,6 @@ import { ExceptionFilter } from './exception/exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-    /**
-     * to use the logger service globally - use:
-     *
-     * const app = await NestFactory.create(AppModule, { bufferLogs: true });
-     * app.useLogger(app.get(WinstonLoggerService));
-     */
     const app = await NestFactory.create(AppModule);
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalFilters(new ExceptionFilter(httpAdapter));

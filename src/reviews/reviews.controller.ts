@@ -5,7 +5,6 @@ import {
     Post,
     ParseIntPipe,
     Body,
-    ValidationPipe,
     Query,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
@@ -27,7 +26,7 @@ export class ReviewsController {
     }
 
     @Post()
-    create(@Body(new ValidationPipe()) body: CreateReviewDto) {
+    create(@Body() body: CreateReviewDto) {
         return this.reviewsService.create(body);
     }
 }

@@ -12,11 +12,11 @@ import { AdministratorModule } from 'src/administrator/administrator.module';
     controllers: [RegisterController],
     providers: [RegisterService],
     imports: [
-        DatabaseModule,
-        AccountsModule,
         PersonModule,
         OrganizationModule,
         EmployeeModule,
+        DatabaseModule,
+        AccountsModule,
         AdministratorModule,
     ],
 })

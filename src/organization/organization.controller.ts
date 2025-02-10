@@ -1,7 +1,6 @@
 import {
     Controller,
     Body,
-    ValidationPipe,
     ParseIntPipe,
     Patch,
     Get,
@@ -29,7 +28,7 @@ export class OrganizationController {
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) body: UpdateOrganizationDto,
+        @Body() body: UpdateOrganizationDto,
     ) {
         return this.organization.updateOrganization(+id, body);
     }

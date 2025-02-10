@@ -6,7 +6,6 @@ import {
     Patch,
     Body,
     Post,
-    ValidationPipe,
     ParseIntPipe,
     NotImplementedException,
     Query,
@@ -31,21 +30,18 @@ export class ExamsController {
     }
 
     @Post()
-    create(@Body(new ValidationPipe()) body: CreateExamDto) {
+    create(@Body() body: CreateExamDto) {
         return this.examsService.create(body);
     }
 
     @Post(':id/submit')
-    submitExam(@Body(new ValidationPipe()) body: CreateExamDto) {
+    submitExam(@Body() body: CreateExamDto) {
         /** not yet done */
         throw new NotImplementedException('NOT YET IMPLEMENTED', body);
     }
 
     @Patch(':id')
-    update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) body: UpdateExamDto,
-    ) {
+    update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateExamDto) {
         return this.examsService.updateExam(id, body);
     }
 
@@ -57,7 +53,7 @@ export class ExamsController {
     @Post(':id/eligible_positions')
     addEligiblePositions(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) body: { positions: number[] },
+        @Body() body: { positions: number[] },
     ) {
         return this.examsService.updateEligiblePositions(
             id,
@@ -69,7 +65,7 @@ export class ExamsController {
     @Post(':id/ineligible_employees')
     addIneligibleEmployees(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) body: { employees: number[] },
+        @Body() body: { employees: number[] },
     ) {
         return this.examsService.updateIneligibleEmployees(
             id,

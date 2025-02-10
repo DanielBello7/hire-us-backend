@@ -3,7 +3,6 @@ import {
     Get,
     Delete,
     Post,
-    ValidationPipe,
     Patch,
     Body,
     ParseIntPipe,
@@ -28,14 +27,14 @@ export class QuestionsController {
     }
 
     @Post()
-    create(@Body(new ValidationPipe()) body: CreateQuestionDto) {
+    create(@Body() body: CreateQuestionDto) {
         return this.questionsService.create(body);
     }
 
     @Post(':id/submit')
     submit(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) body: CreateQuestionDto,
+        @Body() body: CreateQuestionDto,
     ) {
         return this.questionsService.submitQuestion(id, body);
     }
@@ -43,7 +42,7 @@ export class QuestionsController {
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) body: UpdateQuestionDto,
+        @Body() body: UpdateQuestionDto,
     ) {
         return this.questionsService.updateQuestion(id, body);
     }

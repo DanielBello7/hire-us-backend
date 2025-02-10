@@ -5,7 +5,6 @@ import {
     Post,
     Param,
     Body,
-    ValidationPipe,
     Query,
 } from '@nestjs/common';
 import { CreateProgressDto } from './dto/create-progress.dto';
@@ -27,7 +26,7 @@ export class ProgressController {
     }
 
     @Post()
-    create(@Body(new ValidationPipe()) body: CreateProgressDto) {
+    create(@Body() body: CreateProgressDto) {
         return this.progressService.create(body);
     }
 }

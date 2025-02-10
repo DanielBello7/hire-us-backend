@@ -5,7 +5,6 @@ import {
     Param,
     ParseIntPipe,
     Post,
-    ValidationPipe,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -25,14 +24,12 @@ export class PaymentsController {
     }
 
     @Post()
-    create(@Body(new ValidationPipe()) createPaymentDto: CreatePaymentDto) {
+    create(@Body() createPaymentDto: CreatePaymentDto) {
         return this.paymentsService.create(createPaymentDto);
     }
 
     @Post('bulk')
-    makeSalaryPayments(
-        @Body(new ValidationPipe()) createPaymentDto: CreatePaymentDto,
-    ) {
+    makeSalaryPayments(@Body() createPaymentDto: CreatePaymentDto) {
         return this.paymentsService.create(createPaymentDto);
     }
 }

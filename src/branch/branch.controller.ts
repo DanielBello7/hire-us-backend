@@ -2,7 +2,6 @@ import {
     Controller,
     Get,
     Body,
-    ValidationPipe,
     Query,
     Post,
     Delete,
@@ -31,14 +30,14 @@ export class BranchController {
     }
 
     @Post()
-    create(@Body(new ValidationPipe()) body: CreateBranchDto) {
+    create(@Body() body: CreateBranchDto) {
         return this.branchService.createBranch(body);
     }
 
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) body: UpdateBranchDto,
+        @Body() body: UpdateBranchDto,
     ) {
         return this.branchService.updateBranch(id, body);
     }
@@ -46,7 +45,7 @@ export class BranchController {
     @Patch(':id/manager/')
     changeManager(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) body: UpdateBranchManagerDto,
+        @Body() body: UpdateBranchManagerDto,
     ) {
         return this.branchService.updateManager(id, body.manager);
     }

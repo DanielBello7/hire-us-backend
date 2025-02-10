@@ -2,7 +2,6 @@ import {
     ParseIntPipe,
     Controller,
     Post,
-    ValidationPipe,
     Delete,
     Body,
     Param,
@@ -15,8 +14,8 @@ export class MessagesController {
     constructor(private readonly messagesService: MessagesService) {}
 
     @Post()
-    create(@Body(new ValidationPipe()) createMessageDto: CreateMessageDto) {
-        return this.messagesService.create(createMessageDto);
+    create(@Body() body: CreateMessageDto) {
+        return this.messagesService.create(body);
     }
 
     @Delete(':id')

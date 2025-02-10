@@ -97,6 +97,7 @@ model Employee {
   CreatedBy      Review[]     @relation("CreatedBy")
   CreatedFor     Review[]     @relation("CreatedFor")
   Payment        Payment[]
+  Response       Response[]
 }
 
 model Branch {
@@ -145,6 +146,7 @@ model Exam {
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
   Promotion           Promotion[]
+  Progress            Progress[]
 }
 
 model Question {
@@ -156,21 +158,25 @@ model Question {
   updatedAt DateTime   @updatedAt
   Options   Option[]
   Progress  Progress[]
+  Response  Response[]
 }
 
 model Option {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   questionId  Int
-  question    Question @relation(fields: [questionId], references: [id])
+  question    Question   @relation(fields: [questionId], references: [id])
   body        String
   description String?
   isCorrect   Boolean
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Response    Response[]
 }
 
 model Progress {
   id             Int       @id @default(autoincrement())
+  examId         Int
+  exam           Exam      @relation(fields: [examId], references: [id])
   employeeId     Int
   employee       Employee  @relation(fields: [employeeId], references: [id])
   score          Int?
@@ -180,6 +186,20 @@ model Progress {
   status         String
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+model Response {
+  id         Int      @id @default(autoincrement())
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  optionId   Int?
+  option     Option?  @relation(fields: [optionId], references: [id])
+  isCorrect  Boolean
+  body       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Promotion {

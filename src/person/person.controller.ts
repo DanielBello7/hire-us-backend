@@ -1,7 +1,6 @@
 import {
     Controller,
     Param,
-    ValidationPipe,
     Patch,
     Get,
     ParseIntPipe,
@@ -29,7 +28,7 @@ export class PersonController {
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe()) body: UpdatePersonDto,
+        @Body() body: UpdatePersonDto,
     ) {
         return this.person.updatePerson(id, body);
     }
