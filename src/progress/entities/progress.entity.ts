@@ -4,6 +4,7 @@ export class Progress implements PrismaProgress {
     id: number;
     employeeId: number;
     score: number | null;
+    examId: number;
     isCompleted: boolean;
     lastQuestionId: number | null;
     status: ProgressEnum;

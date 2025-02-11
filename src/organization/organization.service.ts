@@ -22,6 +22,17 @@ export class OrganizationService {
         return !!response;
     }
 
+    async findOrganizationUsingAccountId(id: number) {
+        const response = await this.database.organization.findFirst({
+            where: {
+                accountId: id,
+            },
+        });
+        if (!response)
+            throw new NotFoundException('organization account not found');
+        return response;
+    }
+
     async createOrganization(
         body: CreateOrganizationDto,
         database?: DatabaseService | PrismaDatabaseService,

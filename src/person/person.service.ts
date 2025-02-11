@@ -22,6 +22,16 @@ export class PersonService {
         return !!check;
     }
 
+    async findPersonUsingAccountId(id: number) {
+        const response = await this.database.person.findFirst({
+            where: {
+                accountId: id,
+            },
+        });
+        if (!response) throw new NotFoundException('person account not found');
+        return response;
+    }
+
     async createPerson(
         body: CreatePersonDto,
         database?: DatabaseService | PrismaDatabaseService,

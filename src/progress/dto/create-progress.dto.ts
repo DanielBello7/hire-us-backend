@@ -8,7 +8,7 @@ export enum ProgressEnum {
 }
 
 export class CreateProgressDto
-    implements Omit<Prisma.ProgressCreateInput, 'employee'>
+    implements Omit<Prisma.ProgressCreateInput, 'employee' | 'exam'>
 {
     @Expose()
     @Matches(ProgressEnum.ONGOING)
@@ -19,4 +19,9 @@ export class CreateProgressDto
     @IsNotEmpty()
     @IsNumber()
     employee: number;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsNumber()
+    exam: number;
 }

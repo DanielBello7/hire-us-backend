@@ -23,6 +23,7 @@ import { MessagesModule } from './messages/messages.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { PaymentsModule } from './payments/payments.module';
 import { ResponseModule } from './response/response.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -50,6 +51,7 @@ import { ResponseModule } from './response/response.module';
         ReviewsModule,
         PaymentsModule,
         ResponseModule,
+        AuthModule,
     ],
     controllers: [AppController],
     providers: [

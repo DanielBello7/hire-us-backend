@@ -147,6 +147,7 @@ model Exam {
   updatedAt           DateTime     @updatedAt
   Promotion           Promotion[]
   Progress            Progress[]
+  Response            Response[]
 }
 
 model Question {
@@ -190,6 +191,8 @@ model Progress {
 
 model Response {
   id         Int      @id @default(autoincrement())
+  examId     Int
+  exam       Exam     @relation(fields: [examId], references: [id])
   questionId Int
   question   Question @relation(fields: [questionId], references: [id])
   employeeId Int

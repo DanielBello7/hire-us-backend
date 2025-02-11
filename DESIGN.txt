@@ -5,9 +5,9 @@ REGISTER
 - POST     /api/register/administrator/             register admin                ✅
 ---------------------------------------------------------------------------
 AUTHENTICATION
-- POST     /api/auth/login/                         login user                    ❌
-- POST     /api/auth/logout/                        logout user                   ❌
-- GET      /api/auth/me/                            get current user              ❌
+- POST     /api/auth/login/                         login user                    ✅
+- POST     /api/auth/logout/                        logout user                   ✅
+- GET      /api/auth/me/                            get current user              ✅
 ---------------------------------------------------------------------------
 ACCOUNTS
 - GET      /api/accounts/                           get accounts                  ✅
@@ -109,4 +109,77 @@ PAYMENTS
 - GET      /api/payments/:id/                       find payment                  ✅
 - POST     /api/payments/                           pay employee                  ✅
 - POST     /api/payments/bulk/                      make employee salary payments ✅
+---------------------------------------------------------------------------
+RESPONSE
+- GET      /api/response/                           get responses                 ✅
+---------------------------------------------------------------------------
+
+
+
+
+
+COMPLEX ENDPOINTS
+
+---------------------------------------------------------------------------
+REGISTER
+- POST     /api/register/employee/                  register employee             
+- POST     /api/register/organization/              register organization         
+- POST     /api/register/administrator/             register admin                
+---------------------------------------------------------------------------
+ACCOUNTS
+- PUT      /api/accounts/:id/                       update account                
+---------------------------------------------------------------------------
+ADMINISTRATORS
+- PATCH    /api/administrators/:id/                 update admin                  
+---------------------------------------------------------------------------
+ORGANIZATIONS
+- PATCH    /api/organizations/:id/                  update organization           
+---------------------------------------------------------------------------
+PERSON
+- PATCH    /api/person/:id/                         update person account         
+---------------------------------------------------------------------------
+EMPLOYEES
+- PATCH    /api/employees/:id/                      update employee               
+- PATCH    /api/employees/:id/terminate/            layoff an employee            
+---------------------------------------------------------------------------
+POSITION
+- POST     /api/position/                           create position               
+- PATCH    /api/position/:id/                       update position               
+- DELETE   /api/position/:id/                       delete position               
+---------------------------------------------------------------------------
+EXAMS
+- GET      /api/exams/:id/                          find exam                     
+- DELETE   /api/exams/:id/                          delete exam                   
+- POST     /api/exams/:id/submit/                   submit exam                   
+---------------------------------------------------------------------------
+QUESTIONS
+- GET      /api/questions/                          get questions                 
+- GET      /api/questions/:id/                      find question                 
+- POST     /api/questions/                          create question               
+- DELETE   /api/questions/:id/                      delete question               
+- DELETE   /api/questions/exam/:id/                 delete exam questions         
+- PATCH    /api/questions/:id/                      update question               
+- POST     /api/questions/:id/submit/               submit question               
+---------------------------------------------------------------------------
+OPTIONS
+- POST     /api/options/                            create option                 
+- PATCH    /api/options/:id/                        update options                
+---------------------------------------------------------------------------
+EXAM STATUS
+- POST     /api/exam_status/                        start exam                    
+---------------------------------------------------------------------------
+PROMOTION
+- POST     /api/promotions/                         promote employee              
+---------------------------------------------------------------------------
+CONVERSATIONS
+- GET      /api/conversations/:id/                  find conversation             
+- POST     /api/conversations/                      start conversation            
+- DELETE   /api/conversations/                      delete conversations          
+---------------------------------------------------------------------------
+MESSAGES
+- POST     /api/messages/                           create message                
+---------------------------------------------------------------------------
+PAYMENTS
+- POST     /api/payments/                           pay employee                  
+- POST     /api/payments/bulk/                      make employee salary payments 
 ---------------------------------------------------------------------------

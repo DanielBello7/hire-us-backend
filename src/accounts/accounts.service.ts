@@ -18,6 +18,14 @@ export class AccountsService {
         private readonly person: PersonService,
     ) {}
 
+    async findAccountUsingEmail(email: string) {
+        return this.database.account.findFirst({
+            where: {
+                email,
+            },
+        });
+    }
+
     async isEmailRegistered(email: string) {
         const response = await this.database.account.findFirst({
             where: {

@@ -18,6 +18,17 @@ export class AdministratorService {
         return !!response;
     }
 
+    async findAdminUsingAccountId(id: number) {
+        const response = await this.database.administrator.findFirst({
+            where: {
+                accountId: id,
+            },
+        });
+        if (!response)
+            throw new NotFoundException('administrator account not found');
+        return response;
+    }
+
     async findAll(query?: ExpressQuery) {
         let pageNum = 1;
         let pickNum = 5;

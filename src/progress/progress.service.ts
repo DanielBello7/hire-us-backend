@@ -24,6 +24,11 @@ export class ProgressService {
                         id: body.employee,
                     },
                 },
+                exam: {
+                    connect: {
+                        id: body.exam,
+                    },
+                },
             },
         });
     }
@@ -119,6 +124,13 @@ export class ProgressService {
                     ? {
                           connect: {
                               id: body.employee,
+                          },
+                      }
+                    : undefined,
+                exam: body.exam
+                    ? {
+                          connect: {
+                              id: body.exam,
                           },
                       }
                     : undefined,
