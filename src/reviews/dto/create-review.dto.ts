@@ -25,4 +25,7 @@ export class CreateReviewDto
     @IsNotEmpty()
     @IsNumber()
     createdFor: number;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

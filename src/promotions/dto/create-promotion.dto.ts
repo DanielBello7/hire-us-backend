@@ -37,4 +37,7 @@ export class CreatePromotionDto
     @IsNumber()
     @IsNotEmpty()
     toPosition: number;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

@@ -28,4 +28,7 @@ export class CreateMessageDto
     @IsNotEmpty()
     @IsNumber()
     conversation: number;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

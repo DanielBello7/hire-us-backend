@@ -130,13 +130,14 @@ export class AccountsService {
         const body = rest;
 
         return this.database.$transaction(async (tx) => {
-            if (body.email || body.name) {
+            if (body.email || body.name || body.avatar) {
                 if (role === ACCOUNT_ROLES_ENUM.ORGANIZATIONS) {
                     await this.organization.updateOrganization(
                         id,
                         {
                             title: updates.name,
                             email: updates.email,
+                            avatar: body.avatar,
                         },
                         tx,
                     );
@@ -147,6 +148,7 @@ export class AccountsService {
                         {
                             name: updates.name,
                             email: updates.email,
+                            avatar: body.avatar,
                         },
                         tx,
                     );

@@ -49,4 +49,7 @@ export class CreateAccountDto
     @IsBoolean()
     @IsNotEmpty()
     isEmailVerified: boolean | undefined;
+
+    avatar?: string | null | undefined;
+    lastLogin?: string | Date | undefined;
 }

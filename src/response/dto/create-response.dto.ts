@@ -44,4 +44,7 @@ export class CreateResponseDto
     @IsNotEmpty()
     @IsNumber()
     employee: number;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

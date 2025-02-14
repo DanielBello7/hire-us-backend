@@ -42,4 +42,8 @@ export class CreateOrganizationDto
     @Expose()
     @IsString()
     brief?: string | null | undefined;
+
+    avatar?: string | null | undefined;
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

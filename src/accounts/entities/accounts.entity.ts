@@ -6,6 +6,7 @@ export class Accounts implements PrismaAccount {
     name: string;
     email: string;
     password: string;
+    avatar: string | null;
     role: ACCOUNT_ROLES_ENUM;
     lastLogin: Date;
     isEmailVerified: boolean;

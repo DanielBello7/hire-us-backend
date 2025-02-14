@@ -32,4 +32,7 @@ export class CreateEmployeeDto
 
     @Expose()
     isTerminated?: boolean | undefined;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

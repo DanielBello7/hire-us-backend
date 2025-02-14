@@ -6,7 +6,13 @@ export class CreatePositionDto
     implements
         Omit<
             Prisma.PositionCreateInput,
-            'Employee' | 'Exam' | 'organization' | 'fromPosition' | 'toPosition'
+            | 'Employee'
+            | 'Exam'
+            | 'organization'
+            | 'fromPosition'
+            | 'toPosition'
+            | 'predecessor'
+            | 'successor'
         >
 {
     @Expose()
@@ -43,4 +49,17 @@ export class CreatePositionDto
     @IsOptional()
     @IsNumber()
     fromPosition?: number | undefined;
+
+    @Expose()
+    @IsOptional()
+    @IsNumber()
+    predecessor?: number | undefined;
+
+    @Expose()
+    @IsOptional()
+    @IsNumber()
+    successor?: number | undefined;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

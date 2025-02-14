@@ -59,4 +59,7 @@ export class CreateExamDto
     @IsArray()
     @IsNumber({}, { each: true })
     ineligibleEmployees?: number[];
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

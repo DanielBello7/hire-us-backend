@@ -49,4 +49,8 @@ export class CreatePersonDto
     @Expose()
     @IsNotEmpty()
     account: number;
+
+    avatar?: string | null | undefined;
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

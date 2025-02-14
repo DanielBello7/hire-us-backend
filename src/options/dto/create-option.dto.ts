@@ -23,4 +23,7 @@ export class CreateOptionDto
     @IsNotEmpty()
     @IsBoolean()
     isCorrect: boolean;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

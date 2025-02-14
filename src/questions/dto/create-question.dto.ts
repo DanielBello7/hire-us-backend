@@ -26,4 +26,7 @@ export class CreateQuestionDto
     @IsString()
     @IsEnum(QuestionTypeEnum)
     type: string;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

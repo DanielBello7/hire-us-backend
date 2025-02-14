@@ -1,6 +1,12 @@
 import { Prisma } from '@prisma/client';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsNumber, Matches } from 'class-validator';
+import {
+    IsBoolean,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    Matches,
+} from 'class-validator';
 
 export enum ProgressEnum {
     ONGOING = 'ONGOING',
@@ -8,7 +14,8 @@ export enum ProgressEnum {
 }
 
 export class CreateProgressDto
-    implements Omit<Prisma.ProgressCreateInput, 'employee' | 'exam'>
+    implements
+        Omit<Prisma.ProgressCreateInput, 'employee' | 'exam' | 'lastQuestion'>
 {
     @Expose()
     @Matches(ProgressEnum.ONGOING)
@@ -24,4 +31,22 @@ export class CreateProgressDto
     @IsNotEmpty()
     @IsNumber()
     exam: number;
+
+    @Expose()
+    @IsNumber()
+    @IsOptional()
+    score?: number | null | undefined;
+
+    @Expose()
+    @IsBoolean()
+    @IsOptional()
+    isCompleted?: boolean | undefined;
+
+    @Expose()
+    @IsNumber()
+    @IsOptional()
+    lastQuestion?: number | undefined;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

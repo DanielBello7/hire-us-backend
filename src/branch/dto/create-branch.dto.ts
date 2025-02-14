@@ -22,4 +22,7 @@ export class CreateBranchDto
 
     @Expose()
     manager?: number;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }

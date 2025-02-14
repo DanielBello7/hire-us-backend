@@ -24,4 +24,7 @@ export class CreatePaymentDto
     @IsNotEmpty()
     @IsNumber()
     organization: number;
+
+    createdAt?: string | Date | undefined;
+    updatedAt?: string | Date | undefined;
 }
