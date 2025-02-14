@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PromotionsService } from './promotions.service';
 import { PromotionsController } from './promotions.controller';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '@app/common/database/database.module';
 
 @Module({
     controllers: [PromotionsController],

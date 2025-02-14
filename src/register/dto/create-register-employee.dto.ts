@@ -8,7 +8,7 @@ import {
 import { CreateRegisterDto } from './create-register.dto';
 import { CreateEmployeeDto } from 'src/employee/dto/create-employee.dto';
 import { CreatePersonDto, GenderEnum } from 'src/person/dto/create-person.dto';
-import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
+import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
 import { Expose } from 'class-transformer';
 
 type RegisterEmployeeDto = Omit<CreateEmployeeDto, 'account' | 'person'> &

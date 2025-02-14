@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ResponseService } from './response.service';
 import { ResponseController } from './response.controller';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '@app/common/database/database.module';
 
 @Module({
     controllers: [ResponseController],

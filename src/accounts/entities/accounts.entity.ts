@@ -1,5 +1,5 @@
 import { Account as PrismaAccount } from '@prisma/client';
-import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
+import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
 
 export class Accounts implements PrismaAccount {
     id: number;

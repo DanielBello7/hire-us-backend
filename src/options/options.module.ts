@@ -1,5 +1,5 @@
 import { OptionsController } from './options.controller';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '@app/common/database/database.module';
 import { Module } from '@nestjs/common';
 import { OptionsService } from './options.service';
 

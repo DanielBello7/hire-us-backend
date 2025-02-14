@@ -7,7 +7,7 @@ import { CreateRegisterEmployeeDto } from './dto/create-register-employee.dto';
 import { CreateRegisterAdministratorDto } from './dto/create-register-administrator.dto';
 import { CreateRegisterOrganizationDto } from './dto/create-register-organization.dto';
 import { AdministratorService } from 'src/administrator/administrator.service';
-import { DatabaseService } from 'src/database/database.service';
+import { DatabaseService } from '@app/common/database/database.service';
 import { plainToInstance } from 'class-transformer';
 import { CreateAdministratorDto } from 'src/administrator/dto/create-administrator.dto';
 import { CreatePersonDto } from 'src/person/dto/create-person.dto';

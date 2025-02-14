@@ -1,4 +1,4 @@
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '@app/common/database/database.module';
 import { ExamsService } from './exams.service';
 import { Module } from '@nestjs/common';
 import { ExamsController } from './exams.controller';

@@ -6,7 +6,7 @@ import {
 import { PersonService } from 'src/person/person.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
-import { DatabaseService } from 'src/database/database.service';
+import { DatabaseService } from '@app/common/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import * as bcrypt from 'bcrypt';
 import { PrismaDatabaseService } from '@app/common';

@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Prisma } from '@prisma/client';
 import { Expose } from 'class-transformer';
-import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
+import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
 
 export class CreateAccountDto
     implements

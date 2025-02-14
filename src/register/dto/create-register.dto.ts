@@ -7,7 +7,7 @@ import {
     IsStrongPassword,
 } from 'class-validator';
 import { CreateAccountDto } from 'src/accounts/dto/create-account.dto';
-import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
+import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
 
 export class CreateRegisterDto
     implements Omit<CreateAccountDto, 'isEmailVerified'>

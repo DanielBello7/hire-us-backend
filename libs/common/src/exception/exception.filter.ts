@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch } from '@nestjs/common';
-import { WinstonService } from 'src/winston/winston.service';
+import { WinstonService } from '@app/common/winston/winston.service';
 import { BaseExceptionFilter } from '@nestjs/core';
 
 @Catch()

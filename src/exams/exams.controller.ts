@@ -17,9 +17,9 @@ import { UpdateExamDto } from './dto/update-exam.dto';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AuthGuard } from '@nestjs/passport';
 import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
-import { AllowRoles } from 'src/roles/decorators/roles.decorator';
-import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
-import { RolesGuard } from 'src/roles/guards/roles.guard';
+import { AllowRoles } from '@app/common/roles/decorators/roles.decorator';
+import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
+import { RolesGuard } from '@app/common/roles/guards/roles.guard';
 
 @Controller('exams')
 export class ExamsController {

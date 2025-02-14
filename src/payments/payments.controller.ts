@@ -11,9 +11,9 @@ import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
-import { AllowRoles } from 'src/roles/decorators/roles.decorator';
-import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
-import { RolesGuard } from 'src/roles/guards/roles.guard';
+import { AllowRoles } from '@app/common/roles/decorators/roles.decorator';
+import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
+import { RolesGuard } from '@app/common/roles/guards/roles.guard';
 
 @Controller('payments')
 export class PaymentsController {

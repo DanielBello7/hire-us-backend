@@ -1,5 +1,5 @@
 import { PaymentsController } from './payments.controller';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '@app/common/database/database.module';
 import { Module } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 

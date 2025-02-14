@@ -2,7 +2,7 @@ import { Query as ExpressQuery } from 'express-serve-static-core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
-import { DatabaseService } from 'src/database/database.service';
+import { DatabaseService } from '@app/common/database/database.service';
 import { PrismaDatabaseService } from '@app/common';
 
 @Injectable()

@@ -3,7 +3,7 @@ import {
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
-import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
+import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
 import { LoginAccountDto } from './dto/login-account.dto';
 import { AccountsService } from 'src/accounts/accounts.service';
 import { JwtService } from '@nestjs/jwt';
