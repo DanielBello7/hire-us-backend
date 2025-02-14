@@ -3,11 +3,18 @@ import { AccountsController } from './accounts.controller';
 import { AccountsService } from './accounts.service';
 import { DatabaseModule } from '@app/common/database/database.module';
 import { PersonModule } from 'src/person/person.module';
+import { OrganizationModule } from 'src/organization/organization.module';
+import { AdministratorModule } from 'src/administrator/administrator.module';
 
 @Module({
     controllers: [AccountsController],
     exports: [AccountsService],
     providers: [AccountsService],
-    imports: [DatabaseModule, PersonModule],
+    imports: [
+        DatabaseModule,
+        PersonModule,
+        OrganizationModule,
+        AdministratorModule,
+    ],
 })
 export class AccountsModule {}

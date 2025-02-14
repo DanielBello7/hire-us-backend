@@ -19,6 +19,7 @@ model Account {
   email               String          @unique
   password            String
   role                String
+  avatar              String?
   lastLogin           DateTime        @default(now())
   isEmailVerified     Boolean         @default(false)
   createdAt           DateTime        @default(now())
@@ -29,6 +30,7 @@ model Account {
   Message             Message[]
   CreatedBy           Conversation[]  @relation("CreatedBy")
   ConversationMembers Conversation[]  @relation("ConversationMembers")
+  Upload              Upload[]
 }
 
 model Person {
@@ -59,23 +61,24 @@ model Administrator {
 }
 
 model Organization {
-  id        Int        @id @default(autoincrement())
-  accountId Int
-  account   Account    @relation(fields: [accountId], references: [id])
-  title     String
-  email     String     @unique
-  country   String
-  address   String
-  avatar    String?
-  brief     String?
-  taxId     String     @unique
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  Employee  Employee[]
-  Position  Position[]
-  Branch    Branch[]
-  Exam      Exam[]
-  Payment   Payment[]
+  id         Int          @id @default(autoincrement())
+  accountId  Int
+  account    Account      @relation(fields: [accountId], references: [id])
+  title      String
+  email      String       @unique
+  country    String
+  address    String
+  avatar     String?
+  brief      String?
+  taxId      String       @unique
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Employee   Employee[]
+  Position   Position[]
+  Branch     Branch[]
+  Exam       Exam[]
+  Payment    Payment[]
+  Terminated Terminated[]
 }
 
 model Employee {
@@ -98,6 +101,7 @@ model Employee {
   CreatedFor     Review[]     @relation("CreatedFor")
   Payment        Payment[]
   Response       Response[]
+  Terminated     Terminated[]
 }
 
 model Branch {
@@ -265,4 +269,27 @@ model Payment {
   organization   Organization @relation(fields: [organizationId], references: [id])
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+}
+
+model Terminated {
+  id             Int          @id @default(autoincrement())
+  employeeId     Int
+  employee       Employee     @relation(fields: [employeeId], references: [id])
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  reason         String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Upload {
+  id        Int      @id @default(autoincrement())
+  accountId Int
+  account   Account  @relation(fields: [accountId], references: [id])
+  url       String
+  title     String
+  mimetype  String
+  size      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

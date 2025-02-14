@@ -19,19 +19,19 @@ import { RolesGuard } from '@app/common/roles/guards/roles.guard';
 
 @Controller('accounts')
 export class AccountsController {
-    constructor(private readonly accountService: AccountsService) {}
+    constructor(private readonly accounts: AccountsService) {}
 
     @UseGuards(PassprtJWTGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMINISTRATOR)
     @UseGuards(AuthGuard(), RolesGuard)
     @Get()
     getAccounts(@Query() query: ExpressQuery) {
-        return this.accountService.getAccounts(query);
+        return this.accounts.getAccounts(query);
     }
 
     @Get(':id')
     getAccount(@Param('id', ParseIntPipe) id: number) {
-        return this.accountService.findAccount(id);
+        return this.accounts.findAccount(id);
     }
 
     @UseGuards(PassprtJWTGuard)
@@ -40,6 +40,6 @@ export class AccountsController {
         @Param('id', ParseIntPipe) id: number,
         @Body() updates: UpdateAccountDto,
     ) {
-        return this.accountService.updateAccount(id, updates);
+        return this.accounts.updateAccount(id, updates);
     }
 }

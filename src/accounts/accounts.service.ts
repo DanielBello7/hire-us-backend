@@ -10,12 +10,17 @@ import { DatabaseService } from '@app/common/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import * as bcrypt from 'bcrypt';
 import { PrismaDatabaseService } from '@app/common';
+import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
+import { AdministratorService } from 'src/administrator/administrator.service';
+import { OrganizationService } from 'src/organization/organization.service';
 
 @Injectable()
 export class AccountsService {
     constructor(
         private readonly database: DatabaseService,
         private readonly person: PersonService,
+        private readonly admin: AdministratorService,
+        private readonly organization: OrganizationService,
     ) {}
 
     async findAccountUsingEmail(email: string) {
@@ -121,20 +126,50 @@ export class AccountsService {
         updates: UpdateAccountDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { role, ...rest } = updates;
         const body = rest;
-        if (body.email || body.name) {
-            await this.person.updatePerson(id, {
-                email: updates.email,
-                name: updates.name,
-            });
-        }
-        if (rest.password) {
-            const hashed = bcrypt.hashSync(rest.password, 10);
-            body.password = hashed;
-        }
-        return this.update(id, updates, database);
+
+        return this.database.$transaction(async (tx) => {
+            if (body.email || body.name) {
+                if (role === ACCOUNT_ROLES_ENUM.ORGANIZATIONS) {
+                    await this.organization.updateOrganization(
+                        id,
+                        {
+                            title: updates.name,
+                            email: updates.email,
+                        },
+                        tx,
+                    );
+                }
+                if (role === ACCOUNT_ROLES_ENUM.EMPLOYEE) {
+                    await this.person.updatePerson(
+                        id,
+                        {
+                            name: updates.name,
+                            email: updates.email,
+                        },
+                        tx,
+                    );
+                }
+                if (role === ACCOUNT_ROLES_ENUM.ADMINISTRATOR) {
+                    await this.admin.updateAdmin(
+                        id,
+                        {
+                            name: updates.name,
+                            email: updates.email,
+                        },
+                        tx,
+                    );
+                }
+            }
+
+            if (rest.password) {
+                const hashed = bcrypt.hashSync(rest.password, 10);
+                body.password = hashed;
+            }
+
+            return this.update(id, updates, database ?? tx);
+        });
     }
 
     async create(

@@ -109,19 +109,7 @@ export class EmployeeService {
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
-        return db.employee.update({
-            where: {
-                id,
-            },
-            data: {
-                isTerminated: true,
-            },
-            include: {
-                person: true,
-                position: true,
-            },
-        });
+        return this.update(id, { isTerminated: true }, database);
     }
 
     async delete(

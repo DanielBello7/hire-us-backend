@@ -113,6 +113,14 @@ PAYMENTS
 RESPONSE
 - GET      /api/response/                           get responses                 ✅
 ---------------------------------------------------------------------------
+TERMINATED
+- GET      /api/terminated/                         get termination records
+- GET      /api/terminated/:id/                     find termination record
+---------------------------------------------------------------------------
+UPLOADS
+- GET      /api/uploads/:id/                        find termination record
+- POST     /api/uploads/avatar/                     update account avatar
+---------------------------------------------------------------------------
 
 
 
@@ -121,21 +129,21 @@ RESPONSE
 COMPLEX ENDPOINTS
 ---------------------------------------------------------------------------
 REGISTER
-- POST     /api/register/employee/                  register employee             
-- POST     /api/register/organization/              register organization         
-- POST     /api/register/administrator/             register admin                
+- POST     /api/register/employee/                  register employee             ✅
+- POST     /api/register/organization/              register organization         ✅
+- POST     /api/register/administrator/             register admin                ✅
 ---------------------------------------------------------------------------
 ACCOUNTS
-- PUT      /api/accounts/:id/                       update account                
+- PUT      /api/accounts/:id/                       update account                ✅
 ---------------------------------------------------------------------------
 ADMINISTRATORS
-- PATCH    /api/administrators/:id/                 update admin                  
+- PATCH    /api/administrators/:id/                 update admin                  ✅
 ---------------------------------------------------------------------------
 ORGANIZATIONS
-- PATCH    /api/organizations/:id/                  update organization           
+- PATCH    /api/organizations/:id/                  update organization           ✅
 ---------------------------------------------------------------------------
 PERSON
-- PATCH    /api/person/:id/                         update person account         
+- PATCH    /api/person/:id/                         update person account         ✅
 ---------------------------------------------------------------------------
 EMPLOYEES
 - PATCH    /api/employees/:id/                      update employee               

@@ -8,10 +8,14 @@ import { UpdatePersonDto } from './dto/update-person.dto';
 import { DatabaseService } from '@app/common/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { PrismaDatabaseService } from '@app/common';
+import { AccountsService } from 'src/accounts/accounts.service';
 
 @Injectable()
 export class PersonService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly accounts: AccountsService,
+    ) {}
 
     async isEmailRegistered(email: string) {
         const check = await this.database.person.findFirst({
@@ -101,7 +105,16 @@ export class PersonService {
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { account, ...rest } = body;
-        return this.update(id, rest, database);
+        return this.database.$transaction(async (tx) => {
+            if (rest.email || rest.name) {
+                const person = await this.findOne(id);
+                await this.accounts.update(person.accountId, {
+                    name: rest.name,
+                    email: rest.email,
+                });
+            }
+            return this.update(id, rest, database ?? tx);
+        });
     }
 
     async remove(

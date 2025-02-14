@@ -4,10 +4,14 @@ import { UpdateAdministratorDto } from './dto/update-administrator.dto';
 import { DatabaseService } from '@app/common/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { PrismaDatabaseService } from '@app/common';
+import { AccountsService } from 'src/accounts/accounts.service';
 
 @Injectable()
 export class AdministratorService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly accounts: AccountsService,
+    ) {}
 
     async isEmailRegistered(email: string) {
         const response = await this.database.administrator.findFirst({
@@ -94,7 +98,20 @@ export class AdministratorService {
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { account, ...rest } = body;
-        return this.update(id, rest, database);
+        return this.database.$transaction(async (tx) => {
+            if (rest.email || rest.name) {
+                const admin = await this.findOne(id);
+                await this.accounts.updateAccount(
+                    admin.accountId,
+                    {
+                        email: rest.email,
+                        name: rest.name,
+                    },
+                    tx,
+                );
+            }
+            return this.update(id, rest, database ?? tx);
+        });
     }
 
     async create(

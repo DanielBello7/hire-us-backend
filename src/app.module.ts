@@ -24,6 +24,8 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { PaymentsModule } from './payments/payments.module';
 import { ResponseModule } from './response/response.module';
 import { AuthModule } from './auth/auth.module';
+import { UploadsModule } from './uploads/uploads.module';
+import { TerminatedModule } from './terminated/terminated.module';
 
 @Module({
     imports: [
@@ -52,6 +54,8 @@ import { AuthModule } from './auth/auth.module';
         PaymentsModule,
         ResponseModule,
         AuthModule,
+        UploadsModule,
+        TerminatedModule,
     ],
     controllers: [AppController],
     providers: [

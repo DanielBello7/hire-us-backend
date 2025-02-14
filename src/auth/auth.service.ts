@@ -57,7 +57,7 @@ export class AuthService {
         return { token };
     }
 
-    async retrieveAccount(id: number) {
+    async getMe(id: number) {
         const response = await this.accounts.findAccount(id);
         const actions = {
             [ACCOUNT_ROLES_ENUM.ADMINISTRATOR]: async (id: number) =>

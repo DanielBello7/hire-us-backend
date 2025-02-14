@@ -28,6 +28,6 @@ export class AuthController {
     @Get('me')
     @UseGuards(PassprtJWTGuard)
     whoami(@Req() req: ExpressRequest) {
-        return this.auth.retrieveAccount(req.user.accountId);
+        return this.auth.getMe(req.user.accountId);
     }
 }

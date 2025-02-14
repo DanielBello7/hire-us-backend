@@ -8,10 +8,14 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { DatabaseService } from '@app/common/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { PrismaDatabaseService } from '@app/common';
+import { AccountsService } from 'src/accounts/accounts.service';
 
 @Injectable()
 export class OrganizationService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly accounts: AccountsService,
+    ) {}
 
     async isOrganizationRegistered(email: string, taxId: string) {
         const response = await this.database.organization.findFirst({
@@ -102,7 +106,20 @@ export class OrganizationService {
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { taxId, account, address, ...rest } = body;
-        return this.update(id, rest, database);
+        return this.database.$transaction(async (tx) => {
+            if (rest.email || rest.title) {
+                const organization = await this.findOne(id);
+                await this.accounts.update(
+                    organization.accountId,
+                    {
+                        email: rest.email,
+                        name: rest.title,
+                    },
+                    tx,
+                );
+            }
+            return this.update(id, rest, database ?? tx);
+        });
     }
 
     async remove(
