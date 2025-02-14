@@ -1,0 +1,21 @@
+# start the first build stage
+# use a node image and name the build stage as "build"
+FROM node:20.13.1-alpine AS build
+
+# switch to the /app directory in the image 
+WORKDIR /app
+
+# copy into the /app directory package.json
+COPY package*.json ./
+
+# install packages
+RUN npm install
+
+# copy everything else from outside into the /app
+COPY . .
+
+# expose 3000 port
+EXPOSE 3000
+
+# run application
+CMD ["npm", "run", "start:dev"]

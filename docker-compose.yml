@@ -1,0 +1,27 @@
+services:
+  development:
+    container_name: hireus-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./prisma:/app/prisma
+    profiles:
+      - dev
+  production:
+    container_name: hireus-pro
+    build:
+      context: .
+      dockerfile: Dockerfile.pro
+    env_file:
+      - .env
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./prisma:/app/prisma
+    profiles:
+      - pro
