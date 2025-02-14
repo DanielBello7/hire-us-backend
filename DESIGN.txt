@@ -114,8 +114,8 @@ RESPONSE
 - GET      /api/response/                           get responses                 ✅
 ---------------------------------------------------------------------------
 TERMINATED
-- GET      /api/terminated/                         get termination records
-- GET      /api/terminated/:id/                     find termination record
+- GET      /api/terminated/                         get termination records       ✅
+- GET      /api/terminated/:id/                     find termination record       ✅
 ---------------------------------------------------------------------------
 UPLOADS
 - GET      /api/uploads/:id/                        find termination record
@@ -146,8 +146,8 @@ PERSON
 - PATCH    /api/person/:id/                         update person account         ✅
 ---------------------------------------------------------------------------
 EMPLOYEES
-- PATCH    /api/employees/:id/                      update employee               
-- PATCH    /api/employees/:id/terminate/            layoff an employee            
+- PATCH    /api/employees/:id/                      update employee               ✅
+- PATCH    /api/employees/:id/terminate/            layoff an employee            ✅
 ---------------------------------------------------------------------------
 POSITION
 - POST     /api/position/                           create position               

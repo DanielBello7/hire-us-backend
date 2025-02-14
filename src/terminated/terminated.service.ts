@@ -1,26 +1,121 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTerminatedDto } from './dto/create-terminated.dto';
 import { UpdateTerminatedDto } from './dto/update-terminated.dto';
+import { DatabaseService } from '@app/common/database/database.service';
+import { PrismaDatabaseService } from '@app/common';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class TerminatedService {
-  create(createTerminatedDto: CreateTerminatedDto) {
-    return 'This action adds a new terminated';
-  }
+    constructor(private readonly database: DatabaseService) {}
 
-  findAll() {
-    return `This action returns all terminated`;
-  }
+    async create(body: CreateTerminatedDto, database?: PrismaDatabaseService) {
+        const db = database ?? this.database;
+        return db.terminated.create({
+            data: {
+                ...body,
+                organization: {
+                    connect: {
+                        id: body.organization,
+                    },
+                },
+                employee: {
+                    connect: {
+                        id: body.employee,
+                    },
+                },
+            },
+        });
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} terminated`;
-  }
+    async findAll(query?: ExpressQuery) {
+        let pageNum = 1;
+        let pickNum = 5;
 
-  update(id: number, updateTerminatedDto: UpdateTerminatedDto) {
-    return `This action updates a #${id} terminated`;
-  }
+        let options = {};
 
-  remove(id: number) {
-    return `This action removes a #${id} terminated`;
-  }
+        let skip = pickNum * (pageNum - 1);
+
+        if (query) {
+            const { page, pick } = query;
+            pageNum = Number(page ?? 1);
+            pickNum = Number(pick ?? 5);
+            skip = pickNum * (pageNum - 1);
+            options = {
+                ...options,
+                ...Object.fromEntries(
+                    Object.entries(query).filter(([key]) =>
+                        [
+                            'id',
+                            'employeeId',
+                            'organizationId',
+                            'reason',
+                            'createdAt',
+                            'updatedAt',
+                        ].includes(key),
+                    ),
+                ),
+            };
+        }
+
+        return this.database.terminated.findMany({
+            where: options,
+            skip,
+            take: pickNum,
+        });
+    }
+
+    async findOne(id: number) {
+        const response = await this.database.terminated.findFirst({
+            where: {
+                id,
+            },
+        });
+        if (!response)
+            throw new NotFoundException('cannot find termination record');
+        return response;
+    }
+
+    async updateTerminated(
+        id: number,
+        body: UpdateTerminatedDto,
+        database?: PrismaDatabaseService,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { employee, organization, ...rest } = body;
+        return this.update(id, rest, database);
+    }
+
+    async update(
+        id: number,
+        body: UpdateTerminatedDto,
+        database?: PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.terminated.update({
+            where: { id },
+            data: {
+                ...body,
+                employee: body.employee
+                    ? {
+                          connect: {
+                              id: body.employee,
+                          },
+                      }
+                    : undefined,
+                organization: body.organization
+                    ? {
+                          connect: {
+                              id: body.organization,
+                          },
+                      }
+                    : undefined,
+            },
+        });
+    }
+
+    async remove(id: number, database?: PrismaDatabaseService) {
+        const db = database ?? this.database;
+        return db.terminated.delete({ where: { id } });
+    }
 }

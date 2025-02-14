@@ -8,10 +8,14 @@ import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { DatabaseService } from '@app/common/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { PrismaDatabaseService } from '@app/common';
+import { TerminatedService } from 'src/terminated/terminated.service';
 
 @Injectable()
 export class EmployeeService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly terminated: TerminatedService,
+    ) {}
 
     async isEmployeeRegistered(personId: number, organizationId: number) {
         const response = await this.database.employee.findFirst({
@@ -107,9 +111,21 @@ export class EmployeeService {
 
     async layoffEmployee(
         id: number,
+        reason: string,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        return this.update(id, { isTerminated: true }, database);
+        return this.database.$transaction(async (tx) => {
+            const employee = await this.findOne(id);
+            await this.terminated.create(
+                {
+                    employee: id,
+                    organization: employee.organizationId,
+                    reason,
+                },
+                tx,
+            );
+            return this.update(id, { isTerminated: true }, database ?? tx);
+        });
     }
 
     async delete(
