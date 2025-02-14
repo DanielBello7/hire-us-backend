@@ -8,7 +8,7 @@ import {
 import { CreateRegisterDto } from './create-register.dto';
 import { CreateEmployeeDto } from 'src/employee/dto/create-employee.dto';
 import { CreatePersonDto, GenderEnum } from 'src/person/dto/create-person.dto';
-import { AccountEnum } from 'src/accounts/dto/create-account.dto';
+import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
 import { Expose } from 'class-transformer';
 
 type RegisterEmployeeDto = Omit<CreateEmployeeDto, 'account' | 'person'> &
@@ -19,9 +19,9 @@ export class CreateRegisterEmployeeDto
     implements RegisterEmployeeDto
 {
     @Expose()
-    @Matches(AccountEnum.EMPLOYEE)
+    @Matches(ACCOUNT_ROLES_ENUM.EMPLOYEE)
     @IsNotEmpty()
-    role: AccountEnum;
+    role: ACCOUNT_ROLES_ENUM;
 
     @Expose()
     @IsNotEmpty()

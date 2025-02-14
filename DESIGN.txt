@@ -60,16 +60,16 @@ EXAMS
 - DELETE   /api/exams/:id/eligible_positions/:id/   delete eligible_positions     ✅
 - POST     /api/exams/:id/ineligible_employees/     add ineligible_employees      ✅
 - DELETE   /api/exams/:id/ineligible_employees/:id/ delete ineligible_employees   ✅
-- POST     /api/exams/:id/submit/                   submit exam                   ✅❌
+- POST     /api/exams/:id/submit/                   submit exam                   ✅
 ---------------------------------------------------------------------------
 QUESTIONS
 - GET      /api/questions/                          get questions                 ✅
 - GET      /api/questions/:id/                      find question                 ✅
 - POST     /api/questions/                          create question               ✅
 - DELETE   /api/questions/:id/                      delete question               ✅
-- DELETE   /api/questions/exam/:id/                 delete exam questions         ✅❌
+- DELETE   /api/questions/exam/:id/                 delete exam questions         ✅
 - PATCH    /api/questions/:id/                      update question               ✅
-- POST     /api/questions/:id/submit/               submit question               ✅❌
+- POST     /api/questions/:id/submit/               submit question               ✅
 ---------------------------------------------------------------------------
 OPTIONS
 - GET      /api/options/                            get options                   ✅
@@ -119,7 +119,6 @@ RESPONSE
 
 
 COMPLEX ENDPOINTS
-
 ---------------------------------------------------------------------------
 REGISTER
 - POST     /api/register/employee/                  register employee             

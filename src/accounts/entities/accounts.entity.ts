@@ -1,12 +1,12 @@
 import { Account as PrismaAccount } from '@prisma/client';
-import { AccountEnum } from '../dto/create-account.dto';
+import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
 
 export class Accounts implements PrismaAccount {
     id: number;
     name: string;
     email: string;
     password: string;
-    role: AccountEnum;
+    role: ACCOUNT_ROLES_ENUM;
     lastLogin: Date;
     isEmailVerified: boolean;
     createdAt: Date;

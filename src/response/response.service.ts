@@ -6,7 +6,7 @@ import {
 import { CreateResponseDto } from './dto/create-response.dto';
 import { UpdateResponseDto } from './dto/update-response.dto';
 import { DatabaseService } from 'src/database/database.service';
-import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
+import { PrismaDatabaseService } from '@app/common';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()

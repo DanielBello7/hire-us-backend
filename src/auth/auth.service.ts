@@ -3,7 +3,7 @@ import {
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
-import { AccountEnum } from 'src/accounts/dto/create-account.dto';
+import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
 import { LoginAccountDto } from './dto/login-account.dto';
 import { AccountsService } from 'src/accounts/accounts.service';
 import { JwtService } from '@nestjs/jwt';
@@ -12,7 +12,7 @@ import { PersonService } from 'src/person/person.service';
 import { OrganizationService } from 'src/organization/organization.service';
 
 export type ValidatedUser = {
-    role: AccountEnum;
+    role: ACCOUNT_ROLES_ENUM;
     email: string;
     accountId: number;
     name: string;
@@ -39,7 +39,7 @@ export class AuthService {
         )
             return null;
         return {
-            role: response.role as AccountEnum,
+            role: response.role as ACCOUNT_ROLES_ENUM,
             accountId: response.id,
             name: response.name,
             email: response.email,
@@ -60,11 +60,11 @@ export class AuthService {
     async retrieveAccount(id: number) {
         const response = await this.accounts.findAccount(id);
         const actions = {
-            [AccountEnum.ADMINISTRATOR]: async (id: number) =>
+            [ACCOUNT_ROLES_ENUM.ADMINISTRATOR]: async (id: number) =>
                 this.admin.findAdminUsingAccountId(id),
-            [AccountEnum.EMPLOYEE]: async (id: number) =>
+            [ACCOUNT_ROLES_ENUM.EMPLOYEE]: async (id: number) =>
                 this.person.findPersonUsingAccountId(id),
-            [AccountEnum.ORGANIZATION]: async (id: number) =>
+            [ACCOUNT_ROLES_ENUM.ORGANIZATIONS]: async (id: number) =>
                 this.organization.findOrganizationUsingAccountId(id),
         };
 

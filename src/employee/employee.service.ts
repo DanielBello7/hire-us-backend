@@ -7,7 +7,7 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
+import { PrismaDatabaseService } from '@app/common';
 
 @Injectable()
 export class EmployeeService {

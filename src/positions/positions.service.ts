@@ -3,7 +3,7 @@ import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
+import { PrismaDatabaseService } from '@app/common';
 import { Position } from './entities/position.entity';
 
 @Injectable()

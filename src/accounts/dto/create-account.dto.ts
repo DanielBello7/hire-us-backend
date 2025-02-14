@@ -8,12 +8,7 @@ import {
 } from 'class-validator';
 import { Prisma } from '@prisma/client';
 import { Expose } from 'class-transformer';
-
-export enum AccountEnum {
-    ORGANIZATION = 'organization',
-    EMPLOYEE = 'employee',
-    ADMINISTRATOR = 'administrator',
-}
+import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
 
 export class CreateAccountDto
     implements
@@ -33,10 +28,10 @@ export class CreateAccountDto
     name: string;
 
     @Expose()
-    @IsIn(Object.values(AccountEnum))
+    @IsIn(Object.values(ACCOUNT_ROLES_ENUM))
     @IsNotEmpty()
     @IsString()
-    role: AccountEnum;
+    role: ACCOUNT_ROLES_ENUM;
 
     @Expose()
     @IsString()

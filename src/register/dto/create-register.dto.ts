@@ -6,10 +6,8 @@ import {
     IsString,
     IsStrongPassword,
 } from 'class-validator';
-import {
-    AccountEnum,
-    CreateAccountDto,
-} from 'src/accounts/dto/create-account.dto';
+import { CreateAccountDto } from 'src/accounts/dto/create-account.dto';
+import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
 
 export class CreateRegisterDto
     implements Omit<CreateAccountDto, 'isEmailVerified'>
@@ -33,6 +31,6 @@ export class CreateRegisterDto
 
     @Expose()
     @IsNotEmpty()
-    @IsEnum(AccountEnum)
-    role: AccountEnum;
+    @IsEnum(ACCOUNT_ROLES_ENUM)
+    role: ACCOUNT_ROLES_ENUM;
 }

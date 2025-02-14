@@ -1,8 +1,8 @@
 import { CreateOrganizationDto } from 'src/organization/dto/create-organization.dto';
 import { CreateRegisterDto } from './create-register.dto';
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
-import { AccountEnum } from 'src/accounts/dto/create-account.dto';
 import { Expose } from 'class-transformer';
+import { ACCOUNT_ROLES_ENUM } from 'src/roles/enums/roles.enum';
 
 type RegisterOrganizationDto = Omit<CreateOrganizationDto, 'account'>;
 
@@ -13,8 +13,8 @@ export class CreateRegisterOrganizationDto
     @Expose()
     @IsString()
     @IsNotEmpty()
-    @Matches(AccountEnum.ORGANIZATION)
-    role: AccountEnum;
+    @Matches(ACCOUNT_ROLES_ENUM.ORGANIZATIONS)
+    role: ACCOUNT_ROLES_ENUM;
 
     @Expose()
     @IsString()

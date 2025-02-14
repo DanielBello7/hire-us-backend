@@ -7,7 +7,7 @@ import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
+import { PrismaDatabaseService } from '@app/common';
 
 @Injectable()
 export class ConversationsService {

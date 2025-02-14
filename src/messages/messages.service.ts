@@ -3,7 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { DatabaseService } from 'src/database/database.service';
-import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
+import { PrismaDatabaseService } from '@app/common';
 
 @Injectable()
 export class MessagesService {

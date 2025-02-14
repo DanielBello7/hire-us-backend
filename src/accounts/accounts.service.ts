@@ -9,7 +9,7 @@ import { UpdateAccountDto } from './dto/update-account.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import * as bcrypt from 'bcrypt';
-import { PrismaDatabaseService } from 'src/common/config/prisma-database-type.confg';
+import { PrismaDatabaseService } from '@app/common';
 
 @Injectable()
 export class AccountsService {
