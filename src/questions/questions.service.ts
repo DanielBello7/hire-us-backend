@@ -1,30 +1,111 @@
-import {
-    Injectable,
-    NotFoundException,
-    NotImplementedException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { DatabaseService } from '@app/common/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { PrismaDatabaseService } from '@app/common';
+import { ExamsService } from 'src/exams/exams.service';
+import { OptionsService } from 'src/options/options.service';
 
 @Injectable()
 export class QuestionsService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly exams: ExamsService,
+        private readonly options: OptionsService,
+    ) {}
 
-    submitQuestion(id: number, body: any) {
-        console.log(id, body);
-        throw new NotImplementedException('not yet complete');
+    /**
+     * Retrieves questions for an exam and include the options for each question
+     */
+    async getExamQuestionsUsingExamId(examId: number) {
+        return this.database.question.findMany({
+            where: {
+                examId,
+            },
+            include: {
+                Options: true,
+            },
+        });
     }
 
-    saveQuestion() {
-        throw new NotImplementedException('not yet complete');
+    /**
+     * This records a new question to the database,
+     * This also updates the exam question count
+     */
+    async saveQuestion(
+        body: CreateQuestionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        return this.database.$transaction(async (tx) => {
+            const exam = await this.exams.findOne(body.examId);
+            await this.exams.updateExam(
+                exam.id,
+                {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    questions: exam.questions + 1,
+                },
+                database ?? tx,
+            );
+            return this.create(body, database ?? tx);
+        });
     }
 
-    deleteQuestions(id: number) {
-        console.log(id);
-        throw new NotImplementedException('not yet complete');
+    /**
+     * Deletes a question,
+     * This also removes the options,
+     * This reduces the questions on the exam count
+     */
+    async deleteQuestion(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const question = await this.findOne(id);
+        const exam = await this.exams.findOne(question.examId);
+        return this.database.$transaction(async (tx) => {
+            const db = database ?? tx;
+            await this.remove(id, db);
+            await this.exams.update(
+                question.examId,
+                { questions: exam.questions - 1 },
+                db,
+            );
+            await this.options.removeMany({ questionId: id }, db);
+        });
+    }
+
+    /**
+     * Deletes plenty questions where the exam id is a given input,
+     * it also deletes the options of all the deleted questions
+     */
+    async deleteQuestionsUsingExamId(
+        examid: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const response = await this.database.question.findMany({
+            where: { examId: examid },
+        });
+        const ids = response.map((item) => item.id);
+        return this.database.$transaction(async (tx) => {
+            const db = database ?? tx;
+            await db.question.deleteMany({
+                where: {
+                    examId: examid,
+                },
+            });
+            await this.options.removeManyUsingInclusive(ids, db);
+        });
+    }
+
+    /** This updates a question but excludes certain fields */
+    async updateQuestion(
+        id: number,
+        body: UpdateQuestionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { examId, ...rest } = body;
+        return this.update(id, rest, database);
     }
 
     async create(
@@ -37,17 +118,6 @@ export class QuestionsService {
         return db.question.create({
             data: {
                 ...body,
-            },
-        });
-    }
-
-    async getExamQuestions(examId: number) {
-        return this.database.question.findMany({
-            where: {
-                examId,
-            },
-            include: {
-                Options: true,
             },
         });
     }
@@ -94,19 +164,12 @@ export class QuestionsService {
             where: {
                 id,
             },
+            include: {
+                Options: true,
+            },
         });
         if (!response) throw new NotFoundException('question not found');
         return response;
-    }
-
-    async updateQuestion(
-        id: number,
-        body: UpdateQuestionDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { examId, ...rest } = body;
-        return this.update(id, rest, database);
     }
 
     async update(
@@ -135,18 +198,6 @@ export class QuestionsService {
         return db.question.delete({
             where: {
                 id,
-            },
-        });
-    }
-
-    async removeExamQuestions(
-        examid: number,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        const db = database ?? this.database;
-        return db.question.deleteMany({
-            where: {
-                examId: examid,
             },
         });
     }

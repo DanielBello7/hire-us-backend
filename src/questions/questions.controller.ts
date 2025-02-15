@@ -46,17 +46,6 @@ export class QuestionsController {
     }
 
     @UseGuards(PassprtJWTGuard)
-    @AllowRoles(ACCOUNT_ROLES_ENUM.EMPLOYEE)
-    @UseGuards(AuthGuard(), RolesGuard)
-    @Post(':id/submit')
-    submit(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() body: CreateQuestionDto,
-    ) {
-        return this.questionsService.submitQuestion(id, body);
-    }
-
-    @UseGuards(PassprtJWTGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -89,6 +78,6 @@ export class QuestionsController {
     @UseGuards(AuthGuard(), RolesGuard)
     @Delete('exam/:id')
     deleteExamQuestions(@Param('id', ParseIntPipe) id: number) {
-        return this.questionsService.deleteQuestions(id);
+        return this.questionsService.deleteQuestion(id);
     }
 }

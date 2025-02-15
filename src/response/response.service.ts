@@ -7,10 +7,14 @@ import { CreateResponseDto } from './dto/create-response.dto';
 import { UpdateResponseDto } from './dto/update-response.dto';
 import { DatabaseService } from '@app/common/database/database.service';
 import { PrismaDatabaseService } from '@app/common';
+import { ProgressService } from 'src/progress/progress.service';
 
 @Injectable()
 export class ResponseService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly progress: ProgressService,
+    ) {}
 
     async alreadyExists(
         examId: number,
@@ -27,13 +31,29 @@ export class ResponseService {
         return !!response;
     }
 
-    async setResponse(
+    async submitResponse(
         body: CreateResponseDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         if (await this.alreadyExists(body.exam, body.employee, body.question))
             throw new BadRequestException('Response already recorded');
-        return this.create(body, database);
+        return this.database.$transaction(async (tx) => {
+            const response = await this.create(body, database ?? tx);
+            const progress = await this.progress.findEmployeeStatus(
+                body.employee,
+                body.exam,
+            );
+            await this.progress.updateProgress(
+                progress.id,
+                {
+                    score: response.isCorrect
+                        ? (progress.score ?? 0) + 1
+                        : progress.score,
+                },
+                database ?? tx,
+            );
+            return response;
+        });
     }
 
     async create(

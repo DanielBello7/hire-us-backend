@@ -9,23 +9,9 @@ import { PrismaDatabaseService } from '@app/common';
 export class OptionsService {
     constructor(private readonly database: DatabaseService) {}
 
-    async create(
-        body: CreateOptionDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        const db = database ?? this.database;
-        return db.option.create({
-            data: {
-                ...body,
-                question: {
-                    connect: {
-                        id: body.question,
-                    },
-                },
-            },
-        });
-    }
-
+    /**
+     * Create many options at once
+     */
     async createMany(
         body: CreateOptionDto[],
         database?: DatabaseService | PrismaDatabaseService,
@@ -42,6 +28,48 @@ export class OptionsService {
                 },
             })),
         });
+    }
+
+    /**
+     * Delete many question options, using filters.
+     */
+    async removeMany(
+        filter: Partial<{ questionId: number; examId: number }>,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.option.deleteMany({
+            where: filter,
+        });
+    }
+
+    /**
+     * Delete many question options, using questionIds,
+     * takes in an array of question ids
+     */
+    async removeManyUsingInclusive(
+        ids: number[],
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.option.deleteMany({
+            where: {
+                questionId: { in: ids },
+            },
+        });
+    }
+
+    /**
+     * Update an option excluding certain items
+     */
+    async updateOption(
+        id: number,
+        body: UpdateOptionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { question, ...rest } = body;
+        return this.update(id, rest, database);
     }
 
     async findAll(query?: ExpressQuery) {
@@ -92,14 +120,21 @@ export class OptionsService {
         return response;
     }
 
-    async updateOption(
-        id: number,
-        body: UpdateOptionDto,
+    async create(
+        body: CreateOptionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { question, ...rest } = body;
-        return this.update(id, rest, database);
+        const db = database ?? this.database;
+        return db.option.create({
+            data: {
+                ...body,
+                question: {
+                    connect: {
+                        id: body.question,
+                    },
+                },
+            },
+        });
     }
 
     async update(
@@ -134,16 +169,6 @@ export class OptionsService {
             where: {
                 id,
             },
-        });
-    }
-
-    async removeMany(
-        filter: Partial<{ questionId: number; examId: number }>,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        const db = database ?? this.database;
-        return db.option.deleteMany({
-            where: filter,
         });
     }
 }

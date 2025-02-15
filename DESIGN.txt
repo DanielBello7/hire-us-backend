@@ -112,6 +112,7 @@ PAYMENTS
 ---------------------------------------------------------------------------
 RESPONSE
 - GET      /api/response/                           get responses                 ✅
+- POST     /api/response/submit/                    submit question               ✅
 ---------------------------------------------------------------------------
 TERMINATED
 - GET      /api/terminated/                         get termination records       ✅
@@ -160,13 +161,12 @@ EXAMS
 - POST     /api/exams/:id/submit/                   submit exam                   ✅
 ---------------------------------------------------------------------------
 QUESTIONS
-- GET      /api/questions/                          get questions                 
-- GET      /api/questions/:id/                      find question                 
-- POST     /api/questions/                          create question               
-- DELETE   /api/questions/:id/                      delete question               
-- DELETE   /api/questions/exam/:id/                 delete exam questions         
+- GET      /api/questions/                          get questions                 ✅
+- GET      /api/questions/:id/                      find question                 ✅
+- POST     /api/questions/                          create question               ✅
+- DELETE   /api/questions/:id/                      delete question               ✅
+- DELETE   /api/questions/exam/:id/                 delete exam questions         ✅
 - PATCH    /api/questions/:id/                      update question               
-- POST     /api/questions/:id/submit/               submit question               
 ---------------------------------------------------------------------------
 OPTIONS
 - POST     /api/options/                            create option                 
@@ -189,4 +189,7 @@ MESSAGES
 PAYMENTS
 - POST     /api/payments/                           pay employee                  
 - POST     /api/payments/bulk/                      make employee salary payments 
+---------------------------------------------------------------------------
+RESPONSE
+- POST     /api/response/submit/                    submit question               ✅
 ---------------------------------------------------------------------------

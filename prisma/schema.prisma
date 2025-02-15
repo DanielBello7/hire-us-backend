@@ -157,6 +157,7 @@ model Exam {
 
 model Question {
   id        Int        @id @default(autoincrement())
+  index     Int        @unique
   examId    Int
   type      String
   body      String
