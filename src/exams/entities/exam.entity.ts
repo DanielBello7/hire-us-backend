@@ -6,6 +6,7 @@ export class Exam implements PrismaExam {
     organizationId: number;
     availableAt: Date;
     startsAt: Date;
+    questions: number;
     endsAt: Date;
     createdAt: Date;
     updatedAt: Date;

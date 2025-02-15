@@ -9,6 +9,14 @@ import { PrismaDatabaseService } from '@app/common';
 export class ProgressService {
     constructor(private readonly database: DatabaseService) {}
 
+    async findEmployeeStatus(employeeId: number, examId: number) {
+        const response = await this.database.progress.findFirst({
+            where: { employeeId, examId },
+        });
+        if (!response) throw new NotFoundException('cannot find status');
+        return response;
+    }
+
     async create(
         body: CreateProgressDto,
         database?: DatabaseService | PrismaDatabaseService,
@@ -29,6 +37,7 @@ export class ProgressService {
                         id: body.exam,
                     },
                 },
+                lastQuestion: undefined,
             },
         });
     }
@@ -131,6 +140,13 @@ export class ProgressService {
                     ? {
                           connect: {
                               id: body.exam,
+                          },
+                      }
+                    : undefined,
+                lastQuestion: body.lastQuestion
+                    ? {
+                          connect: {
+                              id: body.lastQuestion,
                           },
                       }
                     : undefined,

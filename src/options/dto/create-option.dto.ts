@@ -17,6 +17,11 @@ export class CreateOptionDto
     @Expose()
     @IsNotEmpty()
     @IsNumber()
+    examId: number;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsNumber()
     question: number;
 
     @Expose()

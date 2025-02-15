@@ -41,6 +41,17 @@ export class QuestionsService {
         });
     }
 
+    async getExamQuestions(examId: number) {
+        return this.database.question.findMany({
+            where: {
+                examId,
+            },
+            include: {
+                Options: true,
+            },
+        });
+    }
+
     async findAll(query?: ExpressQuery) {
         let pageNum = 1;
         let pickNum = 5;
@@ -124,6 +135,18 @@ export class QuestionsService {
         return db.question.delete({
             where: {
                 id,
+            },
+        });
+    }
+
+    async removeExamQuestions(
+        examid: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.question.deleteMany({
+            where: {
+                examId: examid,
             },
         });
     }

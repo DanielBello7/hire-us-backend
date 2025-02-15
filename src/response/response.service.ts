@@ -7,7 +7,6 @@ import { CreateResponseDto } from './dto/create-response.dto';
 import { UpdateResponseDto } from './dto/update-response.dto';
 import { DatabaseService } from '@app/common/database/database.service';
 import { PrismaDatabaseService } from '@app/common';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class ResponseService {
@@ -69,7 +68,7 @@ export class ResponseService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async findAll(query?: Record<string, string | number>) {
         let pageNum = 1;
         let pickNum = 5;
 

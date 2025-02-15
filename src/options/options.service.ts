@@ -138,7 +138,7 @@ export class OptionsService {
     }
 
     async removeMany(
-        filter: Partial<{ questionId: number }>,
+        filter: Partial<{ questionId: number; examId: number }>,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         const db = database ?? this.database;

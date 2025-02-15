@@ -139,6 +139,7 @@ model Position {
 model Exam {
   id                  Int          @id @default(autoincrement())
   title               String
+  questions           Int          @default(0)
   description         String
   organizationId      Int
   organization        Organization @relation(fields: [organizationId], references: [id])
@@ -168,6 +169,7 @@ model Question {
 
 model Option {
   id          Int        @id @default(autoincrement())
+  examId      Int
   questionId  Int
   question    Question   @relation(fields: [questionId], references: [id])
   body        String

@@ -1,14 +1,46 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 import { DatabaseService } from '@app/common/database/database.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { PrismaDatabaseService } from '@app/common';
+import { QuestionsService } from 'src/questions/questions.service';
+import { OptionsService } from 'src/options/options.service';
+import { ResponseService } from 'src/response/response.service';
+import { ProgressService } from 'src/progress/progress.service';
+import { ProgressEnum } from 'src/progress/dto/create-progress.dto';
 
 @Injectable()
 export class ExamsService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly options: OptionsService,
+        private readonly question: QuestionsService,
+        private readonly response: ResponseService,
+        private readonly progress: ProgressService,
+    ) {}
+
+    async submit(examId: number, employeeId: number) {
+        const status = await this.progress.findEmployeeStatus(
+            employeeId,
+            examId,
+        );
+        const exam = await this.findOne(examId);
+        const responses = await this.response.findAll({ examId, employeeId });
+        if (responses.length < exam.questions)
+            throw new BadRequestException('exam not completed');
+        const score = responses.filter((response) => response.isCorrect);
+        return this.progress.updateProgress(status.id, {
+            score: score.length,
+            status: ProgressEnum.COMPLETED,
+            isCompleted: true,
+        });
+    }
 
     async create(
         body: CreateExamDto,
@@ -88,7 +120,11 @@ export class ExamsService {
             },
         });
         if (!response) throw new NotFoundException('cannot find exam');
-        return response;
+        const questions = await this.question.getExamQuestions(id);
+        return {
+            ...response,
+            Questions: questions,
+        };
     }
 
     async updateExam(
@@ -174,11 +210,20 @@ export class ExamsService {
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
-        await db.exam.delete({
-            where: {
-                id,
-            },
+        await this.database.$transaction(async (tx) => {
+            const db = database ?? tx;
+            await db.exam.delete({
+                where: {
+                    id,
+                },
+            });
+            await this.question.removeExamQuestions(id, db);
+            await this.options.removeMany(
+                {
+                    examId: id,
+                },
+                db,
+            );
         });
     }
 }

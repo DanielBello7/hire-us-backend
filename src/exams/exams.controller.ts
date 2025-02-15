@@ -7,7 +7,6 @@ import {
     Body,
     Post,
     ParseIntPipe,
-    NotImplementedException,
     Query,
     UseGuards,
 } from '@nestjs/common';
@@ -20,6 +19,7 @@ import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
 import { AllowRoles } from '@app/common/roles/decorators/roles.decorator';
 import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
 import { RolesGuard } from '@app/common/roles/guards/roles.guard';
+import { SubmitExamDto } from './dto/submit-exam.dto';
 
 @Controller('exams')
 export class ExamsController {
@@ -49,10 +49,14 @@ export class ExamsController {
     }
 
     @UseGuards(PassprtJWTGuard)
+    @AllowRoles(ACCOUNT_ROLES_ENUM.EMPLOYEE)
+    @UseGuards(AuthGuard(), RolesGuard)
     @Post(':id/submit')
-    submitExam(@Body() body: CreateExamDto) {
-        /** not yet done */
-        throw new NotImplementedException('NOT YET IMPLEMENTED', body);
+    submitExam(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: SubmitExamDto,
+    ) {
+        return this.examsService.submit(id, body.employeeId);
     }
 
     @UseGuards(PassprtJWTGuard)

@@ -20,7 +20,7 @@ export class CreateProgressDto
     @Expose()
     @Matches(ProgressEnum.ONGOING)
     @IsNotEmpty()
-    status: string;
+    status: ProgressEnum;
 
     @Expose()
     @IsNotEmpty()

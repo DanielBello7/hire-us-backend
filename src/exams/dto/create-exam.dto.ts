@@ -5,6 +5,7 @@ import {
     IsDate,
     IsNotEmpty,
     IsNumber,
+    IsOptional,
     IsString,
 } from 'class-validator';
 export class CreateExamDto
@@ -32,6 +33,11 @@ export class CreateExamDto
     @IsString()
     @IsDate()
     availableAt: string | Date;
+
+    @Expose()
+    @IsNumber()
+    @IsOptional()
+    questions?: number | undefined;
 
     @Expose()
     @IsNotEmpty()

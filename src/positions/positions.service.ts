@@ -59,6 +59,16 @@ export class PositionsService {
                         id: body.organization,
                     },
                 },
+                successor: {
+                    connect: {
+                        id: body.successor,
+                    },
+                },
+                predecessor: {
+                    connect: {
+                        id: body.predecessor,
+                    },
+                },
             },
         });
     }
@@ -170,6 +180,20 @@ export class PositionsService {
                     ? {
                           connect: {
                               id: body.toPosition,
+                          },
+                      }
+                    : undefined,
+                successor: body.successor
+                    ? {
+                          connect: {
+                              id: body.successor,
+                          },
+                      }
+                    : undefined,
+                predecessor: body.predecessor
+                    ? {
+                          connect: {
+                              id: body.predecessor,
                           },
                       }
                     : undefined,
