@@ -7,8 +7,8 @@ import { OptionsModule } from 'src/options/options.module';
 
 @Module({
     controllers: [QuestionsController],
-    imports: [DatabaseModule, ExamsModule, OptionsModule],
     providers: [QuestionsService],
     exports: [QuestionsService],
+    imports: [DatabaseModule, ExamsModule, OptionsModule],
 })
 export class QuestionsModule {}

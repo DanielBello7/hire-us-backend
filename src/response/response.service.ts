@@ -1,8 +1,4 @@
-import {
-    BadRequestException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateResponseDto } from './dto/create-response.dto';
 import { UpdateResponseDto } from './dto/update-response.dto';
 import { DatabaseService } from '@app/common/database/database.service';
@@ -16,29 +12,37 @@ export class ResponseService {
         private readonly progress: ProgressService,
     ) {}
 
+    /** This checks if an employee has already answered a question */
     async alreadyExists(
         examId: number,
         employeeId: number,
         questionId: number,
     ): Promise<boolean> {
         const response = await this.database.response.findFirst({
-            where: {
-                examId,
-                employeeId,
-                questionId,
-            },
+            where: { examId, employeeId, questionId },
         });
         return !!response;
     }
 
+    /** This submits a user's response to a particular question,
+     * it checks if a user has answered the question before first, if yes, it updates the body,
+     * and changes the selected option, if not it creates a new response.
+     */
     async submitResponse(
         body: CreateResponseDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        if (await this.alreadyExists(body.exam, body.employee, body.question))
-            throw new BadRequestException('Response already recorded');
+        if (await this.alreadyExists(body.exam, body.employee, body.question)) {
+            const response =
+                await this.findResponseUsingEmployeeIdAndQuestionId(
+                    body.employee,
+                    body.question,
+                );
+            return this.update(response.id, { option: body.option });
+        }
         return this.database.$transaction(async (tx) => {
-            const response = await this.create(body, database ?? tx);
+            const db = database ?? tx;
+            const response = await this.create(body, db);
             const progress = await this.progress.findEmployeeStatus(
                 body.employee,
                 body.exam,
@@ -50,42 +54,33 @@ export class ResponseService {
                         ? (progress.score ?? 0) + 1
                         : progress.score,
                 },
-                database ?? tx,
+                db,
             );
             return response;
         });
     }
 
-    async create(
-        body: CreateResponseDto,
+    /** This finds a response using the employee id and the question id */
+    async findResponseUsingEmployeeIdAndQuestionId(
+        employee: number,
+        question: number,
+    ) {
+        const response = await this.database.response.findFirst({
+            where: { employeeId: employee, questionId: question },
+        });
+        if (!response) throw new NotFoundException('Cannot find response');
+        return response;
+    }
+
+    /** This updates a response but excludes some fields */
+    async updateResponse(
+        id: number,
+        updates: UpdateResponseDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
-        return db.response.create({
-            data: {
-                ...body,
-                employee: {
-                    connect: {
-                        id: body.employee,
-                    },
-                },
-                exam: {
-                    connect: {
-                        id: body.exam,
-                    },
-                },
-                option: {
-                    connect: {
-                        id: body.option,
-                    },
-                },
-                question: {
-                    connect: {
-                        id: body.question,
-                    },
-                },
-            },
-        });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { employee, question, ...rest } = updates;
+        return this.update(id, rest, database);
     }
 
     async findAll(query?: Record<string, string | number>) {
@@ -128,6 +123,38 @@ export class ResponseService {
         });
     }
 
+    async create(
+        body: CreateResponseDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.response.create({
+            data: {
+                ...body,
+                employee: {
+                    connect: {
+                        id: body.employee,
+                    },
+                },
+                exam: {
+                    connect: {
+                        id: body.exam,
+                    },
+                },
+                option: {
+                    connect: {
+                        id: body.option,
+                    },
+                },
+                question: {
+                    connect: {
+                        id: body.question,
+                    },
+                },
+            },
+        });
+    }
+
     async findOne(id: number) {
         const response = await this.database.response.findFirst({
             where: {
@@ -138,17 +165,7 @@ export class ResponseService {
         return response;
     }
 
-    updateResponse(
-        id: number,
-        updates: UpdateResponseDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { employee, question, ...rest } = updates;
-        return this.update(id, rest, database);
-    }
-
-    update(
+    async update(
         id: number,
         updates: UpdateResponseDto,
         database?: DatabaseService | PrismaDatabaseService,

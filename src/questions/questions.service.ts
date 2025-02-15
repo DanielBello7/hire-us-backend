@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { DatabaseService } from '@app/common/database/database.service';
@@ -14,6 +18,16 @@ export class QuestionsService {
         private readonly exams: ExamsService,
         private readonly options: OptionsService,
     ) {}
+
+    /** This checks if a particular index has been used */
+    async checkIfIndexIsUsed(examId: number, index: number) {
+        return this.database.question.findFirst({
+            where: {
+                examId,
+                index,
+            },
+        });
+    }
 
     /**
      * Retrieves questions for an exam and include the options for each question
@@ -37,7 +51,11 @@ export class QuestionsService {
         body: CreateQuestionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
+        if (await this.checkIfIndexIsUsed(body.examId, body.index))
+            throw new BadRequestException('Index has been used');
+
         return this.database.$transaction(async (tx) => {
+            const db = database ?? tx;
             const exam = await this.exams.findOne(body.examId);
             await this.exams.updateExam(
                 exam.id,
@@ -45,9 +63,9 @@ export class QuestionsService {
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     questions: exam.questions + 1,
                 },
-                database ?? tx,
+                db,
             );
-            return this.create(body, database ?? tx);
+            return this.create(body, db);
         });
     }
 

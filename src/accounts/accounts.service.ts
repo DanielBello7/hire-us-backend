@@ -23,6 +23,9 @@ export class AccountsService {
         private readonly organization: OrganizationService,
     ) {}
 
+    /** This finds an account using the email but returns null if it
+     * cannot find it
+     */
     async findAccountUsingEmail(email: string) {
         return this.database.account.findFirst({
             where: {
@@ -31,6 +34,7 @@ export class AccountsService {
         });
     }
 
+    /** This checks if an email isa lready registered  */
     async isEmailRegistered(email: string) {
         const response = await this.database.account.findFirst({
             where: {
@@ -40,6 +44,9 @@ export class AccountsService {
         return !!response;
     }
 
+    /** This compares the password of an account with a given string
+     * it uses either the id or the email of the account in question
+     */
     async comparePassword(idOrEmail: number | string, password: string) {
         const account = await this.database.account.findFirst({
             where:
@@ -54,6 +61,89 @@ export class AccountsService {
         if (!account) throw new NotFoundException('account not found');
         const isPositive = bcrypt.compareSync(password, account.password);
         return !!isPositive;
+    }
+
+    /** This creates an account, it also checks if the account
+     * is already registered */
+    async createAccount(
+        data: CreateAccountDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        if (await this.isEmailRegistered(data.email)) {
+            throw new BadRequestException('Email already registered');
+        }
+        return this.create(data, database);
+    }
+
+    /** This updates an account's data but removes some certain
+     * fields, then it also updates the
+     * same field for the respective account role types
+     */
+    async updateAccount(
+        id: number,
+        updates: UpdateAccountDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const { role, ...rest } = updates;
+        const body = rest;
+
+        return this.database.$transaction(async (tx) => {
+            const db = database ?? tx;
+            if (body.email || body.name || body.avatar) {
+                if (role === ACCOUNT_ROLES_ENUM.ORGANIZATIONS) {
+                    await this.organization.updateOrganization(
+                        id,
+                        {
+                            title: updates.name,
+                            email: updates.email,
+                            avatar: body.avatar,
+                        },
+                        db,
+                    );
+                }
+                if (role === ACCOUNT_ROLES_ENUM.EMPLOYEE) {
+                    await this.person.updatePerson(
+                        id,
+                        {
+                            name: updates.name,
+                            email: updates.email,
+                            avatar: body.avatar,
+                        },
+                        db,
+                    );
+                }
+                if (role === ACCOUNT_ROLES_ENUM.ADMINISTRATOR) {
+                    await this.admin.updateAdmin(
+                        id,
+                        {
+                            name: updates.name,
+                            email: updates.email,
+                        },
+                        db,
+                    );
+                }
+            }
+
+            if (rest.password) {
+                const hashed = bcrypt.hashSync(rest.password, 10);
+                body.password = hashed;
+            }
+
+            return this.update(id, updates, db);
+        });
+    }
+
+    async findAccount(id: number) {
+        const account = await this.database.account.findFirst({
+            where: {
+                id,
+            },
+            omit: {
+                password: true,
+            },
+        });
+        if (account) return account;
+        throw new NotFoundException('account not found');
     }
 
     async getAccounts(query?: ExpressQuery) {
@@ -95,82 +185,6 @@ export class AccountsService {
             omit: {
                 password: true,
             },
-        });
-    }
-
-    async findAccount(id: number) {
-        const account = await this.database.account.findFirst({
-            where: {
-                id,
-            },
-            omit: {
-                password: true,
-            },
-        });
-        if (account) return account;
-        throw new NotFoundException('account not found');
-    }
-
-    async createAccount(
-        data: CreateAccountDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        if (await this.isEmailRegistered(data.email)) {
-            throw new BadRequestException('Email already registered');
-        }
-        return this.create(data, database);
-    }
-
-    async updateAccount(
-        id: number,
-        updates: UpdateAccountDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        const { role, ...rest } = updates;
-        const body = rest;
-
-        return this.database.$transaction(async (tx) => {
-            if (body.email || body.name || body.avatar) {
-                if (role === ACCOUNT_ROLES_ENUM.ORGANIZATIONS) {
-                    await this.organization.updateOrganization(
-                        id,
-                        {
-                            title: updates.name,
-                            email: updates.email,
-                            avatar: body.avatar,
-                        },
-                        tx,
-                    );
-                }
-                if (role === ACCOUNT_ROLES_ENUM.EMPLOYEE) {
-                    await this.person.updatePerson(
-                        id,
-                        {
-                            name: updates.name,
-                            email: updates.email,
-                            avatar: body.avatar,
-                        },
-                        tx,
-                    );
-                }
-                if (role === ACCOUNT_ROLES_ENUM.ADMINISTRATOR) {
-                    await this.admin.updateAdmin(
-                        id,
-                        {
-                            name: updates.name,
-                            email: updates.email,
-                        },
-                        tx,
-                    );
-                }
-            }
-
-            if (rest.password) {
-                const hashed = bcrypt.hashSync(rest.password, 10);
-                body.password = hashed;
-            }
-
-            return this.update(id, updates, database ?? tx);
         });
     }
 

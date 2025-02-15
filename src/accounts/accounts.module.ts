@@ -13,8 +13,8 @@ import { AdministratorModule } from 'src/administrator/administrator.module';
     imports: [
         DatabaseModule,
         PersonModule,
-        OrganizationModule,
         AdministratorModule,
+        OrganizationModule,
     ],
 })
 export class AccountsModule {}

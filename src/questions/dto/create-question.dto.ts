@@ -18,6 +18,11 @@ export class CreateQuestionDto
 
     @Expose()
     @IsNotEmpty()
+    @IsNumber()
+    index: number;
+
+    @Expose()
+    @IsNotEmpty()
     @IsString()
     body: string;
 

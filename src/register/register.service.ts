@@ -14,6 +14,7 @@ import { CreatePersonDto } from 'src/person/dto/create-person.dto';
 import { CreateEmployeeDto } from 'src/employee/dto/create-employee.dto';
 import { CreateOrganizationDto } from 'src/organization/dto/create-organization.dto';
 import { CreateAccountDto } from 'src/accounts/dto/create-account.dto';
+import { PrismaDatabaseService } from '@app/common';
 
 @Injectable()
 export class RegisterService {
@@ -26,7 +27,11 @@ export class RegisterService {
         private readonly admin: AdministratorService,
     ) {}
 
-    async registerEmployee(body: CreateRegisterEmployeeDto) {
+    /** This creates an account, creates  person account, and creates an employee account */
+    async registerEmployee(
+        body: CreateRegisterEmployeeDto,
+        database?: PrismaDatabaseService,
+    ) {
         const checks = await Promise.all([
             this.account.isEmailRegistered(body.email),
             this.person.isEmailRegistered(body.email),
@@ -36,12 +41,13 @@ export class RegisterService {
             throw new BadRequestException('Employee already registered');
 
         return this.database.$transaction(async (tx) => {
+            const db = database ?? tx;
             const account = await this.account.createAccount(
                 {
                     ...body,
                     isEmailVerified: false,
                 },
-                tx,
+                db,
             );
 
             const person = await this.person.createPerson(
@@ -51,8 +57,9 @@ export class RegisterService {
                     }),
                     account: account.id,
                 },
-                tx,
+                db,
             );
+
             return this.employee.createEmployee(
                 {
                     ...plainToInstance(CreateEmployeeDto, body, {
@@ -60,12 +67,16 @@ export class RegisterService {
                     }),
                     person: person.id,
                 },
-                tx,
+                db,
             );
         });
     }
 
-    async registerAdministrator(body: CreateRegisterAdministratorDto) {
+    /** This creates an account and creates an administrator account */
+    async registerAdministrator(
+        body: CreateRegisterAdministratorDto,
+        database?: PrismaDatabaseService,
+    ) {
         const checks = await Promise.all([
             this.account.isEmailRegistered(body.email),
             this.admin.isEmailRegistered(body.email),
@@ -75,10 +86,12 @@ export class RegisterService {
             throw new BadRequestException('Account already registered');
 
         return this.database.$transaction(async (tx) => {
+            const db = database ?? tx;
             const account = await this.account.createAccount(
                 { ...body, isEmailVerified: false },
-                tx,
+                db,
             );
+
             return this.admin.createAdmin(
                 {
                     ...plainToInstance(CreateAdministratorDto, body, {
@@ -86,12 +99,16 @@ export class RegisterService {
                     }),
                     account: account.id,
                 },
-                tx,
+                db,
             );
         });
     }
 
-    async registerOrganization(body: CreateRegisterOrganizationDto) {
+    /** This creates an account, and creates an organization ccount*/
+    async registerOrganization(
+        body: CreateRegisterOrganizationDto,
+        database?: PrismaDatabaseService,
+    ) {
         const checks = await Promise.all([
             this.account.isEmailRegistered(body.email),
             this.organization.isOrganizationRegistered(body.email, body.taxId),
@@ -101,6 +118,8 @@ export class RegisterService {
             throw new BadRequestException('Account already registered');
 
         return this.database.$transaction(async (tx) => {
+            const db = database ?? tx;
+
             const account = await this.account.createAccount(
                 {
                     ...plainToInstance(CreateAccountDto, body, {
@@ -108,8 +127,9 @@ export class RegisterService {
                     }),
                     isEmailVerified: false,
                 },
-                tx,
+                db,
             );
+
             return this.organization.createOrganization(
                 {
                     ...plainToInstance(CreateOrganizationDto, body, {
@@ -117,7 +137,7 @@ export class RegisterService {
                     }),
                     account: account.id,
                 },
-                tx,
+                db,
             );
         });
     }
