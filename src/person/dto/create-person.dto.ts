@@ -1,6 +1,12 @@
 import { Prisma } from '@prisma/client';
 import { Expose } from 'class-transformer';
-import { IsString, IsNotEmpty, IsEmail, IsEnum } from 'class-validator';
+import {
+    IsString,
+    IsNotEmpty,
+    IsEmail,
+    IsEnum,
+    IsOptional,
+} from 'class-validator';
 
 export enum GenderEnum {
     MALE = 'male',
@@ -50,7 +56,11 @@ export class CreatePersonDto
     @IsNotEmpty()
     account: number;
 
+    @Expose()
+    @IsString()
+    @IsOptional()
     avatar?: string | null | undefined;
+
     createdAt?: string | Date | undefined;
     updatedAt?: string | Date | undefined;
 }

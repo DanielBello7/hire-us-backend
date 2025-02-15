@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Prisma } from '@prisma/client';
 import { Expose } from 'class-transformer';
 
@@ -43,7 +43,11 @@ export class CreateOrganizationDto
     @IsString()
     brief?: string | null | undefined;
 
+    @Expose()
+    @IsString()
+    @IsOptional()
     avatar?: string | null | undefined;
+
     createdAt?: string | Date | undefined;
     updatedAt?: string | Date | undefined;
 }
