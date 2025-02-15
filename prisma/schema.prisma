@@ -284,6 +284,7 @@ model Terminated {
 
 model Upload {
   id        Int      @id @default(autoincrement())
+  tempid    String   @unique
   accountId Int
   account   Account  @relation(fields: [accountId], references: [id])
   url       String

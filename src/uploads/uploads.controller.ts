@@ -1,34 +1,38 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    Param,
+    UseGuards,
+    Req,
+    UseInterceptors,
+    UploadedFiles,
+} from '@nestjs/common';
 import { UploadsService } from './uploads.service';
-import { CreateUploadDto } from './dto/create-upload.dto';
-import { UpdateUploadDto } from './dto/update-upload.dto';
+import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
+import { ExpressRequest } from 'src/auth/auth.controller';
+import { ValidatedUser } from 'src/auth/auth.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 
 @Controller('uploads')
 export class UploadsController {
-  constructor(private readonly uploadsService: UploadsService) {}
+    constructor(private readonly uploads: UploadsService) {}
 
-  @Post()
-  create(@Body() createUploadDto: CreateUploadDto) {
-    return this.uploadsService.create(createUploadDto);
-  }
+    @UseGuards(PassprtJWTGuard)
+    @Get(':id')
+    findOne(@Param('id') id: string, @Req() res: Response) {
+        return this.uploads.findUpload(id, res);
+    }
 
-  @Get()
-  findAll() {
-    return this.uploadsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.uploadsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUploadDto: UpdateUploadDto) {
-    return this.uploadsService.update(+id, updateUploadDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.uploadsService.remove(+id);
-  }
+    @UseGuards(PassprtJWTGuard)
+    @Post('avatar')
+    @UseInterceptors(FilesInterceptor('files'))
+    create(
+        @UploadedFiles() files: Express.Multer.File[],
+        @Req() req: ExpressRequest,
+    ) {
+        const user: ValidatedUser = req.user;
+        return this.uploads.updateAvatar(user.accountId, files);
+    }
 }

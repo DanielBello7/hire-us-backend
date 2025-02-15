@@ -118,8 +118,8 @@ TERMINATED
 - GET      /api/terminated/:id/                     find termination record       ✅
 ---------------------------------------------------------------------------
 UPLOADS
-- GET      /api/uploads/:id/                        find termination record
-- POST     /api/uploads/avatar/                     update account avatar
+- GET      /api/uploads/:id/                        find termination record       ✅
+- POST     /api/uploads/avatar/                     update account avatar         ✅
 ---------------------------------------------------------------------------
 
 
