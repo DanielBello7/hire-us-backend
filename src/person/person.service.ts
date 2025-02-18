@@ -17,6 +17,7 @@ export class PersonService {
         private readonly accounts: AccountsService,
     ) {}
 
+    /** This checks if an email is already registered */
     async isEmailRegistered(email: string) {
         const check = await this.database.person.findFirst({
             where: {
@@ -26,6 +27,7 @@ export class PersonService {
         return !!check;
     }
 
+    /** This looks for a person record using the account id*/
     async findPersonUsingAccountId(id: number) {
         const response = await this.database.person.findFirst({
             where: {
@@ -36,6 +38,7 @@ export class PersonService {
         return response;
     }
 
+    /** This creates a person account */
     async createPerson(
         body: CreatePersonDto,
         database?: DatabaseService | PrismaDatabaseService,
@@ -43,6 +46,33 @@ export class PersonService {
         if (await this.isEmailRegistered(body.email))
             throw new BadRequestException('Email already registered');
         return this.create(body, database);
+    }
+
+    /** This updates a person's account, it also modifies the account record of the
+     * person document
+     * */
+    async updatePerson(
+        id: number,
+        body: UpdatePersonDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { account, ...rest } = body;
+        return this.database.$transaction(async (tx) => {
+            const db = database ?? tx;
+            if (rest.email || rest.name) {
+                const person = await this.findOne(id);
+                await this.accounts.update(
+                    person.accountId,
+                    {
+                        name: rest.name,
+                        email: rest.email,
+                    },
+                    db,
+                );
+            }
+            return this.update(id, rest, db);
+        });
     }
 
     async findAll(query?: ExpressQuery) {
@@ -96,25 +126,6 @@ export class PersonService {
         });
         if (!check) throw new NotFoundException('Unable to find person');
         return check;
-    }
-
-    async updatePerson(
-        id: number,
-        body: UpdatePersonDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { account, ...rest } = body;
-        return this.database.$transaction(async (tx) => {
-            if (rest.email || rest.name) {
-                const person = await this.findOne(id);
-                await this.accounts.update(person.accountId, {
-                    name: rest.name,
-                    email: rest.email,
-                });
-            }
-            return this.update(id, rest, database ?? tx);
-        });
     }
 
     async remove(

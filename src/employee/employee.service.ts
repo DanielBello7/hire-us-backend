@@ -17,6 +17,7 @@ export class EmployeeService {
         private readonly terminated: TerminatedService,
     ) {}
 
+    /** This checks if an employee is registered */
     async isEmployeeRegistered(personId: number, organizationId: number) {
         const response = await this.database.employee.findFirst({
             where: {
@@ -27,6 +28,7 @@ export class EmployeeService {
         return !!response;
     }
 
+    /** this creates a new employee record */
     async createEmployee(
         body: CreateEmployeeDto,
         database?: DatabaseService | PrismaDatabaseService,
@@ -40,6 +42,43 @@ export class EmployeeService {
         } else {
             return this.create(body, database);
         }
+    }
+
+    /**
+     * This updates an employee record,
+     * It excludes some fields
+     */
+    async updateEmployee(
+        id: number,
+        body: UpdateEmployeeDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { organization, person, ...rest } = body;
+        return this.update(id, rest, database);
+    }
+
+    /** This completes the layoff function for an employee ,
+     * It sets the terminated value to true,
+     * This also creates a terminated record for the employee
+     */
+    async layoffEmployee(
+        id: number,
+        reason: string,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        return this.database.$transaction(async (tx) => {
+            const employee = await this.findOne(id);
+            await this.terminated.create(
+                {
+                    employee: id,
+                    organization: employee.organizationId,
+                    reason,
+                },
+                tx,
+            );
+            return this.update(id, { isTerminated: true }, database ?? tx);
+        });
     }
 
     async findAll(query?: ExpressQuery) {
@@ -97,35 +136,6 @@ export class EmployeeService {
         });
         if (!response) throw new NotFoundException('employee not found');
         return response;
-    }
-
-    async updateEmployee(
-        id: number,
-        body: UpdateEmployeeDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { organization, person, ...rest } = body;
-        return this.update(id, rest, database);
-    }
-
-    async layoffEmployee(
-        id: number,
-        reason: string,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        return this.database.$transaction(async (tx) => {
-            const employee = await this.findOne(id);
-            await this.terminated.create(
-                {
-                    employee: id,
-                    organization: employee.organizationId,
-                    reason,
-                },
-                tx,
-            );
-            return this.update(id, { isTerminated: true }, database ?? tx);
-        });
     }
 
     async delete(

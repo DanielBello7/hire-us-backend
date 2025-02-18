@@ -13,6 +13,7 @@ export class AdministratorService {
         private readonly accounts: AccountsService,
     ) {}
 
+    /** This checks if an admin account with the same email already exists */
     async isEmailRegistered(email: string) {
         const response = await this.database.administrator.findFirst({
             where: {
@@ -22,6 +23,7 @@ export class AdministratorService {
         return !!response;
     }
 
+    /** This looks for an admin using the account id*/
     async findAdminUsingAccountId(id: number) {
         const response = await this.database.administrator.findFirst({
             where: {
@@ -31,6 +33,42 @@ export class AdministratorService {
         if (!response)
             throw new NotFoundException('administrator account not found');
         return response;
+    }
+
+    /** This creates an admin account */
+    async createAdmin(
+        body: CreateAdministratorDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        if (await this.isEmailRegistered(body.email)) {
+            throw new NotFoundException('email already registered');
+        }
+        return this.create(body, database);
+    }
+
+    /** This updates an admin account */
+    async updateAdmin(
+        id: number,
+        body: UpdateAdministratorDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { account, ...rest } = body;
+        return this.database.$transaction(async (tx) => {
+            const db = database ?? tx;
+            if (rest.email || rest.name) {
+                const admin = await this.findOne(id);
+                await this.accounts.updateAccount(
+                    admin.accountId,
+                    {
+                        email: rest.email,
+                        name: rest.name,
+                    },
+                    db,
+                );
+            }
+            return this.update(id, rest, db);
+        });
     }
 
     async findAll(query?: ExpressQuery) {
@@ -79,39 +117,6 @@ export class AdministratorService {
         if (!response)
             throw new NotFoundException('administrator account not found');
         return response;
-    }
-
-    async createAdmin(
-        body: CreateAdministratorDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        if (await this.isEmailRegistered(body.email)) {
-            throw new NotFoundException('email already registered');
-        }
-        return this.create(body, database);
-    }
-
-    async updateAdmin(
-        id: number,
-        body: UpdateAdministratorDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { account, ...rest } = body;
-        return this.database.$transaction(async (tx) => {
-            if (rest.email || rest.name) {
-                const admin = await this.findOne(id);
-                await this.accounts.updateAccount(
-                    admin.accountId,
-                    {
-                        email: rest.email,
-                        name: rest.name,
-                    },
-                    tx,
-                );
-            }
-            return this.update(id, rest, database ?? tx);
-        });
     }
 
     async create(
