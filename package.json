@@ -96,7 +96,12 @@
             "<rootDir>/libs/"
         ],
         "moduleNameMapper": {
-            "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+            "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
+            "^@app/constants(|/.*)$": "<rootDir>/libs/constants/src/$1",
+            "^@app/database(|/.*)$": "<rootDir>/libs/database/src/$1",
+            "^@app/exception(|/.*)$": "<rootDir>/libs/exception/src/$1",
+            "^@app/roles(|/.*)$": "<rootDir>/libs/roles/src/$1",
+            "^@app/winston(|/.*)$": "<rootDir>/libs/winston/src/$1"
         }
     }
 }
