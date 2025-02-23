@@ -5,9 +5,8 @@ import {
 } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
-import { DatabaseService } from '@app/common/database/database.service';
+import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import { PrismaDatabaseService } from '@app/common';
 import { AccountsService } from 'src/accounts/accounts.service';
 
 @Injectable()

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
     BadRequestException,
     Injectable,
@@ -9,10 +6,9 @@ import {
 } from '@nestjs/common';
 import { CreateUploadDto } from './dto/create-upload.dto';
 import { UpdateUploadDto } from './dto/update-upload.dto';
-import { DatabaseService } from '@app/common/database/database.service';
+import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { OrganizationService } from 'src/organization/organization.service';
 import { PersonService } from 'src/person/person.service';
-import { PrismaDatabaseService } from '@app/common';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import * as fs from 'fs';
 import * as path from 'path';

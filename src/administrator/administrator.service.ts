@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAdministratorDto } from './dto/create-administrator.dto';
 import { UpdateAdministratorDto } from './dto/update-administrator.dto';
-import { DatabaseService } from '@app/common/database/database.service';
+import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import { PrismaDatabaseService } from '@app/common';
 import { AccountsService } from 'src/accounts/accounts.service';
 
 @Injectable()

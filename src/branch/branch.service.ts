@@ -1,10 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
-import { DatabaseService } from '@app/common/database/database.service';
+import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { EmployeeService } from 'src/employee/employee.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import { PrismaDatabaseService } from '@app/common';
 
 @Injectable()
 export class BranchService {

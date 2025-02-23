@@ -7,14 +7,13 @@ import { CreateRegisterEmployeeDto } from './dto/create-register-employee.dto';
 import { CreateRegisterAdministratorDto } from './dto/create-register-administrator.dto';
 import { CreateRegisterOrganizationDto } from './dto/create-register-organization.dto';
 import { AdministratorService } from 'src/administrator/administrator.service';
-import { DatabaseService } from '@app/common/database/database.service';
+import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { plainToInstance } from 'class-transformer';
 import { CreateAdministratorDto } from 'src/administrator/dto/create-administrator.dto';
 import { CreatePersonDto } from 'src/person/dto/create-person.dto';
 import { CreateEmployeeDto } from 'src/employee/dto/create-employee.dto';
 import { CreateOrganizationDto } from 'src/organization/dto/create-organization.dto';
 import { CreateAccountDto } from 'src/accounts/dto/create-account.dto';
-import { PrismaDatabaseService } from '@app/common';
 
 @Injectable()
 export class RegisterService {

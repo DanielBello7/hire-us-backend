@@ -1,5 +1,5 @@
 import { ProgressController } from './progress.controller';
-import { DatabaseModule } from '@app/common/database/database.module';
+import { DatabaseModule } from '@app/database';
 import { Module } from '@nestjs/common';
 import { ProgressService } from './progress.service';
 

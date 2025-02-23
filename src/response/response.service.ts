@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateResponseDto } from './dto/create-response.dto';
 import { UpdateResponseDto } from './dto/update-response.dto';
-import { DatabaseService } from '@app/common/database/database.service';
-import { PrismaDatabaseService } from '@app/common';
+import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { ProgressService } from 'src/progress/progress.service';
 
 @Injectable()

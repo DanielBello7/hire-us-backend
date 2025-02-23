@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpAdapterHost } from '@nestjs/core';
-import { ExceptionFilter } from '../libs/common/src/exception/exception.filter';
+import { ExceptionFilter } from '@app/exception';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 

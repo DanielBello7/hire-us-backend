@@ -2,7 +2,7 @@ import { CreateOrganizationDto } from 'src/organization/dto/create-organization.
 import { CreateRegisterDto } from './create-register.dto';
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
 import { Expose } from 'class-transformer';
-import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
+import { ACCOUNT_ROLES_ENUM } from '@app/roles';
 
 type RegisterOrganizationDto = Omit<CreateOrganizationDto, 'account'>;
 

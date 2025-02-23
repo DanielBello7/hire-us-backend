@@ -1,12 +1,12 @@
 import { MessagesController } from './messages.controller';
-import { DatabaseModule } from '@app/common/database/database.module';
+import { DatabaseModule } from '@app/database';
 import { Module } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 
 @Module({
     controllers: [MessagesController],
-    providers: [MessagesService],
     exports: [MessagesService],
+    providers: [MessagesService],
     imports: [DatabaseModule],
 })
 export class MessagesModule {}

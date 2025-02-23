@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTerminatedDto } from './dto/create-terminated.dto';
 import { UpdateTerminatedDto } from './dto/update-terminated.dto';
-import { DatabaseService } from '@app/common/database/database.service';
-import { PrismaDatabaseService } from '@app/common';
+import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()

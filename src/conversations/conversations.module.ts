@@ -1,7 +1,7 @@
 import { ConversationsController } from './conversations.controller';
 import { Module } from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
-import { DatabaseModule } from '@app/common/database/database.module';
+import { DatabaseModule } from '@app/database';
 
 @Module({
     controllers: [ConversationsController],

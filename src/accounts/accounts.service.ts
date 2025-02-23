@@ -6,11 +6,10 @@ import {
 import { PersonService } from 'src/person/person.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
-import { DatabaseService } from '@app/common/database/database.service';
+import { DatabaseService, PrismaDatabaseService } from '@app/database';
+import { ACCOUNT_ROLES_ENUM } from '@app/roles';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import * as bcrypt from 'bcrypt';
-import { PrismaDatabaseService } from '@app/common';
-import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
 import { AdministratorService } from 'src/administrator/administrator.service';
 import { OrganizationService } from 'src/organization/organization.service';
 

@@ -12,10 +12,8 @@ import { UpdateAccountDto } from './dto/update-account.dto';
 import { AccountsService } from './accounts.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
-import { AllowRoles } from '@app/common/roles/decorators/roles.decorator';
-import { ACCOUNT_ROLES_ENUM } from '@app/common/roles/enums/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard } from '@app/common/roles/guards/roles.guard';
+import { RolesGuard, AllowRoles, ACCOUNT_ROLES_ENUM } from '@app/roles';
 
 @Controller('accounts')
 export class AccountsController {

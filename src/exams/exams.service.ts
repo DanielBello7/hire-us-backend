@@ -6,9 +6,8 @@ import {
 } from '@nestjs/common';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
-import { DatabaseService } from '@app/common/database/database.service';
+import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import { PrismaDatabaseService } from '@app/common';
 import { QuestionsService } from 'src/questions/questions.service';
 import { OptionsService } from 'src/options/options.service';
 import { ResponseService } from 'src/response/response.service';
