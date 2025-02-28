@@ -1,8 +1,17 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    InternalServerErrorException,
+    Post,
+    Session,
+    Req,
+    Res,
+    UseGuards,
+} from '@nestjs/common';
 import { AuthService, ValidatedUser } from './auth.service';
-import { Request } from 'express';
-import { PassportLocalGuard } from './guards/passport-local.guard';
+import { Request, Response } from 'express';
 import { PassprtJWTGuard } from './guards/jwt.guard';
+import { PassportLocalGuard } from './guards/passport-local.guard';
 
 export type ExpressRequest = Request & {
     user: ValidatedUser;
@@ -14,15 +23,25 @@ export class AuthController {
 
     @Post('login')
     @UseGuards(PassportLocalGuard)
-    login(@Req() req: ExpressRequest) {
-        return this.auth.signIn(req.user);
+    login(
+        @Req() req: ExpressRequest,
+        @Res() res: Response,
+        @Session() session: Record<string, any>,
+    ) {
+        const response = this.auth.signIn(req.user);
+        session.token = response.token;
+        res.json(response);
     }
 
     @Post('logout')
     @UseGuards(PassprtJWTGuard)
-    logout(@Req() req: ExpressRequest) {
-        console.log(req.user);
-        return 'logout';
+    logout(@Session() session: Record<string, any>, @Res() res: Response) {
+        session.destroy((error: any) => {
+            if (error) throw new InternalServerErrorException(error);
+            res.json({
+                msg: 'logout successful',
+            });
+        });
     }
 
     @Get('me')

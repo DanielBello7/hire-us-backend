@@ -1,13 +1,13 @@
 import {
     Controller,
     Get,
+    Patch,
     Body,
+    Delete,
     Query,
     Post,
-    Delete,
     ParseIntPipe,
     Param,
-    Patch,
     UseGuards,
 } from '@nestjs/common';
 import { BranchService } from './branch.service';
@@ -16,26 +16,26 @@ import { UpdateBranchDto } from './dto/update-branch.dto';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { UpdateBranchManagerDto } from './dto/update-branch-manager.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
+import { SessionGuard } from 'src/auth/guards/session.guard';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 
-@Controller('branch')
+@Controller('branches')
 export class BranchController {
     constructor(private readonly branchService: BranchService) {}
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
         return this.branchService.findAll(query);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.branchService.findOne(id);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -46,7 +46,7 @@ export class BranchController {
         return this.branchService.createBranch(body);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -60,7 +60,7 @@ export class BranchController {
         return this.branchService.updateBranch(id, body);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -74,7 +74,7 @@ export class BranchController {
         return this.branchService.updateManager(id, body.manager);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,

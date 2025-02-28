@@ -10,26 +10,26 @@ import {
 } from '@nestjs/common';
 import { ResponseService } from './response.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateResponseDto } from './dto/create-response.dto';
+import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('responses')
 export class ResponseController {
     constructor(private readonly responseService: ResponseService) {}
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return this.responseService.findAll(query as any);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.EMPLOYEE)
     @UseGuards(AuthGuard(), RolesGuard)
-    @Post(':id/submit')
+    @Post(':id/submit/')
     submit(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: CreateResponseDto,

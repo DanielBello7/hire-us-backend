@@ -9,23 +9,23 @@ import {
     UploadedFiles,
 } from '@nestjs/common';
 import { UploadsService } from './uploads.service';
-import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
 import { ExpressRequest } from 'src/auth/auth.controller';
 import { ValidatedUser } from 'src/auth/auth.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
+import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('uploads')
 export class UploadsController {
     constructor(private readonly uploads: UploadsService) {}
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id') id: string, @Req() res: Response) {
         return this.uploads.findUpload(id, res);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Post('avatar')
     @UseInterceptors(FilesInterceptor('files'))
     create(

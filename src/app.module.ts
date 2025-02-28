@@ -1,16 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AccountsModule } from './accounts/accounts.module';
 import { PersonModule } from './person/person.module';
-import { DatabaseModule } from '../libs/common/src/database/database.module';
+import { DatabaseModule } from '@app/database';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { RegisterModule } from './register/register.module';
 import { AdministratorModule } from './administrator/administrator.module';
 import { EmployeeModule } from './employee/employee.module';
 import { OrganizationModule } from './organization/organization.module';
-import { WinstonModule } from '../libs/common/src/winston/winston.module';
+import { WinstonModule } from '@app/winston';
 import { BranchModule } from './branch/branch.module';
 import { PositionsModule } from './positions/positions.module';
 import { ExamsModule } from './exams/exams.module';
@@ -57,9 +55,7 @@ import { TerminatedModule } from './terminated/terminated.module';
         UploadsModule,
         TerminatedModule,
     ],
-    controllers: [AppController],
     providers: [
-        AppService,
         {
             provide: APP_GUARD,
             useClass: ThrottlerGuard,

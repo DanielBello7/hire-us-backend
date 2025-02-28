@@ -10,26 +10,26 @@ import {
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
+import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('payments')
 export class PaymentsController {
     constructor(private readonly paymentsService: PaymentsService) {}
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get()
     findAll() {
         return this.paymentsService.findAll();
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.paymentsService.findOne(+id);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ORGANIZATIONS)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post()
@@ -37,7 +37,7 @@ export class PaymentsController {
         return this.paymentsService.create(createPaymentDto);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ORGANIZATIONS)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post('bulk')

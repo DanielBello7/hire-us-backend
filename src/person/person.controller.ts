@@ -11,25 +11,25 @@ import {
 import { PersonService } from './person.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { UpdatePersonDto } from './dto/update-person.dto';
-import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
+import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('person')
 export class PersonController {
     constructor(private readonly person: PersonService) {}
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
         return this.person.findAll(query);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.person.findOne(id);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,

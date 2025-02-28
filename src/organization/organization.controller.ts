@@ -12,26 +12,26 @@ import { OrganizationService } from './organization.service';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AuthGuard } from '@nestjs/passport';
-import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
+import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('organizations')
 export class OrganizationController {
     constructor(private readonly organization: OrganizationService) {}
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
         return this.organization.findAll(query);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.organization.findOne(id);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,

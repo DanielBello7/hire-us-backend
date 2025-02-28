@@ -12,33 +12,33 @@ import { EmployeeService } from './employee.service';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AuthGuard } from '@nestjs/passport';
-import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { LayoffEmployeeDto } from './dto/layoff-emplyee.dto';
+import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('employees')
 export class EmployeeController {
     constructor(private readonly employeeService: EmployeeService) {}
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
         return this.employeeService.findAll(query);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.employeeService.findOne(id);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Patch(':id')
     update(@Param('id') id: string, @Body() body: UpdateEmployeeDto) {
         return this.employeeService.updateEmployee(+id, body);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,

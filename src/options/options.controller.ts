@@ -15,26 +15,26 @@ import { UpdateOptionDto } from './dto/update-option.dto';
 import { OptionsService } from './options.service';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AuthGuard } from '@nestjs/passport';
-import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
+import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('options')
 export class OptionsController {
     constructor(private readonly optionsService: OptionsService) {}
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
         return this.optionsService.findAll(query);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.optionsService.findOne(id);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -45,7 +45,7 @@ export class OptionsController {
         return this.optionsService.create(body);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -59,7 +59,7 @@ export class OptionsController {
         return this.optionsService.updateOption(id, body);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,

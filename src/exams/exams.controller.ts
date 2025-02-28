@@ -15,27 +15,27 @@ import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AuthGuard } from '@nestjs/passport';
-import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
-import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { SubmitExamDto } from './dto/submit-exam.dto';
+import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
+import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('exams')
 export class ExamsController {
     constructor(private readonly examsService: ExamsService) {}
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
         return this.examsService.findAll(query);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.examsService.findOne(id);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -46,7 +46,7 @@ export class ExamsController {
         return this.examsService.create(body);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.EMPLOYEE)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post(':id/submit')
@@ -57,7 +57,7 @@ export class ExamsController {
         return this.examsService.submit(id, body.employeeId);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -68,7 +68,7 @@ export class ExamsController {
         return this.examsService.updateExam(id, body);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -79,7 +79,7 @@ export class ExamsController {
         return this.examsService.remove(id);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -97,7 +97,7 @@ export class ExamsController {
         );
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -115,7 +115,7 @@ export class ExamsController {
         );
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
@@ -129,7 +129,7 @@ export class ExamsController {
         return this.examsService.updateEligiblePositions(exam, [], [id]);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,

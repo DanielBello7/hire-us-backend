@@ -12,37 +12,37 @@ import {
 import { ConversationsService } from './conversations.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
+import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('conversations')
 export class ConversationsController {
     constructor(private readonly conversationsService: ConversationsService) {}
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
         return this.conversationsService.findAll(query);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.conversationsService.findOne(id);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Get(':id/messages/')
     findMessages(@Param('id', ParseIntPipe) id: number) {
         return this.conversationsService.findMessages(id);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Post()
     create(@Body() body: CreateConversationDto) {
         return this.conversationsService.createConversation(body);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.conversationsService.remove(id);

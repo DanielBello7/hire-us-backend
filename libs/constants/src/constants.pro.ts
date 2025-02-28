@@ -6,4 +6,6 @@ export const PRODUCTION_CONSTANTS: CONSTANTS = {
     PORT: 3000,
     JWT_EXPIRES: '24h',
     JWT_SECRET: '7d461be1da88ee69506748be7af42e35-18cd25e72cbvt-3',
+    SESSION_SECRET: 'secret',
+    DB_NAME: 'employee-db',
 };

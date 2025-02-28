@@ -4,6 +4,8 @@ export type CONSTANTS = {
     NODE_ENV: 'development' | 'production';
     JWT_SECRET: string;
     JWT_EXPIRES: string;
+    SESSION_SECRET: string;
+    DB_NAME: string;
 };
 
 export const CURRENT: 'DEV' | 'PRO' =

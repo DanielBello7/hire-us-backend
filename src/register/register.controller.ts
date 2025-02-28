@@ -4,14 +4,14 @@ import { CreateRegisterAdministratorDto } from './dto/create-register-administra
 import { CreateRegisterEmployeeDto } from './dto/create-register-employee.dto';
 import { CreateRegisterOrganizationDto } from './dto/create-register-organization.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { PassprtJWTGuard } from 'src/auth/guards/jwt.guard';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
+import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('register')
 export class RegisterController {
     constructor(private readonly register: RegisterService) {}
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMINISTRATOR)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post('administrator')
@@ -22,7 +22,7 @@ export class RegisterController {
         return this.register.registerAdministrator(data);
     }
 
-    @UseGuards(PassprtJWTGuard)
+    @UseGuards(SessionGuard)
     @AllowRoles(
         ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
         ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
