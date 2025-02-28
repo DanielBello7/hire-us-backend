@@ -8,6 +8,18 @@ import { DatabaseService, PrismaDatabaseService } from '@app/database';
 export class MessagesService {
     constructor(private readonly database: DatabaseService) {}
 
+    /** find the messages for a particular conversation */
+    async findConversationMessages(convoId: number) {
+        return this.database.message.findMany({
+            where: {
+                conversationId: convoId,
+            },
+            include: {
+                createdBy: true,
+            },
+        });
+    }
+
     async create(
         body: CreateMessageDto,
         database?: DatabaseService | PrismaDatabaseService,
@@ -69,17 +81,6 @@ export class MessagesService {
             where: options,
             skip,
             take: pickNum,
-        });
-    }
-
-    async findConversationMessages(convoId: number) {
-        return this.database.message.findMany({
-            where: {
-                conversationId: convoId,
-            },
-            include: {
-                createdBy: true,
-            },
         });
     }
 

@@ -9,6 +9,7 @@ import { Position } from './entities/position.entity';
 export class PositionsService {
     constructor(private readonly database: DatabaseService) {}
 
+    /** check if a position has already been recorded */
     async alreadyCreated(title: string, id: number): Promise<Position | false> {
         const response: Position[] = await this.database.$queryRaw`
             SELECT * FROM position 
@@ -19,6 +20,7 @@ export class PositionsService {
         return false;
     }
 
+    /** save a position to the database */
     async recordPosition(
         body: CreatePositionDto,
         database?: DatabaseService | PrismaDatabaseService,
@@ -29,6 +31,17 @@ export class PositionsService {
         );
         if (response) return response;
         return this.create(body, database);
+    }
+
+    /** update a position record */
+    async updatePosition(
+        id: number,
+        body: UpdatePositionDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { organization, ...rest } = body;
+        return this.update(id, rest, database);
     }
 
     async create(
@@ -123,16 +136,6 @@ export class PositionsService {
         });
         if (!response) throw new NotFoundException('cannot find position');
         return response;
-    }
-
-    async updatePosition(
-        id: number,
-        body: UpdatePositionDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { organization, ...rest } = body;
-        return this.update(id, rest, database);
     }
 
     async remove(

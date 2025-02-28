@@ -12,11 +12,67 @@ export class BranchService {
         private readonly employee: EmployeeService,
     ) {}
 
+    /** create branch */
     async createBranch(
         body: CreateBranchDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         return this.create(body, database);
+    }
+
+    /** update a branch data */
+    async updateBranch(
+        id: number,
+        updates: UpdateBranchDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { organization, manager, ...rest } = updates;
+        return this.update(id, rest, database);
+    }
+
+    /** update the manager for a branch */
+    async updateManager(
+        id: number,
+        manager: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        await this.employee.findOne(id);
+        return this.update(id, { manager }, database);
+    }
+
+    /** remove a particular branch using the id */
+    async removeBranch(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        return this.delete(id, database);
+    }
+
+    /** remove many branches using the organization id */
+    async removeManyUsingOrganizationId(
+        organization: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.branch.deleteMany({
+            where: {
+                organizationId: organization,
+            },
+        });
+    }
+
+    /** remove many using ids */
+    async removeMany(
+        ids: number[],
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const db = database ?? this.database;
+        return db.branch.deleteMany({
+            where: {
+                id: { in: ids },
+            },
+        });
     }
 
     async findAll(query?: ExpressQuery) {
@@ -65,56 +121,6 @@ export class BranchService {
         });
         if (!selected) throw new NotFoundException('unable to find branch');
         return selected;
-    }
-
-    async updateBranch(
-        id: number,
-        updates: UpdateBranchDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { organization, manager, ...rest } = updates;
-        return this.update(id, rest, database);
-    }
-
-    async updateManager(
-        id: number,
-        manager: number,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        await this.employee.findOne(id);
-        return this.update(id, { manager }, database);
-    }
-
-    async removeBranch(
-        id: number,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        return this.delete(id, database);
-    }
-
-    async removeManyUsingOrganizationId(
-        organization: number,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        const db = database ?? this.database;
-        return db.branch.deleteMany({
-            where: {
-                organizationId: organization,
-            },
-        });
-    }
-
-    async removeMany(
-        ids: number[],
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        const db = database ?? this.database;
-        return db.branch.deleteMany({
-            where: {
-                id: { in: ids },
-            },
-        });
     }
 
     async create(

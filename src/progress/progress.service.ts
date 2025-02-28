@@ -8,12 +8,24 @@ import { Query as ExpressQuery } from 'express-serve-static-core';
 export class ProgressService {
     constructor(private readonly database: DatabaseService) {}
 
+    /** find the progress record for an employee using the exam id and the employee id */
     async findEmployeeStatus(employeeId: number, examId: number) {
         const response = await this.database.progress.findFirst({
             where: { employeeId, examId },
         });
         if (!response) throw new NotFoundException('cannot find status');
         return response;
+    }
+
+    /** update the progress record excluding some fields */
+    async updateProgress(
+        id: number,
+        body: UpdateProgressDto,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { employee, ...rest } = body;
+        return this.update(id, rest, database);
     }
 
     async create(
@@ -88,16 +100,6 @@ export class ProgressService {
         });
         if (!response) throw new NotFoundException('cannot find status');
         return response;
-    }
-
-    async updateProgress(
-        id: number,
-        body: UpdateProgressDto,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { employee, ...rest } = body;
-        return this.update(id, rest, database);
     }
 
     async remove(

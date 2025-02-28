@@ -8,6 +8,17 @@ import { Query as ExpressQuery } from 'express-serve-static-core';
 export class TerminatedService {
     constructor(private readonly database: DatabaseService) {}
 
+    /** update the terminated record excluding somethings */
+    async updateTerminated(
+        id: number,
+        body: UpdateTerminatedDto,
+        database?: PrismaDatabaseService,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { employee, organization, ...rest } = body;
+        return this.update(id, rest, database);
+    }
+
     async create(body: CreateTerminatedDto, database?: PrismaDatabaseService) {
         const db = database ?? this.database;
         return db.terminated.create({
@@ -73,16 +84,6 @@ export class TerminatedService {
         if (!response)
             throw new NotFoundException('cannot find termination record');
         return response;
-    }
-
-    async updateTerminated(
-        id: number,
-        body: UpdateTerminatedDto,
-        database?: PrismaDatabaseService,
-    ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { employee, organization, ...rest } = body;
-        return this.update(id, rest, database);
     }
 
     async update(

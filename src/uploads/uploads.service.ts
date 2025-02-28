@@ -27,6 +27,33 @@ export class UploadsService {
         private readonly accounts: AccountsService,
     ) {}
 
+    /** get the size of the public folder */
+    getFolderSizeSync(folderPath: string): number {
+        let totalSize = 0;
+        const files = fs.readdirSync(folderPath);
+
+        for (const file of files) {
+            const filePath = path.join(folderPath, file);
+            const stats = fs.statSync(filePath);
+
+            if (stats.isFile()) {
+                totalSize += stats.size;
+            } else if (stats.isDirectory()) {
+                totalSize += this.getFolderSizeSync(filePath);
+            }
+        }
+        return totalSize;
+    }
+
+    /** check if the public folder holding files has reached it's max capacity */
+    isFolderMaxed() {
+        const size = this.getFolderSizeSync(this.folder);
+        /** 1024bytes = 1KB, 104,857,600bytes = 100MB */
+        if (size > 104857600) return true;
+        return false;
+    }
+
+    /** add a file to the public folder */
     async saveFile(
         username: number,
         file: Express.Multer.File,
@@ -49,30 +76,7 @@ export class UploadsService {
         );
     }
 
-    getFolderSizeSync(folderPath: string): number {
-        let totalSize = 0;
-        const files = fs.readdirSync(folderPath);
-
-        for (const file of files) {
-            const filePath = path.join(folderPath, file);
-            const stats = fs.statSync(filePath);
-
-            if (stats.isFile()) {
-                totalSize += stats.size;
-            } else if (stats.isDirectory()) {
-                totalSize += this.getFolderSizeSync(filePath);
-            }
-        }
-        return totalSize;
-    }
-
-    isFolderMaxed() {
-        const size = this.getFolderSizeSync(this.folder);
-        /** 1024bytes = 1KB, 104,857,600bytes = 100MB */
-        if (size > 104857600) return true;
-        return false;
-    }
-
+    /** update the avatar of an account */
     async updateAvatar(
         accountid: number,
         files: Express.Multer.File[],
@@ -99,6 +103,7 @@ export class UploadsService {
         });
     }
 
+    /** find upload and return the document with the response */
     async findUpload(id: string, res: Response) {
         try {
             const selected = await this.findUsingTempId(id);
@@ -115,6 +120,7 @@ export class UploadsService {
         }
     }
 
+    /** find file using temp id */
     async findUsingTempId(id: string) {
         const response = await this.database.upload.findFirst({
             where: { tempid: id },
@@ -124,6 +130,7 @@ export class UploadsService {
         return response;
     }
 
+    /** delete uploaded file */
     async deleteUpload(id: number) {
         try {
             const selected = await this.findOne(id);
