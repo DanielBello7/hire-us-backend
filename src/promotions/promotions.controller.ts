@@ -22,13 +22,13 @@ export class PromotionsController {
     @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
-        return this.promotionsService.findAll(query);
+        return this.promotionsService.findPromotions(query);
     }
 
     @UseGuards(SessionGuard)
     @Get('employee/:id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.promotionsService.employeePromotion(id);
+        return this.promotionsService.promoteEmployee(id);
     }
 
     @UseGuards(SessionGuard)

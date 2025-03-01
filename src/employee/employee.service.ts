@@ -6,7 +6,6 @@ import {
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { TerminatedService } from 'src/terminated/terminated.service';
 
 @Injectable()
@@ -80,7 +79,7 @@ export class EmployeeService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async findEmployees(query?: Record<string, any>) {
         let pageNum = 1;
         let pickNum = 5;
 

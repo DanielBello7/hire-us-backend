@@ -1,8 +1,8 @@
 import {
     Controller,
+    Param,
     Get,
     Body,
-    Param,
     ParseIntPipe,
     Post,
     UseGuards,
@@ -15,33 +15,33 @@ import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('payments')
 export class PaymentsController {
-    constructor(private readonly paymentsService: PaymentsService) {}
+    constructor(private readonly payments: PaymentsService) {}
 
     @UseGuards(SessionGuard)
     @Get()
     findAll() {
-        return this.paymentsService.findAll();
+        return this.payments.findAll();
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.paymentsService.findOne(+id);
+        return this.payments.findOne(id);
     }
 
     @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ORGANIZATIONS)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post()
-    create(@Body() createPaymentDto: CreatePaymentDto) {
-        return this.paymentsService.create(createPaymentDto);
+    create(@Body() body: CreatePaymentDto) {
+        return this.payments.payEmployeeSalary(body.employee);
     }
 
     @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ORGANIZATIONS)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post('bulk')
-    makeSalaryPayments(@Body() createPaymentDto: CreatePaymentDto) {
-        return this.paymentsService.create(createPaymentDto);
+    makeSalaryPayments(@Body() body: { id: number }) {
+        return this.payments.paySalaries(body.id);
     }
 }

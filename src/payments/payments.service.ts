@@ -1,21 +1,55 @@
-import {
-    Injectable,
-    NotFoundException,
-    NotImplementedException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { EmployeeService } from 'src/employee/employee.service';
 
 @Injectable()
 export class PaymentsService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly employees: EmployeeService,
+    ) {}
 
-    /** organization id */
-    paySalaries(id: number) {
-        console.log(id);
-        throw new NotImplementedException('not done');
+    /** organization/company id */
+    /** this handles payment of employee salary in bulk */
+    async paySalaries(
+        company: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const employees = await this.employees.findEmployees({
+            organizationId: company,
+            isTerminated: false,
+        });
+        return this.createMany(
+            employees.map(
+                (employee) => ({
+                    amount: employee.position?.salary ?? 0,
+                    currency: employee.position?.currency ?? 'usd',
+                    employee: employee.id,
+                    organization: company,
+                }),
+                database,
+            ),
+        );
+    }
+
+    /** this handles paying of a single employee's salary */
+    async payEmployeeSalary(
+        employee: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const response = await this.employees.findOne(employee);
+        return this.create(
+            {
+                amount: response.position?.salary ?? 0,
+                currency: response.position?.currency ?? 'usd',
+                employee,
+                organization: response.organizationId,
+            },
+            database,
+        );
     }
 
     async create(

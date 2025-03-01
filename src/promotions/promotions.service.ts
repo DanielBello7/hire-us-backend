@@ -1,24 +1,36 @@
 import {
+    BadRequestException,
     Injectable,
     NotFoundException,
-    NotImplementedException,
 } from '@nestjs/common';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
+import { EmployeeService } from 'src/employee/employee.service';
 
 @Injectable()
 export class PromotionsService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly employee: EmployeeService,
+    ) {}
 
-    promote() {
-        throw new NotImplementedException('not yet done');
-    }
-
-    employeePromotion(id: number) {
-        console.log(id);
-        throw new NotImplementedException('not done yet');
+    /** handles the promotion of an employee */
+    async promoteEmployee(employee: number) {
+        const selected = await this.employee.findOne(employee);
+        if (!selected.positionId) {
+            throw new BadRequestException(
+                'Employee cannot be promoted. No position currently held',
+            );
+        }
+        if (!selected.position?.successorId) {
+            throw new BadRequestException(
+                'Employee cannot be promoted. Position has no successor',
+            );
+        }
+        return this.employee.updateEmployee(employee, {
+            person: selected.position.successorId,
+        });
     }
 
     async create(
@@ -57,7 +69,7 @@ export class PromotionsService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async findPromotions(query?: Record<string, any>) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -96,7 +108,7 @@ export class PromotionsService {
         });
     }
 
-    async findOne(id: number) {
+    async findOneUsingId(id: number) {
         const response = await this.database.promotion.findFirst({
             where: {
                 id,

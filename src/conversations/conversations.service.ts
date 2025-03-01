@@ -1,8 +1,4 @@
-import {
-    Injectable,
-    NotFoundException,
-    NotImplementedException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
@@ -12,9 +8,20 @@ import { Query as ExpressQuery } from 'express-serve-static-core';
 export class ConversationsService {
     constructor(private readonly database: DatabaseService) {}
 
-    findMessages(id: number) {
-        console.log(id);
-        throw new NotImplementedException('not yet done');
+    /** get all the messages of a conversation */
+    async findMessages(id: number) {
+        const response = await this.database.conversation.findFirst({
+            where: {
+                id,
+            },
+            include: {
+                Message: true,
+            },
+        });
+        if (!response) {
+            throw new NotFoundException('conversation record not found');
+        }
+        return response;
     }
 
     /** create a conversation */

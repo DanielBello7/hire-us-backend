@@ -23,7 +23,7 @@ export class EmployeeController {
     @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
-        return this.employeeService.findAll(query);
+        return this.employeeService.findEmployees(query);
     }
 
     @UseGuards(SessionGuard)

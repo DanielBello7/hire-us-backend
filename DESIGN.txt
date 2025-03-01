@@ -176,10 +176,10 @@ EXAM STATUS
 - POST     /api/exam_status/                        start exam                    
 ---------------------------------------------------------------------------
 PROMOTION
-- POST     /api/promotions/                         promote employee              
+- POST     /api/promotions/                         promote employee              ✅
 ---------------------------------------------------------------------------
 CONVERSATIONS
-- GET      /api/conversations/:id/                  find conversation             
+- GET      /api/conversations/:id/                  find conversation             ✅
 - POST     /api/conversations/                      start conversation            
 - DELETE   /api/conversations/                      delete conversations          
 ---------------------------------------------------------------------------
@@ -187,8 +187,8 @@ MESSAGES
 - POST     /api/messages/                           create message                
 ---------------------------------------------------------------------------
 PAYMENTS
-- POST     /api/payments/                           pay employee                  
-- POST     /api/payments/bulk/                      make employee salary payments 
+- POST     /api/payments/                           pay employee                  ✅
+- POST     /api/payments/bulk/                      make employee salary payments ✅
 ---------------------------------------------------------------------------
 RESPONSE
 - POST     /api/response/submit/                    submit question               ✅
