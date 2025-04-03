@@ -16,35 +16,35 @@ import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('conversations')
 export class ConversationsController {
-    constructor(private readonly conversationsService: ConversationsService) {}
+    constructor(private readonly conversations: ConversationsService) {}
 
     @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
-        return this.conversationsService.findAll(query);
+        return this.conversations.findConversations(query);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.conversationsService.findOne(id);
+        return this.conversations.findOneUsingId(id);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id/messages/')
     findMessages(@Param('id', ParseIntPipe) id: number) {
-        return this.conversationsService.findMessages(id);
+        return this.conversations.findMessages(id);
     }
 
     @UseGuards(SessionGuard)
     @Post()
     create(@Body() body: CreateConversationDto) {
-        return this.conversationsService.createConversation(body);
+        return this.conversations.createConversation(body);
     }
 
     @UseGuards(SessionGuard)
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
-        return this.conversationsService.remove(id);
+        return this.conversations.deleteConversation(id);
     }
 }

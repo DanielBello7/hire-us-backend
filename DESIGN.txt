@@ -180,11 +180,11 @@ PROMOTION
 ---------------------------------------------------------------------------
 CONVERSATIONS
 - GET      /api/conversations/:id/                  find conversation             ✅
-- POST     /api/conversations/                      start conversation            
-- DELETE   /api/conversations/                      delete conversations          
+- POST     /api/conversations/                      start conversation            ✅
+- DELETE   /api/conversations/                      delete conversations          ✅
 ---------------------------------------------------------------------------
 MESSAGES
-- POST     /api/messages/                           create message                
+- POST     /api/messages/                           create message                ✅
 ---------------------------------------------------------------------------
 PAYMENTS
 - POST     /api/payments/                           pay employee                  ✅

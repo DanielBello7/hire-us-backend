@@ -1,4 +1,4 @@
-export type CONSTANTS = {
+type CONSTANTS = {
     DATABASE_URI: string;
     PORT: number;
     NODE_ENV: 'development' | 'production';
@@ -8,8 +8,8 @@ export type CONSTANTS = {
     DB_NAME: string;
 };
 
-export const CURRENT: 'DEV' | 'PRO' =
-    ((process.env.NODE_ENV as string) ?? '') === 'development' ? 'DEV' : 'PRO';
+const NODE_ENV = (process.env.NODE_ENV as string) ?? '';
+const EXT: 'dev' | 'pro' = NODE_ENV === 'development' ? 'dev' : 'pro';
+const CURRENT: 'DEV' | 'PRO' = NODE_ENV === 'development' ? 'DEV' : 'PRO';
 
-export const EXT: 'dev' | 'pro' =
-    ((process.env.NODE_ENV as string) ?? '') === 'development' ? 'dev' : 'pro';
+export { CURRENT, EXT, CONSTANTS };

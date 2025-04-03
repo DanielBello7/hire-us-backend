@@ -2,11 +2,22 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
+import { MessagesService } from 'src/messages/messages.service';
 
 @Injectable()
 export class ConversationsService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly messages: MessagesService,
+    ) {}
+
+    /** deletes a conversation and it's messages */
+    async deleteConversation(id: number) {
+        return this.database.$transaction(async (tx) => {
+            await this.messages.deleteMany(id, tx);
+            return this.remove(id, tx);
+        });
+    }
 
     /** get all the messages of a conversation */
     async findMessages(id: number) {
@@ -91,7 +102,7 @@ export class ConversationsService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async findConversations(query?: Record<string, any>) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -123,7 +134,7 @@ export class ConversationsService {
         });
     }
 
-    async findOne(id: number) {
+    async findOneUsingId(id: number) {
         const response = await this.database.conversation.findFirst({
             where: {
                 id,

@@ -1,2 +1,3 @@
 schema.prisma
 docker-compose.yml
+*.md

@@ -13,30 +13,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// holds all the user accounts within the application
 model Account {
-  id                  Int             @id @default(autoincrement())
+  id                  Int            @id @default(autoincrement())
   name                String
-  email               String          @unique
+  email               String         @unique
   password            String
   role                String
   avatar              String?
-  lastLogin           DateTime        @default(now())
-  isEmailVerified     Boolean         @default(false)
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
+  lastLogin           DateTime       @default(now())
+  isEmailVerified     Boolean        @default(false)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
   Person              Person[]
-  Administrator       Administrator[]
-  Organization        Organization[]
+  Admin               Admin[]
+  Company             Company[]
   Message             Message[]
-  CreatedBy           Conversation[]  @relation("CreatedBy")
-  ConversationMembers Conversation[]  @relation("ConversationMembers")
+  CreatedBy           Conversation[] @relation("CreatedBy")
+  ConversationMembers Conversation[] @relation("ConversationMembers")
   Upload              Upload[]
 }
 
+// holds all metadata about an employee
 model Person {
   id        Int        @id @default(autoincrement())
-  accountId Int
-  account   Account    @relation(fields: [accountId], references: [id])
+  accountid Int
+  account   Account    @relation(fields: [accountid], references: [id])
   name      String
   email     String     @unique
   username  String     @unique
@@ -44,33 +46,35 @@ model Person {
   address   String
   gender    String
   avatar    String?
-  taxId     String     @unique
+  taxid     String     @unique
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   Employee  Employee[]
 }
 
-model Administrator {
+// holds information about admins
+model Admin {
   id        Int      @id @default(autoincrement())
-  accountId Int
-  account   Account  @relation(fields: [accountId], references: [id])
+  accountid Int
+  account   Account  @relation(fields: [accountid], references: [id])
   name      String
   email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Organization {
+// holds information about a registered company
+model Company {
   id         Int          @id @default(autoincrement())
-  accountId  Int
-  account    Account      @relation(fields: [accountId], references: [id])
+  accountid  Int
+  account    Account      @relation(fields: [accountid], references: [id])
   title      String
   email      String       @unique
   country    String
   address    String
   avatar     String?
   brief      String?
-  taxId      String       @unique
+  taxid      String       @unique
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   Employee   Employee[]
@@ -81,75 +85,78 @@ model Organization {
   Terminated Terminated[]
 }
 
+// holds information about an employee
 model Employee {
-  id             Int          @id @default(autoincrement())
-  personId       Int
-  person         Person       @relation(fields: [personId], references: [id])
-  organizationId Int
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  positionId     Int?
-  position       Position?    @relation(fields: [positionId], references: [id])
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  isTerminated   Boolean      @default(false)
-  Branch         Branch[]
-  Exam           Exam?        @relation(fields: [examId], references: [id])
-  examId         Int?
-  Progress       Progress[]
-  Promotion      Promotion[]
-  CreatedBy      Review[]     @relation("CreatedBy")
-  CreatedFor     Review[]     @relation("CreatedFor")
-  Payment        Payment[]
-  Response       Response[]
-  Terminated     Terminated[]
+  id         Int          @id @default(autoincrement())
+  personid   Int
+  person     Person       @relation(fields: [personid], references: [id])
+  companyid  Int
+  company    Company      @relation(fields: [companyid], references: [id])
+  positionid Int?
+  position   Position?    @relation(fields: [positionid], references: [id])
+  terminated Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Branch     Branch[]
+  Exam       Exam?        @relation(fields: [examid], references: [id])
+  examid     Int?
+  Progress   Progress[]
+  Promotion  Promotion[]
+  CreatedBy  Review[]     @relation("CreatedBy")
+  CreatedFor Review[]     @relation("CreatedFor")
+  Payment    Payment[]
+  Response   Response[]
+  Terminated Terminated[]
 }
 
+// details about a branch of the company
 model Branch {
-  id             Int          @id @default(autoincrement())
-  country        String
-  address        String
-  organizationId Int
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  managerId      Int?
-  manager        Employee?    @relation(fields: [managerId], references: [id])
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id        Int       @id @default(autoincrement())
+  country   String
+  address   String
+  companyid Int
+  company   Company   @relation(fields: [companyid], references: [id])
+  managerid Int?
+  manager   Employee? @relation(fields: [managerid], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
+// company positions that can be applied for and held by employees
 model Position {
-  id             Int          @id @default(autoincrement())
-  title          String
-  organizationId Int
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  successorId    Int?         @unique
-  successor      Position?    @relation("PositionHistory", fields: [successorId], references: [id])
-  predecessor    Position?    @relation("PositionHistory")
-  salary         Int
-  currency       String
-  description    String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  Employee       Employee[]
-  Exam           Exam?        @relation(fields: [examId], references: [id])
-  examId         Int?
-  fromPosition   Promotion[]  @relation("FromPosition")
-  toPosition     Promotion[]  @relation("ToPosition")
+  id           Int         @id @default(autoincrement())
+  title        String
+  companyid    Int
+  company      Company     @relation(fields: [companyid], references: [id])
+  successorid  Int?        @unique
+  successor    Position?   @relation("PositionHistory", fields: [successorid], references: [id])
+  predecessor  Position?   @relation("PositionHistory")
+  salary       Int
+  currency     String
+  description  String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  Employee     Employee[]
+  Exam         Exam?       @relation(fields: [examid], references: [id])
+  examid       Int?
+  fromPosition Promotion[] @relation("FromPosition")
+  toPosition   Promotion[] @relation("ToPosition")
 }
 
 model Exam {
-  id                  Int          @id @default(autoincrement())
+  id                  Int         @id @default(autoincrement())
   title               String
-  questions           Int          @default(0)
+  questions           Int         @default(0)
   description         String
-  organizationId      Int
-  organization        Organization @relation(fields: [organizationId], references: [id])
+  companyid           Int
+  company             Company     @relation(fields: [companyid], references: [id])
   eligiblePositions   Position[]
   ineligibleEmployees Employee[]
-  availableAt         DateTime
-  startsAt            DateTime
-  endsAt              DateTime
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
+  availableAt         DateTime // ??
+  startsAt            DateTime // date period of the year the exam starts 
+  endsAt              DateTime // date period of the year the exam ends
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
   Promotion           Promotion[]
   Progress            Progress[]
   Response            Response[]
@@ -158,7 +165,7 @@ model Exam {
 model Question {
   id        Int        @id @default(autoincrement())
   index     Int        @unique
-  examId    Int
+  examid    Int
   type      String
   body      String
   createdAt DateTime   @default(now())
@@ -170,68 +177,72 @@ model Question {
 
 model Option {
   id          Int        @id @default(autoincrement())
-  examId      Int
-  questionId  Int
-  question    Question   @relation(fields: [questionId], references: [id])
+  examid      Int
+  questionid  Int
+  question    Question   @relation(fields: [questionid], references: [id])
   body        String
   description String?
-  isCorrect   Boolean
+  correct     Boolean
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   Response    Response[]
 }
 
+// holds information about the progress of an employee with an exam
 model Progress {
   id             Int       @id @default(autoincrement())
-  examId         Int
-  exam           Exam      @relation(fields: [examId], references: [id])
-  employeeId     Int
-  employee       Employee  @relation(fields: [employeeId], references: [id])
+  examid         Int
+  exam           Exam      @relation(fields: [examid], references: [id])
+  employeeid     Int
+  employee       Employee  @relation(fields: [employeeid], references: [id])
   score          Int?
-  isCompleted    Boolean   @default(false)
-  lastQuestionId Int?
-  lastQuestion   Question? @relation(fields: [lastQuestionId], references: [id])
+  completed      Boolean   @default(false)
+  lastQuestionid Int?
+  lastQuestion   Question? @relation(fields: [lastQuestionid], references: [id])
   status         String
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
 
+// the metadata for the response an employee gives to a particular exam question
 model Response {
   id         Int      @id @default(autoincrement())
-  examId     Int
-  exam       Exam     @relation(fields: [examId], references: [id])
-  questionId Int
-  question   Question @relation(fields: [questionId], references: [id])
-  employeeId Int
-  employee   Employee @relation(fields: [employeeId], references: [id])
-  optionId   Int?
-  option     Option?  @relation(fields: [optionId], references: [id])
-  isCorrect  Boolean
+  examid     Int
+  exam       Exam     @relation(fields: [examid], references: [id])
+  questionid Int
+  question   Question @relation(fields: [questionid], references: [id])
+  employeeid Int
+  employee   Employee @relation(fields: [employeeid], references: [id])
+  optionid   Int?
+  option     Option?  @relation(fields: [optionid], references: [id])
+  correct    Boolean
   body       String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
 
+// metadata about the promotion that has happened for an employee
 model Promotion {
   id             Int      @id @default(autoincrement())
   type           String
-  examId         Int?
-  exam           Exam?    @relation(fields: [examId], references: [id])
-  employeeId     Int
-  employee       Employee @relation(fields: [employeeId], references: [id])
-  fromPositionId Int
-  fromPosition   Position @relation("FromPosition", fields: [fromPositionId], references: [id])
-  toPositionId   Int
-  toPosition     Position @relation("ToPosition", fields: [toPositionId], references: [id])
+  examid         Int?
+  exam           Exam?    @relation(fields: [examid], references: [id])
+  employeeid     Int
+  employee       Employee @relation(fields: [employeeid], references: [id])
+  fromPositionid Int
+  fromPosition   Position @relation("FromPosition", fields: [fromPositionid], references: [id])
+  toPositionid   Int
+  toPosition     Position @relation("ToPosition", fields: [toPositionid], references: [id])
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
 
+// metadata for conversations between accounts
 model Conversation {
   id          Int       @id @default(autoincrement())
   members     Account[] @relation("ConversationMembers")
-  createdById Int
-  createdBy   Account   @relation("CreatedBy", fields: [createdById], references: [id])
+  createdByid Int
+  createdBy   Account   @relation("CreatedBy", fields: [createdByid], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   Message     Message[]
@@ -242,10 +253,10 @@ model Message {
   body           String
   media          String?
   mediaType      String?
-  createdById    Int
-  conversationId Int
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
-  createdBy      Account      @relation(fields: [createdById], references: [id])
+  createdByid    Int
+  conversationid Int
+  conversation   Conversation @relation(fields: [conversationid], references: [id])
+  createdBy      Account      @relation(fields: [createdByid], references: [id])
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
@@ -254,42 +265,44 @@ model Review {
   id           Int      @id @default(autoincrement())
   rating       Int
   body         String?
-  createdById  Int
-  createdBy    Employee @relation("CreatedBy", fields: [createdById], references: [id])
-  createdForId Int
-  createdFor   Employee @relation("CreatedFor", fields: [createdForId], references: [id])
+  createdByid  Int
+  createdBy    Employee @relation("CreatedBy", fields: [createdByid], references: [id])
+  createdForid Int
+  createdFor   Employee @relation("CreatedFor", fields: [createdForid], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
 
+// holds record of a payment that's been made out to an employee
 model Payment {
-  id             Int          @id @default(autoincrement())
-  employeeId     Int
-  employee       Employee     @relation(fields: [employeeId], references: [id])
-  amount         Int
-  currency       String
-  organizationId Int
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id         Int      @id @default(autoincrement())
+  employeeid Int
+  employee   Employee @relation(fields: [employeeid], references: [id])
+  amount     Int
+  currency   String
+  companyid  Int
+  company    Company  @relation(fields: [companyid], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
+// holds record of when an employee is being relieved from their position
 model Terminated {
-  id             Int          @id @default(autoincrement())
-  employeeId     Int
-  employee       Employee     @relation(fields: [employeeId], references: [id])
-  organizationId Int
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  reason         String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id         Int      @id @default(autoincrement())
+  employeeid Int
+  employee   Employee @relation(fields: [employeeid], references: [id])
+  companyid  Int
+  company    Company  @relation(fields: [companyid], references: [id])
+  reason     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Upload {
   id        Int      @id @default(autoincrement())
   tempid    String   @unique
-  accountId Int
-  account   Account  @relation(fields: [accountId], references: [id])
+  accountid Int
+  account   Account  @relation(fields: [accountid], references: [id])
   url       String
   title     String
   mimetype  String

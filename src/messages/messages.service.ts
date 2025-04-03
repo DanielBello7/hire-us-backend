@@ -1,23 +1,49 @@
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
+import { UploadsService } from 'src/uploads/uploads.service';
 
 @Injectable()
 export class MessagesService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(
+        private readonly database: DatabaseService,
+        private readonly uploads: UploadsService,
+    ) {}
 
     /** find the messages for a particular conversation */
-    async findConversationMessages(convoId: number) {
+    async findConversationMessages(conversation: number) {
         return this.database.message.findMany({
             where: {
-                conversationId: convoId,
+                conversationId: conversation,
             },
             include: {
                 createdBy: true,
             },
         });
+    }
+
+    /** save a message with a media upload or none */
+    async saveMessage(
+        body: CreateMessageDto,
+        file?: Express.Multer.File,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        let uri: string | null = null;
+        let datatype: string | null = null;
+        if (file) {
+            const response = await this.uploads.saveFile(body.createdBy, file);
+            uri = response.url;
+            datatype = response.mimetype;
+        }
+        return this.create(
+            {
+                ...body,
+                media: uri,
+                mediaType: datatype,
+            },
+            database,
+        );
     }
 
     async create(
@@ -45,7 +71,7 @@ export class MessagesService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async findMessages(query?: Record<string, any>) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -84,7 +110,7 @@ export class MessagesService {
         });
     }
 
-    async findOne(id: number) {
+    async findOneUsingId(id: number) {
         const response = await this.database.message.findFirst({
             where: {
                 id,

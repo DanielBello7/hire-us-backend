@@ -29,7 +29,9 @@ async function bootstrap() {
             secret: ACTIVE.SESSION_SECRET,
             resave: false,
             saveUninitialized: true,
-            cookie: { maxAge: 24 * 60 * 60 * 1000 },
+            cookie: {
+                maxAge: 24 * 60 * 60 * 1000,
+            },
             genid: () => uuid.v4(),
             store: new Store({
                 db: ACTIVE.DB_NAME,
