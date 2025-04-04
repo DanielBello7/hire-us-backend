@@ -3,23 +3,14 @@ import {
     BadRequestException,
     NotFoundException,
 } from '@nestjs/common';
-import { PersonService } from 'src/person/person.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { ACCOUNT_ROLES_ENUM } from '@app/roles';
 import * as bcrypt from 'bcrypt';
-import { AdminsService } from 'src/admins/admins.service';
-import { CompanyService } from 'src/company/company.service';
 
 @Injectable()
 export class AccountsService {
-    constructor(
-        private readonly person: PersonService,
-        private readonly admin: AdminsService,
-        private readonly db: DatabaseService,
-        private readonly organization: CompanyService,
-    ) {}
+    constructor(private readonly db: DatabaseService) {}
 
     /** This finds an account using the email but returns null if it
      * cannot find it
@@ -58,13 +49,12 @@ export class AccountsService {
                       },
         });
         if (!account) throw new NotFoundException('account not found');
-        const isPositive = bcrypt.compareSync(password, account.password);
-        return !!isPositive;
+        return bcrypt.compareSync(password, account.password);
     }
 
     /** This creates an account, it also checks if the account
      * is already registered */
-    async createAccount(
+    async save(
         data: CreateAccountDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
@@ -74,61 +64,27 @@ export class AccountsService {
         return this.create(data, database);
     }
 
-    /** This updates an account's data but removes some certain
-     * fields, then it also updates the
-     * same field for the respective account role types
-     */
-    async modify(
+    /** this changes the current password but requires the old password for authentication */
+    async changePassword(
         id: number,
-        updates: UpdateAccountDto,
+        oldPassword: string,
+        newPassword: string,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const { role, ...rest } = updates;
+        if (!(await this.comparePassword(id, oldPassword))) {
+            throw new BadRequestException('invalid credentials');
+        }
+        return this.resetPassword(id, newPassword, database);
+    }
 
-        return this.db.$transaction(async (tx) => {
-            const db = database ?? tx;
-            if (rest.email || rest.name || rest.avatar) {
-                if (role === ACCOUNT_ROLES_ENUM.COMPANY) {
-                    await this.organization.modify(
-                        id,
-                        {
-                            title: updates.name,
-                            email: updates.email,
-                            avatar: rest.avatar,
-                        },
-                        db,
-                    );
-                }
-                if (role === ACCOUNT_ROLES_ENUM.EMPLOYEE) {
-                    await this.person.modify(
-                        id,
-                        {
-                            name: updates.name,
-                            email: updates.email,
-                            avatar: rest.avatar,
-                        },
-                        db,
-                    );
-                }
-                if (role === ACCOUNT_ROLES_ENUM.ADMIN) {
-                    await this.admin.modify(
-                        id,
-                        {
-                            name: updates.name,
-                            email: updates.email,
-                        },
-                        db,
-                    );
-                }
-            }
-
-            if (rest.password) {
-                const hashed = bcrypt.hashSync(rest.password, 10);
-                rest.password = hashed;
-            }
-
-            return this.update(id, updates, db);
-        });
+    /** this changes the current password to a new one without need for the old password for authentication */
+    async resetPassword(
+        id: number,
+        newPassword: string,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const hashed = bcrypt.hashSync(newPassword, 10);
+        return this.update(id, { password: hashed }, database);
     }
 
     async findById(id: number) {

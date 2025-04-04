@@ -4,15 +4,16 @@ import {
     Get,
     Param,
     ParseIntPipe,
-    Put,
+    Patch,
     Query,
     UseGuards,
 } from '@nestjs/common';
-import { UpdateAccountDto } from './dto/update-account.dto';
 import { AccountsService } from './accounts.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard, AllowRoles, ACCOUNT_ROLES_ENUM } from '@app/roles';
 import { SessionGuard } from 'src/auth/guards/session.guard';
+import { ResetAccountPasswordDto } from './dto/reset-account-password.dto';
+import { ChangeAccountPasswordDto } from './dto/change-account-password.dto';
 
 @Controller('accounts')
 export class AccountsController {
@@ -32,11 +33,24 @@ export class AccountsController {
     }
 
     @UseGuards(SessionGuard)
-    @Put(':id')
-    updateAccount(
+    @Patch(':id/password/recover/')
+    recover(
         @Param('id', ParseIntPipe) id: number,
-        @Body() updates: UpdateAccountDto,
+        @Body() body: ResetAccountPasswordDto,
     ) {
-        return this.accounts.modify(id, updates);
+        return this.accounts.resetPassword(id, body.newPassword);
+    }
+
+    @UseGuards(SessionGuard)
+    @Patch(':id/password/change/')
+    change(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: ChangeAccountPasswordDto,
+    ) {
+        return this.accounts.changePassword(
+            id,
+            body.oldPassword,
+            body.newPassword,
+        );
     }
 }

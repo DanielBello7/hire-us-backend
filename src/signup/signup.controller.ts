@@ -19,7 +19,7 @@ export class SignUpController {
         @Body()
         data: CreateSignUpAdminDto,
     ) {
-        return this.signup.registerAdministrator(data);
+        return this.signup.signup_admin(data);
     }
 
     @UseGuards(SessionGuard)
@@ -27,7 +27,7 @@ export class SignUpController {
     @UseGuards(AuthGuard(), RolesGuard)
     @Post('employee')
     createEmployee(@Body() data: CreateSignUpEmployeeDto) {
-        return this.signup.registerEmployee(data);
+        return this.signup.signup_employee(data);
     }
 
     @Post('company')
@@ -35,6 +35,6 @@ export class SignUpController {
         @Body()
         data: CreateSignUpCompanyDto,
     ) {
-        return this.signup.registerOrganization(data);
+        return this.signup.signup_company(data);
     }
 }

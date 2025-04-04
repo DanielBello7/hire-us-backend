@@ -5,11 +5,18 @@ import { DatabaseModule } from '@app/database';
 import { AccountsModule } from 'src/accounts/accounts.module';
 import { CompanyModule } from 'src/company/company.module';
 import { PersonModule } from 'src/person/person.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
     providers: [UploadsService],
     exports: [UploadsService],
     controllers: [UploadsController],
-    imports: [DatabaseModule, AccountsModule, CompanyModule, PersonModule],
+    imports: [
+        DatabaseModule,
+        CompanyModule,
+        AccountsModule,
+        PersonModule,
+        PassportModule.register({ defaultStrategy: 'jwt' }),
+    ],
 })
 export class UploadsModule {}

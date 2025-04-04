@@ -1,9 +1,14 @@
-import { DEVELOPMENT_CONSTANTS } from './constants.dev';
-import { PRODUCTION_CONSTANTS } from './constants.pro';
-import { CURRENT } from './constants.types';
+import { CONSTANTS } from './constants.types';
 
-const ENVIRONMENTS = {
-    PRO: PRODUCTION_CONSTANTS,
-    DEV: DEVELOPMENT_CONSTANTS,
+const ENVIRONMENTS: CONSTANTS = {
+    DATABASE_URI: (process.env.DATABASE_URI as string) ?? '',
+    NODE_ENV:
+        (process.env.NODE_ENV as 'development' | 'production') ?? 'development',
+    PORT: parseInt(process.env.PORT as string) ?? 3000,
+    JWT_EXPIRES: (process.env.JWT_EXPIRES as string) ?? '',
+    JWT_SECRET: (process.env.JWT_SECRET as string) ?? '',
+    SESSION_SECRET: (process.env.SESSION_SECRET as string) ?? '',
+    DB_NAME: (process.env.DB_NAME as string) ?? '',
 };
-export const ACTIVE = ENVIRONMENTS[CURRENT];
+
+export const ACTIVE = ENVIRONMENTS;

@@ -86,7 +86,7 @@ export class UploadsService {
                 database ?? tx,
             );
 
-            await this.accounts.modify(
+            await this.accounts.update(
                 accountid,
                 {
                     avatar: upload.url,

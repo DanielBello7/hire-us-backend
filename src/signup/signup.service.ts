@@ -27,7 +27,7 @@ export class SignUpService {
     ) {}
 
     /** This creates an account, creates  person account, and creates an employee account */
-    async registerEmployee(
+    async signup_employee(
         body: CreateSignUpEmployeeDto,
         database?: PrismaDatabaseService,
     ) {
@@ -42,7 +42,7 @@ export class SignUpService {
 
         return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
-            const account = await this.account.createAccount(
+            const account = await this.account.save(
                 {
                     ...body,
                     isEmailVerified: false,
@@ -73,7 +73,7 @@ export class SignUpService {
     }
 
     /** This creates an account and creates an administrator account */
-    async registerAdministrator(
+    async signup_admin(
         body: CreateSignUpAdminDto,
         database?: PrismaDatabaseService,
     ) {
@@ -88,12 +88,12 @@ export class SignUpService {
 
         return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
-            const account = await this.account.createAccount(
+            const account = await this.account.save(
                 { ...body, isEmailVerified: false },
                 db,
             );
 
-            return this.admin.createAdmin(
+            return this.admin.save(
                 {
                     ...plainToInstance(CreateAdminDto, body, {
                         excludeExtraneousValues: true,
@@ -106,7 +106,7 @@ export class SignUpService {
     }
 
     /** This creates an account, and creates an organization ccount*/
-    async registerOrganization(
+    async signup_company(
         body: CreateSignUpCompanyDto,
         database?: PrismaDatabaseService,
     ) {
@@ -121,7 +121,7 @@ export class SignUpService {
         return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
 
-            const account = await this.account.createAccount(
+            const account = await this.account.save(
                 {
                     ...plainToInstance(CreateAccountDto, body, {
                         excludeExtraneousValues: true,

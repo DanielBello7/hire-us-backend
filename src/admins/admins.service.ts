@@ -34,7 +34,7 @@ export class AdminsService {
     }
 
     /** This creates an admin account */
-    async createAdmin(
+    async save(
         body: CreateAdminDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
@@ -56,7 +56,7 @@ export class AdminsService {
             const db = database ?? tx;
             if (rest.email || rest.name) {
                 const admin = await this.findById(id);
-                await this.accounts.modify(
+                await this.accounts.update(
                     admin.accountid,
                     {
                         email: rest.email,

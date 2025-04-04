@@ -14,11 +14,11 @@ import { PassportJWTStrategy } from './strategies/jwt.strategy';
     providers: [AuthService, PassportLocalStrategy, PassportJWTStrategy],
     controllers: [AuthController],
     imports: [
+        AccountsModule,
+        CompanyModule,
+        PassportModule.register({ defaultStrategy: 'jwt' }),
         AdminsModule,
         PersonModule,
-        CompanyModule,
-        AccountsModule,
-        PassportModule,
         JwtModule.register({
             global: true,
             secret: process.env.JWT_SECRET as string,
