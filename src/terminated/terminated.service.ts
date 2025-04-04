@@ -2,31 +2,30 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTerminatedDto } from './dto/create-terminated.dto';
 import { UpdateTerminatedDto } from './dto/update-terminated.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class TerminatedService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(private readonly db: DatabaseService) {}
 
     /** update the terminated record excluding somethings */
-    async updateTerminated(
+    async modify(
         id: number,
         body: UpdateTerminatedDto,
         database?: PrismaDatabaseService,
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { employee, organization, ...rest } = body;
+        const { employee, company, ...rest } = body;
         return this.update(id, rest, database);
     }
 
     async create(body: CreateTerminatedDto, database?: PrismaDatabaseService) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.terminated.create({
             data: {
                 ...body,
-                organization: {
+                company: {
                     connect: {
-                        id: body.organization,
+                        id: body.company,
                     },
                 },
                 employee: {
@@ -38,7 +37,7 @@ export class TerminatedService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -57,8 +56,8 @@ export class TerminatedService {
                     Object.entries(query).filter(([key]) =>
                         [
                             'id',
-                            'employeeId',
-                            'organizationId',
+                            'employeeid',
+                            'companyid',
                             'reason',
                             'createdAt',
                             'updatedAt',
@@ -68,22 +67,21 @@ export class TerminatedService {
             };
         }
 
-        return this.database.terminated.findMany({
+        return this.db.terminated.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.terminated.findFirst({
+    async findById(id: number) {
+        const response = await this.db.terminated.findFirst({
             where: {
                 id,
             },
         });
-        if (!response)
-            throw new NotFoundException('cannot find termination record');
-        return response;
+        if (response) return response;
+        throw new NotFoundException();
     }
 
     async update(
@@ -91,7 +89,7 @@ export class TerminatedService {
         body: UpdateTerminatedDto,
         database?: PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.terminated.update({
             where: { id },
             data: {
@@ -103,10 +101,10 @@ export class TerminatedService {
                           },
                       }
                     : undefined,
-                organization: body.organization
+                company: body.company
                     ? {
                           connect: {
-                              id: body.organization,
+                              id: body.company,
                           },
                       }
                     : undefined,
@@ -115,7 +113,7 @@ export class TerminatedService {
     }
 
     async remove(id: number, database?: PrismaDatabaseService) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.terminated.delete({ where: { id } });
     }
 }

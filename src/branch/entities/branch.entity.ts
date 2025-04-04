@@ -3,8 +3,8 @@ export class Branch implements PrismaBranch {
     id: number;
     country: string;
     address: string;
-    organizationId: number;
-    managerId: number | null;
+    companyid: number;
+    managerid: number | null;
     createdAt: Date;
     updatedAt: Date;
 }

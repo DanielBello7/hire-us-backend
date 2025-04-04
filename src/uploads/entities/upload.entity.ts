@@ -1,7 +1,7 @@
 import { Upload as PrismaUpload } from '@prisma/client';
 export class Upload implements PrismaUpload {
     id: number;
-    accountId: number;
+    accountid: number;
     url: string;
     title: string;
     mimetype: string;

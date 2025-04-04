@@ -7,21 +7,21 @@ import { MessagesService } from 'src/messages/messages.service';
 @Injectable()
 export class ConversationsService {
     constructor(
-        private readonly database: DatabaseService,
+        private readonly db: DatabaseService,
         private readonly messages: MessagesService,
     ) {}
 
     /** deletes a conversation and it's messages */
     async deleteConversation(id: number) {
-        return this.database.$transaction(async (tx) => {
+        return this.db.$transaction(async (tx) => {
             await this.messages.deleteMany(id, tx);
             return this.remove(id, tx);
         });
     }
 
     /** get all the messages of a conversation */
-    async findMessages(id: number) {
-        const response = await this.database.conversation.findFirst({
+    async getMsgs(id: number) {
+        const response = await this.db.conversation.findFirst({
             where: {
                 id,
             },
@@ -60,7 +60,7 @@ export class ConversationsService {
         members: number[],
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.conversation.update({
             where: {
                 id,
@@ -84,7 +84,7 @@ export class ConversationsService {
         members: number[],
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.conversation.update({
             where: {
                 id,
@@ -102,7 +102,7 @@ export class ConversationsService {
         });
     }
 
-    async findConversations(query?: Record<string, any>) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -127,15 +127,15 @@ export class ConversationsService {
             };
         }
 
-        return this.database.conversation.findMany({
+        return this.db.conversation.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOneUsingId(id: number) {
-        const response = await this.database.conversation.findFirst({
+    async findById(id: number) {
+        const response = await this.db.conversation.findFirst({
             where: {
                 id,
             },
@@ -155,10 +155,10 @@ export class ConversationsService {
         createdBy: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.conversation.deleteMany({
             where: {
-                createdById: createdBy,
+                createdByid: createdBy,
             },
         });
     }
@@ -167,7 +167,7 @@ export class ConversationsService {
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.conversation.delete({
             where: {
                 id,
@@ -179,7 +179,7 @@ export class ConversationsService {
         body: CreateConversationDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.conversation.create({
             data: {
                 ...body,
@@ -202,7 +202,7 @@ export class ConversationsService {
         body: UpdateConversationDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.conversation.update({
             where: {
                 id,

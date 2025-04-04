@@ -3,47 +3,46 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { CreateOrganizationDto } from './dto/create-organization.dto';
-import { UpdateOrganizationDto } from './dto/update-organization.dto';
+import { CreateCompanyDto } from './dto/create-company.dto';
+import { UpdateCompanyDto } from './dto/update-company.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AccountsService } from 'src/accounts/accounts.service';
 
 @Injectable()
-export class OrganizationService {
+export class CompanyService {
     constructor(
-        private readonly database: DatabaseService,
+        private readonly db: DatabaseService,
         private readonly accounts: AccountsService,
     ) {}
 
     /** This checks if an organization is registered, using the email and tax id */
-    async isOrganizationRegistered(email: string, taxId: string) {
-        const response = await this.database.organization.findFirst({
+    async isUsed(email: string, taxid: string) {
+        const response = await this.db.company.findFirst({
             where: {
-                OR: [{ email }, { taxId }],
+                OR: [{ email }, { taxid }],
             },
         });
-        return !!response;
+        if (!response) return false;
+        return true;
     }
 
     /** This looks for an organization using the account id*/
-    async findOrganizationUsingAccountId(id: number) {
-        const response = await this.database.organization.findFirst({
+    async findByAccId(id: number) {
+        const response = await this.db.company.findFirst({
             where: {
-                accountId: id,
+                accountid: id,
             },
         });
-        if (!response)
-            throw new NotFoundException('organization account not found');
-        return response;
+        if (response) return response;
+        throw new NotFoundException('company account not found');
     }
 
     /** This creates an organization */
-    async createOrganization(
-        body: CreateOrganizationDto,
+    async createCompany(
+        body: CreateCompanyDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        if (await this.isOrganizationRegistered(body.email, body.taxId)) {
+        if (await this.isUsed(body.email, body.taxid)) {
             throw new BadRequestException('account already registered');
         }
         return this.create(body, database);
@@ -52,19 +51,19 @@ export class OrganizationService {
     /** This updates an organization account, it also updates the accound
      * record of the organization
      */
-    async updateOrganization(
+    async modify(
         id: number,
-        body: UpdateOrganizationDto,
+        body: UpdateCompanyDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { taxId, account, address, ...rest } = body;
-        return this.database.$transaction(async (tx) => {
+        const { taxid: taxId, account, address, ...rest } = body;
+        return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
             if (rest.email || rest.title) {
-                const organization = await this.findOne(id);
+                const company = await this.findById(id);
                 await this.accounts.update(
-                    organization.accountId,
+                    company.accountid,
                     {
                         email: rest.email,
                         name: rest.title,
@@ -76,7 +75,7 @@ export class OrganizationService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -95,14 +94,14 @@ export class OrganizationService {
                     Object.entries(query).filter(([key]) =>
                         [
                             'id',
-                            'accountId',
+                            'accountid',
                             'title',
                             'email',
                             'country',
                             'address',
                             'avatar',
                             'brief',
-                            'taxId',
+                            'taxid',
                             'createdAt',
                             'updatedAt',
                         ].includes(key),
@@ -111,39 +110,39 @@ export class OrganizationService {
             };
         }
 
-        return this.database.organization.findMany({
+        return this.db.company.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.organization.findFirst({
+    async findById(id: number) {
+        const response = await this.db.company.findFirst({
             where: {
                 id,
             },
         });
-        if (!response) throw new NotFoundException('organization not found');
-        return response;
+        if (response) return response;
+        throw new NotFoundException('company not found');
     }
 
     async remove(
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
-        return db.organization.delete({
+        const db = database ?? this.db;
+        return db.company.delete({
             where: { id },
         });
     }
 
     async create(
-        body: CreateOrganizationDto,
+        body: CreateCompanyDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
-        return db.organization.create({
+        const db = database ?? this.db;
+        return db.company.create({
             data: {
                 ...body,
                 account: {
@@ -157,11 +156,11 @@ export class OrganizationService {
 
     async update(
         id: number,
-        body: UpdateOrganizationDto,
+        body: UpdateCompanyDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
-        return db.organization.update({
+        const db = database ?? this.db;
+        return db.company.update({
             where: {
                 id,
             },

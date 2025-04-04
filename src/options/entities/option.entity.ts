@@ -1,11 +1,11 @@
 import { Option as PrismaOption } from '@prisma/client';
 export class Option implements PrismaOption {
     id: number;
-    questionId: number;
+    questionid: number;
     body: string;
-    examId: number;
+    examid: number;
     description: string | null;
-    isCorrect: boolean;
+    correct: boolean;
     createdAt: Date;
     updatedAt: Date;
 }

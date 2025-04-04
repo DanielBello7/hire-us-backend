@@ -7,15 +7,15 @@ import { UploadsService } from 'src/uploads/uploads.service';
 @Injectable()
 export class MessagesService {
     constructor(
-        private readonly database: DatabaseService,
+        private readonly db: DatabaseService,
         private readonly uploads: UploadsService,
     ) {}
 
     /** find the messages for a particular conversation */
     async findConversationMessages(conversation: number) {
-        return this.database.message.findMany({
+        return this.db.message.findMany({
             where: {
-                conversationId: conversation,
+                conversationid: conversation,
             },
             include: {
                 createdBy: true,
@@ -50,7 +50,7 @@ export class MessagesService {
         body: CreateMessageDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.message.create({
             data: {
                 ...body,
@@ -71,7 +71,7 @@ export class MessagesService {
         });
     }
 
-    async findMessages(query?: Record<string, any>) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -93,8 +93,8 @@ export class MessagesService {
                             'body',
                             'media',
                             'mediaType',
-                            'createdById',
-                            'conversationId',
+                            'createdByid',
+                            'conversationid',
                             'createdAt',
                             'updatedAt',
                         ].includes(key),
@@ -103,15 +103,15 @@ export class MessagesService {
             };
         }
 
-        return this.database.message.findMany({
+        return this.db.message.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOneUsingId(id: number) {
-        const response = await this.database.message.findFirst({
+    async findById(id: number) {
+        const response = await this.db.message.findFirst({
             where: {
                 id,
             },
@@ -119,8 +119,8 @@ export class MessagesService {
                 createdBy: true,
             },
         });
-        if (!response) throw new NotFoundException('cannot find message');
-        return response;
+        if (response) return response;
+        throw new NotFoundException('cannot find message');
     }
 
     async update(
@@ -128,7 +128,7 @@ export class MessagesService {
         body: UpdateMessageDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.message.update({
             where: {
                 id,
@@ -160,7 +160,7 @@ export class MessagesService {
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.message.delete({
             where: {
                 id,
@@ -172,10 +172,10 @@ export class MessagesService {
         conversation: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.message.deleteMany({
             where: {
-                conversationId: conversation,
+                conversationid: conversation,
             },
         });
     }

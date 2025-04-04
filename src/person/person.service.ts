@@ -6,35 +6,35 @@ import {
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AccountsService } from 'src/accounts/accounts.service';
 
 @Injectable()
 export class PersonService {
     constructor(
-        private readonly database: DatabaseService,
         private readonly accounts: AccountsService,
+        private readonly db: DatabaseService,
     ) {}
 
     /** This checks if an email is already registered */
-    async isEmailRegistered(email: string) {
-        const check = await this.database.person.findFirst({
+    async isUsed(email: string) {
+        const check = await this.db.person.findFirst({
             where: {
                 email,
             },
         });
-        return !!check;
+        if (check) return true;
+        return false;
     }
 
     /** This looks for a person record using the account id*/
-    async findPersonUsingAccountId(id: number) {
-        const response = await this.database.person.findFirst({
+    async findByAccId(id: number) {
+        const response = await this.db.person.findFirst({
             where: {
-                accountId: id,
+                accountid: id,
             },
         });
-        if (!response) throw new NotFoundException('person account not found');
-        return response;
+        if (response) return response;
+        throw new NotFoundException();
     }
 
     /** This creates a person account */
@@ -42,27 +42,28 @@ export class PersonService {
         body: CreatePersonDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        if (await this.isEmailRegistered(body.email))
+        if (await this.isUsed(body.email)) {
             throw new BadRequestException('Email already registered');
+        }
         return this.create(body, database);
     }
 
     /** This updates a person's account, it also modifies the account record of the
      * person document
      * */
-    async updatePerson(
+    async modify(
         id: number,
         body: UpdatePersonDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { account, ...rest } = body;
-        return this.database.$transaction(async (tx) => {
+        return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
             if (rest.email || rest.name) {
-                const person = await this.findOne(id);
+                const person = await this.findById(id);
                 await this.accounts.update(
-                    person.accountId,
+                    person.accountid,
                     {
                         name: rest.name,
                         email: rest.email,
@@ -74,7 +75,7 @@ export class PersonService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -94,8 +95,8 @@ export class PersonService {
                         [
                             'id',
                             'name',
-                            'taxId',
-                            'accountId',
+                            'taxid',
+                            'accountid',
                             'email',
                             'username',
                             'country',
@@ -110,21 +111,21 @@ export class PersonService {
             };
         }
 
-        return this.database.person.findMany({
+        return this.db.person.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const check = await this.database.person.findFirst({
+    async findById(id: number) {
+        const response = await this.db.person.findFirst({
             where: {
                 id,
             },
         });
-        if (!check) throw new NotFoundException('Unable to find person');
-        return check;
+        if (response) return response;
+        throw new NotFoundException();
     }
 
     async remove(
@@ -133,7 +134,7 @@ export class PersonService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.person.delete({
             where: {
                 id,
@@ -147,7 +148,7 @@ export class PersonService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.person.create({
             data: {
                 ...body,
@@ -167,7 +168,7 @@ export class PersonService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.person.update({
             where: {
                 id,

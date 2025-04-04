@@ -13,7 +13,7 @@ export class CreateExamDto
         Omit<
             Prisma.ExamCreateInput,
             | 'Promotion'
-            | 'organization'
+            | 'company'
             | 'eligiblePositions'
             | 'ineligibleEmployees'
         >
@@ -22,50 +22,41 @@ export class CreateExamDto
     @IsNotEmpty()
     @IsString()
     title: string;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     description: string;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     @IsDate()
     availableAt: string | Date;
-
     @Expose()
     @IsNumber()
     @IsOptional()
     questions?: number | undefined;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     @IsDate()
     startsAt: string | Date;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     @IsDate()
     endsAt: string | Date;
-
     @Expose()
     @IsNotEmpty()
     @IsNumber()
-    organization: number;
-
+    company: number;
     @Expose()
     @IsArray()
     @IsNumber({}, { each: true })
     eligiblePositions?: number[];
-
     @Expose()
     @IsArray()
     @IsNumber({}, { each: true })
     ineligibleEmployees?: number[];
-
     createdAt?: string | Date | undefined;
     updatedAt?: string | Date | undefined;
 }

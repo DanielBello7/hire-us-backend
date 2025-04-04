@@ -11,19 +11,20 @@ import { TerminatedService } from 'src/terminated/terminated.service';
 @Injectable()
 export class EmployeeService {
     constructor(
-        private readonly database: DatabaseService,
+        private readonly db: DatabaseService,
         private readonly terminated: TerminatedService,
     ) {}
 
     /** This checks if an employee is registered */
-    async isEmployeeRegistered(personId: number, organizationId: number) {
-        const response = await this.database.employee.findFirst({
+    async isUsed(personid: number, companyid: number) {
+        const response = await this.db.employee.findFirst({
             where: {
-                personId,
-                organizationId,
+                personid,
+                companyid,
             },
         });
-        return !!response;
+        if (response) return true;
+        return false;
     }
 
     /** this creates a new employee record */
@@ -31,28 +32,23 @@ export class EmployeeService {
         body: CreateEmployeeDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const isRegistered = await this.isEmployeeRegistered(
-            body.person,
-            body.organization,
-        );
-        if (isRegistered) {
+        if (await this.isUsed(body.person, body.company)) {
             throw new BadRequestException('Employee already exists');
-        } else {
-            return this.create(body, database);
         }
+        return this.create(body, database);
     }
 
     /**
      * This updates an employee record,
      * It excludes some fields
      */
-    async updateEmployee(
+    async modify(
         id: number,
         body: UpdateEmployeeDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { organization, person, ...rest } = body;
+        const { company: organization, person, ...rest } = body;
         return this.update(id, rest, database);
     }
 
@@ -60,26 +56,26 @@ export class EmployeeService {
      * It sets the terminated value to true,
      * This also creates a terminated record for the employee
      */
-    async layoffEmployee(
+    async layoff(
         id: number,
         reason: string,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        return this.database.$transaction(async (tx) => {
-            const employee = await this.findOne(id);
+        return this.db.$transaction(async (tx) => {
+            const employee = await this.findById(id);
             await this.terminated.create(
                 {
                     employee: id,
-                    organization: employee.organizationId,
+                    company: employee.companyid,
                     reason,
                 },
                 tx,
             );
-            return this.update(id, { isTerminated: true }, database ?? tx);
+            return this.update(id, { terminated: true }, database ?? tx);
         });
     }
 
-    async findEmployees(query?: Record<string, any>) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -111,7 +107,7 @@ export class EmployeeService {
             };
         }
 
-        return this.database.employee.findMany({
+        return this.db.employee.findMany({
             where: options,
             skip,
             take: pickNum,
@@ -122,8 +118,8 @@ export class EmployeeService {
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.employee.findFirst({
+    async findById(id: number) {
+        const response = await this.db.employee.findFirst({
             where: {
                 id,
             },
@@ -132,15 +128,15 @@ export class EmployeeService {
                 position: true,
             },
         });
-        if (!response) throw new NotFoundException('employee not found');
-        return response;
+        if (response) return response;
+        throw new NotFoundException('employee not found');
     }
 
     async delete(
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.employee.delete({
             where: {
                 id,
@@ -156,7 +152,7 @@ export class EmployeeService {
         body: CreateEmployeeDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.employee.create({
             data: {
                 ...body,
@@ -165,9 +161,9 @@ export class EmployeeService {
                         id: body.person,
                     },
                 },
-                organization: {
+                company: {
                     connect: {
-                        id: body.organization,
+                        id: body.company,
                     },
                 },
                 position: {
@@ -188,7 +184,7 @@ export class EmployeeService {
         body: UpdateEmployeeDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.employee.update({
             where: { id },
             data: {
@@ -207,10 +203,10 @@ export class EmployeeService {
                           },
                       }
                     : undefined,
-                organization: body.organization
+                company: body.company
                     ? {
                           connect: {
-                              id: body.organization,
+                              id: body.company,
                           },
                       }
                     : undefined,

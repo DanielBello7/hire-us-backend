@@ -8,8 +8,7 @@ import {
 } from 'class-validator';
 import { CreateAccountDto } from 'src/accounts/dto/create-account.dto';
 import { ACCOUNT_ROLES_ENUM } from '@app/roles';
-
-export class CreateRegisterDto
+export class CreateSignupDto
     implements Omit<CreateAccountDto, 'isEmailVerified'>
 {
     @Expose()
@@ -17,18 +16,15 @@ export class CreateRegisterDto
     @IsNotEmpty()
     @IsStrongPassword()
     password: string;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     name: string;
-
     @Expose()
     @IsString()
     @IsNotEmpty()
     @IsEmail()
     email: string;
-
     @Expose()
     @IsNotEmpty()
     @IsEnum(ACCOUNT_ROLES_ENUM)

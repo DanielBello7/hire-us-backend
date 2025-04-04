@@ -6,23 +6,22 @@ import {
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { ExamsService } from 'src/exams/exams.service';
 import { OptionsService } from 'src/options/options.service';
 
 @Injectable()
 export class QuestionsService {
     constructor(
-        private readonly database: DatabaseService,
         private readonly exams: ExamsService,
+        private readonly db: DatabaseService,
         private readonly options: OptionsService,
     ) {}
 
     /** This checks if a particular index has been used */
-    async checkIfIndexIsUsed(examId: number, index: number) {
-        return this.database.question.findFirst({
+    async checkIfIndexIsUsed(examid: number, index: number) {
+        return this.db.question.findFirst({
             where: {
-                examId,
+                examid,
                 index,
             },
         });
@@ -31,10 +30,10 @@ export class QuestionsService {
     /**
      * Retrieves questions for an exam and include the options for each question
      */
-    async getExamQuestionsUsingExamId(examId: number) {
-        return this.database.question.findMany({
+    async getExamQuestionsUsingExamId(examid: number) {
+        return this.db.question.findMany({
             where: {
-                examId,
+                examid,
             },
             include: {
                 Options: true,
@@ -50,16 +49,16 @@ export class QuestionsService {
         body: CreateQuestionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        if (await this.checkIfIndexIsUsed(body.examId, body.index))
+        if (await this.checkIfIndexIsUsed(body.examid, body.index)) {
             throw new BadRequestException('Index has been used');
+        }
 
-        return this.database.$transaction(async (tx) => {
+        return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
-            const exam = await this.exams.findOne(body.examId);
-            await this.exams.updateExam(
+            const exam = await this.exams.findById(body.examid);
+            await this.exams.modify(
                 exam.id,
                 {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     questions: exam.questions + 1,
                 },
                 db,
@@ -77,13 +76,13 @@ export class QuestionsService {
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const question = await this.findOne(id);
-        const exam = await this.exams.findOne(question.examId);
-        return this.database.$transaction(async (tx) => {
+        const question = await this.findById(id);
+        const exam = await this.exams.findById(question.examid);
+        return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
             await this.remove(id, db);
             await this.exams.update(
-                question.examId,
+                question.examid,
                 { questions: exam.questions - 1 },
                 db,
             );
@@ -99,15 +98,15 @@ export class QuestionsService {
         examid: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const response = await this.database.question.findMany({
-            where: { examId: examid },
+        const response = await this.db.question.findMany({
+            where: { examid },
         });
         const ids = response.map((item) => item.id);
-        return this.database.$transaction(async (tx) => {
+        return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
             await db.question.deleteMany({
                 where: {
-                    examId: examid,
+                    examid,
                 },
             });
             await this.options.removeManyUsingInclusive(ids, db);
@@ -115,13 +114,13 @@ export class QuestionsService {
     }
 
     /** This updates a question but excludes certain fields */
-    async updateQuestion(
+    async modify(
         id: number,
         body: UpdateQuestionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { examId, ...rest } = body;
+        const { examid: examId, ...rest } = body;
         return this.update(id, rest, database);
     }
 
@@ -131,7 +130,7 @@ export class QuestionsService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.question.create({
             data: {
                 ...body,
@@ -139,7 +138,7 @@ export class QuestionsService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -158,7 +157,7 @@ export class QuestionsService {
                     Object.entries(query).filter(([key]) =>
                         [
                             'id',
-                            'examId',
+                            'examid',
                             'type',
                             'body',
                             'createdAt',
@@ -169,15 +168,15 @@ export class QuestionsService {
             };
         }
 
-        return this.database.question.findMany({
+        return this.db.question.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.question.findFirst({
+    async findById(id: number) {
+        const response = await this.db.question.findFirst({
             where: {
                 id,
             },
@@ -185,7 +184,7 @@ export class QuestionsService {
                 Options: true,
             },
         });
-        if (!response) throw new NotFoundException('question not found');
+        if (!response) throw new NotFoundException();
         return response;
     }
 
@@ -196,7 +195,7 @@ export class QuestionsService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.question.update({
             where: {
                 id,
@@ -211,7 +210,7 @@ export class QuestionsService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.question.delete({
             where: {
                 id,

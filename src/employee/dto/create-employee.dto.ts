@@ -1,7 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { Expose } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
-
 export class CreateEmployeeDto
     implements
         Omit<
@@ -13,7 +12,7 @@ export class CreateEmployeeDto
             | 'CreatedFor'
             | 'Payment'
             | 'Branch'
-            | 'organization'
+            | 'company'
             | 'position'
             | 'person'
         >
@@ -21,18 +20,14 @@ export class CreateEmployeeDto
     @Expose()
     @IsNotEmpty()
     person: number;
-
     @Expose()
     @IsNotEmpty()
-    organization: number;
-
+    company: number;
     @Expose()
     @IsNotEmpty()
     position: number;
-
     @Expose()
-    isTerminated?: boolean | undefined;
-
+    terminated?: boolean | undefined;
     createdAt?: string | Date | undefined;
     updatedAt?: string | Date | undefined;
 }

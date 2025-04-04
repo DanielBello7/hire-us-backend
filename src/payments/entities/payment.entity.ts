@@ -1,10 +1,10 @@
 import { Payment as PrismaPayment } from '@prisma/client';
 export class Payment implements PrismaPayment {
     id: number;
-    employeeId: number;
+    employeeid: number;
     amount: number;
     currency: string;
-    organizationId: number;
+    companyid: number;
     createdAt: Date;
     updatedAt: Date;
 }

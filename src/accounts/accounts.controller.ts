@@ -20,16 +20,16 @@ export class AccountsController {
     constructor(private readonly accounts: AccountsService) {}
 
     @UseGuards(SessionGuard)
-    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMINISTRATOR)
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN)
     @UseGuards(AuthGuard(), RolesGuard)
     @Get()
     getAccounts(@Query() query: ExpressQuery) {
-        return this.accounts.getAccounts(query);
+        return this.accounts.get(query);
     }
 
     @Get(':id')
     getAccount(@Param('id', ParseIntPipe) id: number) {
-        return this.accounts.findAccount(id);
+        return this.accounts.findById(id);
     }
 
     @UseGuards(SessionGuard)
@@ -38,6 +38,6 @@ export class AccountsController {
         @Param('id', ParseIntPipe) id: number,
         @Body() updates: UpdateAccountDto,
     ) {
-        return this.accounts.updateAccount(id, updates);
+        return this.accounts.modify(id, updates);
     }
 }

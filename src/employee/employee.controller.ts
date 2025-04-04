@@ -18,37 +18,34 @@ import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('employees')
 export class EmployeeController {
-    constructor(private readonly employeeService: EmployeeService) {}
+    constructor(private readonly employee: EmployeeService) {}
 
     @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
-        return this.employeeService.findEmployees(query);
+        return this.employee.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.employeeService.findOne(id);
+        return this.employee.findById(id);
     }
 
     @UseGuards(SessionGuard)
     @Patch(':id')
     update(@Param('id') id: string, @Body() body: UpdateEmployeeDto) {
-        return this.employeeService.updateEmployee(+id, body);
+        return this.employee.modify(+id, body);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Patch(':id/terminate/')
     terminate(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: LayoffEmployeeDto,
     ) {
-        return this.employeeService.layoffEmployee(id, body.reason);
+        return this.employee.layoff(id, body.reason);
     }
 }

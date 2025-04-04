@@ -3,12 +3,11 @@ import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { EmployeeService } from 'src/employee/employee.service';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class BranchService {
     constructor(
-        private readonly database: DatabaseService,
+        private readonly db: DatabaseService,
         private readonly employee: EmployeeService,
     ) {}
 
@@ -27,7 +26,7 @@ export class BranchService {
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { organization, manager, ...rest } = updates;
+        const { company: organization, manager, ...rest } = updates;
         return this.update(id, rest, database);
     }
 
@@ -37,7 +36,7 @@ export class BranchService {
         manager: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        await this.employee.findOne(id);
+        await this.employee.findById(id);
         return this.update(id, { manager }, database);
     }
 
@@ -46,18 +45,18 @@ export class BranchService {
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        return this.delete(id, database);
+        return this.remove(id, database);
     }
 
     /** remove many branches using the organization id */
-    async removeManyUsingOrganizationId(
-        organization: number,
+    async removeManyById(
+        id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.branch.deleteMany({
             where: {
-                organizationId: organization,
+                companyid: id,
             },
         });
     }
@@ -67,7 +66,7 @@ export class BranchService {
         ids: number[],
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.branch.deleteMany({
             where: {
                 id: { in: ids },
@@ -75,7 +74,7 @@ export class BranchService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -96,8 +95,8 @@ export class BranchService {
                             'id',
                             'country',
                             'address',
-                            'organizationId',
-                            'managerId',
+                            'companyid',
+                            'managerid',
                             'createdAt',
                             'updatedAt',
                         ].includes(key),
@@ -106,34 +105,34 @@ export class BranchService {
             };
         }
 
-        return this.database.branch.findMany({
+        return this.db.branch.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const selected = await this.database.branch.findFirst({
+    async findById(id: number) {
+        const selected = await this.db.branch.findFirst({
             where: {
                 id,
             },
         });
-        if (!selected) throw new NotFoundException('unable to find branch');
-        return selected;
+        if (selected) return selected;
+        throw new NotFoundException('unable to find branch');
     }
 
     async create(
         body: CreateBranchDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.branch.create({
             data: {
                 ...body,
-                organization: {
+                company: {
                     connect: {
-                        id: body.organization,
+                        id: body.company,
                     },
                 },
                 manager: !body.manager
@@ -152,9 +151,7 @@ export class BranchService {
         body: UpdateBranchDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        let db: DatabaseService | PrismaDatabaseService;
-        if (database) db = database;
-        else db = this.database;
+        const db = database ?? this.db;
         return db.branch.update({
             where: {
                 id,
@@ -168,10 +165,10 @@ export class BranchService {
                           },
                       }
                     : undefined,
-                organization: body.organization
+                company: body.company
                     ? {
                           connect: {
-                              id: body.organization,
+                              id: body.company,
                           },
                       }
                     : undefined,
@@ -179,11 +176,11 @@ export class BranchService {
         });
     }
 
-    async delete(
+    async remove(
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.branch.delete({
             where: {
                 id,

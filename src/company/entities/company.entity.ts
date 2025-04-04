@@ -1,15 +1,14 @@
-import { Organization as PrismaOrganization } from '@prisma/client';
-
-export class Organization implements PrismaOrganization {
+import { Company as PrismaCompany } from '@prisma/client';
+export class Company implements PrismaCompany {
     id: number;
-    accountId: number;
+    accountid: number;
     title: string;
     email: string;
     country: string;
     address: string;
     avatar: string | null;
     brief: string | null;
-    taxId: string;
+    taxid: string;
     createdAt: Date;
     updatedAt: Date;
 }

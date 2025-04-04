@@ -20,53 +20,44 @@ import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('positions')
 export class PositionsController {
-    constructor(private readonly positionsService: PositionsService) {}
+    constructor(private readonly positions: PositionsService) {}
 
     @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
-        return this.positionsService.findAll(query);
+        return this.positions.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.positionsService.findOne(id);
+        return this.positions.findById(id);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post()
     create(@Body() body: CreatePositionDto) {
-        return this.positionsService.recordPosition(body);
+        return this.positions.recordPosition(body);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: UpdatePositionDto,
     ) {
-        return this.positionsService.updatePosition(id, body);
+        return this.positions.modify(id, body);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
-        return this.positionsService.remove(id);
+        return this.positions.remove(id);
     }
 }

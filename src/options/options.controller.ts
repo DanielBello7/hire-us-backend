@@ -20,53 +20,44 @@ import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('options')
 export class OptionsController {
-    constructor(private readonly optionsService: OptionsService) {}
+    constructor(private readonly options: OptionsService) {}
 
     @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
-        return this.optionsService.findAll(query);
+        return this.options.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.optionsService.findOne(id);
+        return this.options.findById(id);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post()
     create(@Body() body: CreateOptionDto) {
-        return this.optionsService.create(body);
+        return this.options.create(body);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: UpdateOptionDto,
     ) {
-        return this.optionsService.updateOption(id, body);
+        return this.options.modify(id, body);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
-        return this.optionsService.remove(id);
+        return this.options.remove(id);
     }
 }

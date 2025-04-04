@@ -2,23 +2,22 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProgressDto } from './dto/create-progress.dto';
 import { UpdateProgressDto } from './dto/update-progress.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class ProgressService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(private readonly db: DatabaseService) {}
 
     /** find the progress record for an employee using the exam id and the employee id */
-    async findEmployeeStatus(employeeId: number, examId: number) {
-        const response = await this.database.progress.findFirst({
-            where: { employeeId, examId },
+    async findEmployeeStatus(employeeid: number, examid: number) {
+        const response = await this.db.progress.findFirst({
+            where: { employeeid, examid },
         });
-        if (!response) throw new NotFoundException('cannot find status');
-        return response;
+        if (response) return response;
+        throw new NotFoundException('cannot find status');
     }
 
     /** update the progress record excluding some fields */
-    async updateProgress(
+    async modify(
         id: number,
         body: UpdateProgressDto,
         database?: DatabaseService | PrismaDatabaseService,
@@ -34,7 +33,7 @@ export class ProgressService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.progress.create({
             data: {
                 ...body,
@@ -53,7 +52,7 @@ export class ProgressService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -85,21 +84,21 @@ export class ProgressService {
             };
         }
 
-        return this.database.progress.findMany({
+        return this.db.progress.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.progress.findFirst({
+    async findById(id: number) {
+        const response = await this.db.progress.findFirst({
             where: {
                 id,
             },
         });
-        if (!response) throw new NotFoundException('cannot find status');
-        return response;
+        if (response) return response;
+        throw new NotFoundException();
     }
 
     async remove(
@@ -108,7 +107,7 @@ export class ProgressService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.progress.delete({
             where: {
                 id,
@@ -123,7 +122,7 @@ export class ProgressService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.progress.update({
             where: {
                 id,

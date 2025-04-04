@@ -4,10 +4,10 @@ import { PersonModule } from './person/person.module';
 import { DatabaseModule } from '@app/database';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { RegisterModule } from './register/register.module';
-import { AdministratorModule } from './administrator/administrator.module';
+import { SignUpModule } from './signup/signup.module';
+import { AdminsModule } from './admins/admins.module';
 import { EmployeeModule } from './employee/employee.module';
-import { OrganizationModule } from './organization/organization.module';
+import { CompanyModule } from './company/company.module';
 import { WinstonModule } from '@app/winston';
 import { BranchModule } from './branch/branch.module';
 import { PositionsModule } from './positions/positions.module';
@@ -35,17 +35,17 @@ import { TerminatedModule } from './terminated/terminated.module';
         PromotionsModule,
         DatabaseModule,
         EmployeeModule,
-        OrganizationModule,
+        CompanyModule,
         WinstonModule,
         BranchModule,
         PositionsModule,
         ExamsModule,
         AccountsModule,
-        RegisterModule,
+        SignUpModule,
         QuestionsModule,
         MessagesModule,
         PersonModule,
-        AdministratorModule,
+        AdminsModule,
         ConversationsModule,
         OptionsModule,
         ReviewsModule,

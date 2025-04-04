@@ -5,18 +5,18 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AccountsModule } from 'src/accounts/accounts.module';
 import { PassportLocalStrategy } from './strategies/passport-local.strategy';
-import { AdministratorModule } from 'src/administrator/administrator.module';
+import { AdminsModule } from 'src/admins/admins.module';
 import { PersonModule } from 'src/person/person.module';
-import { OrganizationModule } from 'src/organization/organization.module';
+import { CompanyModule } from 'src/company/company.module';
 import { PassportJWTStrategy } from './strategies/jwt.strategy';
 
 @Module({
     providers: [AuthService, PassportLocalStrategy, PassportJWTStrategy],
     controllers: [AuthController],
     imports: [
-        AdministratorModule,
+        AdminsModule,
         PersonModule,
-        OrganizationModule,
+        CompanyModule,
         AccountsModule,
         PassportModule,
         JwtModule.register({

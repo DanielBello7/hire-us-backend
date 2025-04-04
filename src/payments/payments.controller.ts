@@ -20,17 +20,17 @@ export class PaymentsController {
     @UseGuards(SessionGuard)
     @Get()
     findAll() {
-        return this.payments.findAll();
+        return this.payments.get();
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.payments.findOne(id);
+        return this.payments.findById(id);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(ACCOUNT_ROLES_ENUM.ORGANIZATIONS)
+    @AllowRoles(ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post()
     create(@Body() body: CreatePaymentDto) {
@@ -38,7 +38,7 @@ export class PaymentsController {
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(ACCOUNT_ROLES_ENUM.ORGANIZATIONS)
+    @AllowRoles(ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post('bulk')
     makeSalaryPayments(@Body() body: { id: number }) {

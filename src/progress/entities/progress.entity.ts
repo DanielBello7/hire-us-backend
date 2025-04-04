@@ -1,14 +1,13 @@
 import { Progress as PrismaProgress } from '@prisma/client';
-import { ProgressEnum } from '../dto/create-progress.dto';
-
+import { PROGRESS_ENUM } from '../dto/create-progress.dto';
 export class Progress implements PrismaProgress {
     id: number;
-    employeeId: number;
+    employeeid: number;
     score: number | null;
-    examId: number;
-    isCompleted: boolean;
-    lastQuestionId: number | null;
-    status: ProgressEnum;
+    examid: number;
+    completed: boolean;
+    lastQuestionid: number | null;
+    status: PROGRESS_ENUM;
     createdAt: Date;
     updatedAt: Date;
 }

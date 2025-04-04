@@ -7,19 +7,18 @@ import {
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { QuestionsService } from 'src/questions/questions.service';
 import { OptionsService } from 'src/options/options.service';
 import { ResponseService } from 'src/response/response.service';
 import { ProgressService } from 'src/progress/progress.service';
-import { ProgressEnum } from 'src/progress/dto/create-progress.dto';
+import { PROGRESS_ENUM } from 'src/progress/dto/create-progress.dto';
 
 @Injectable()
 export class ExamsService {
     constructor(
-        private readonly database: DatabaseService,
         private readonly options: OptionsService,
         private readonly question: QuestionsService,
+        private readonly db: DatabaseService,
         private readonly response: ResponseService,
         private readonly progress: ProgressService,
     ) {}
@@ -29,33 +28,36 @@ export class ExamsService {
      * and computes the final result to set in the progress status,
      * it also sets the status of the progress to completed
      */
-    async submit(examId: number, employeeId: number) {
+    async submit(examid: number, employeeid: number) {
         const status = await this.progress.findEmployeeStatus(
-            employeeId,
-            examId,
+            employeeid,
+            examid,
         );
-        const exam = await this.findOne(examId);
-        const responses = await this.response.findAll({ examId, employeeId });
+        const exam = await this.findById(examid);
+        const responses = await this.response.findAll({
+            examid,
+            employeeid,
+        });
         if (responses.length < exam.questions)
             throw new BadRequestException('Exam not completed');
-        const score = responses.filter((response) => response.isCorrect);
-        return this.progress.updateProgress(status.id, {
+        const score = responses.filter((response) => response.correct);
+        return this.progress.modify(status.id, {
             score: score.length,
-            status: ProgressEnum.COMPLETED,
-            isCompleted: true,
+            status: PROGRESS_ENUM.COMPLETED,
+            completed: true,
         });
     }
 
     /**
      * This updates the document of an exam record
      */
-    async updateExam(
+    async modify(
         id: number,
         body: UpdateExamDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         const {
-            organization,
+            company: organization,
             eligiblePositions,
             ineligibleEmployees,
             ...rest
@@ -67,11 +69,10 @@ export class ExamsService {
      * This updates the total number of available questions for an exam
      */
     async updateExamQuestionCount(id: number, amount: number) {
-        const exam = await this.database.exam.findFirst({
+        const exam = await this.db.exam.findFirst({
             where: { id },
         });
         if (!exam) throw new NotFoundException('Cannot find exam');
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         return this.update(id, { questions: exam.questions + amount });
     }
 
@@ -84,7 +85,7 @@ export class ExamsService {
         removePositions: number[] = [],
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.exam.update({
             where: {
                 id,
@@ -107,7 +108,7 @@ export class ExamsService {
         removePositions: number[] = [],
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.exam.update({
             where: {
                 id,
@@ -121,7 +122,7 @@ export class ExamsService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -142,7 +143,7 @@ export class ExamsService {
                             'id',
                             'title',
                             'description',
-                            'organizationId',
+                            'companyid',
                             'availableAt',
                             'startsAt',
                             'endsAt',
@@ -154,15 +155,15 @@ export class ExamsService {
             };
         }
 
-        return this.database.exam.findMany({
+        return this.db.exam.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.exam.findFirst({
+    async findById(id: number) {
+        const response = await this.db.exam.findFirst({
             where: {
                 id,
             },
@@ -179,13 +180,13 @@ export class ExamsService {
         body: CreateExamDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.exam.create({
             data: {
                 ...body,
-                organization: {
+                company: {
                     connect: {
-                        id: body.organization,
+                        id: body.company,
                     },
                 },
                 eligiblePositions: body.eligiblePositions
@@ -211,17 +212,17 @@ export class ExamsService {
         body: UpdateExamDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.exam.update({
             where: {
                 id,
             },
             data: {
                 ...body,
-                organization: body.organization
+                company: body.company
                     ? {
                           connect: {
-                              id: body.organization,
+                              id: body.company,
                           },
                       }
                     : undefined,
@@ -235,7 +236,7 @@ export class ExamsService {
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        await this.database.$transaction(async (tx) => {
+        await this.db.$transaction(async (tx) => {
             const db = database ?? tx;
             await db.exam.delete({
                 where: {
@@ -245,7 +246,7 @@ export class ExamsService {
             await this.question.deleteQuestionsUsingExamId(id, db);
             await this.options.removeMany(
                 {
-                    examId: id,
+                    examid: id,
                 },
                 db,
             );

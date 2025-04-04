@@ -7,9 +7,9 @@ import { ACCOUNT_ROLES_ENUM } from '@app/roles';
 import { LoginAccountDto } from './dto/login-account.dto';
 import { AccountsService } from 'src/accounts/accounts.service';
 import { JwtService } from '@nestjs/jwt';
-import { AdministratorService } from 'src/administrator/administrator.service';
+import { AdminsService } from 'src/admins/admins.service';
 import { PersonService } from 'src/person/person.service';
-import { OrganizationService } from 'src/organization/organization.service';
+import { CompanyService } from 'src/company/company.service';
 
 export type ValidatedUser = {
     role: ACCOUNT_ROLES_ENUM;
@@ -23,13 +23,13 @@ export class AuthService {
     constructor(
         private readonly accounts: AccountsService,
         private readonly jwt: JwtService,
-        private readonly admin: AdministratorService,
+        private readonly admin: AdminsService,
         private readonly person: PersonService,
-        private readonly organization: OrganizationService,
+        private readonly organization: CompanyService,
     ) {}
 
     async validate(body: LoginAccountDto): Promise<ValidatedUser | null> {
-        const response = await this.accounts.findAccountUsingEmail(body.email);
+        const response = await this.accounts.findByEmailorNull(body.email);
         if (!response) return null;
         if (
             !(await this.accounts.comparePassword(
@@ -58,14 +58,14 @@ export class AuthService {
     }
 
     async getMe(id: number) {
-        const response = await this.accounts.findAccount(id);
+        const response = await this.accounts.findById(id);
         const actions = {
-            [ACCOUNT_ROLES_ENUM.ADMINISTRATOR]: async (id: number) =>
-                this.admin.findAdminUsingAccountId(id),
+            [ACCOUNT_ROLES_ENUM.ADMIN]: async (id: number) =>
+                this.admin.findByAccId(id),
             [ACCOUNT_ROLES_ENUM.EMPLOYEE]: async (id: number) =>
-                this.person.findPersonUsingAccountId(id),
-            [ACCOUNT_ROLES_ENUM.ORGANIZATIONS]: async (id: number) =>
-                this.organization.findOrganizationUsingAccountId(id),
+                this.person.findByAccId(id),
+            [ACCOUNT_ROLES_ENUM.COMPANY]: async (id: number) =>
+                this.organization.findByAccId(id),
         };
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

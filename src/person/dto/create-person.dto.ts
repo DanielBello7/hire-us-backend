@@ -7,60 +7,49 @@ import {
     IsEnum,
     IsOptional,
 } from 'class-validator';
-
-export enum GenderEnum {
-    MALE = 'male',
-    FEMALE = 'female',
+export enum GENDER_ENUM {
+    MALE = 'MALE',
+    FEMALE = 'FEMALE',
 }
-
 export class CreatePersonDto
     implements Omit<Prisma.PersonCreateInput, 'Employee' | 'account'>
 {
     @Expose()
     @IsString()
     @IsNotEmpty()
-    taxId: string;
-
+    taxid: string;
     @Expose()
     @IsString()
     @IsNotEmpty()
     name: string;
-
     @Expose()
     @IsNotEmpty()
     @IsEmail()
     email: string;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     username: string;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     country: string;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     address: string;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
-    @IsEnum(GenderEnum)
-    gender: string;
-
+    @IsEnum(GENDER_ENUM)
+    gender: GENDER_ENUM;
     @Expose()
     @IsNotEmpty()
     account: number;
-
     @Expose()
     @IsString()
     @IsOptional()
     avatar?: string | null | undefined;
-
     createdAt?: string | Date | undefined;
     updatedAt?: string | Date | undefined;
 }

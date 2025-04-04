@@ -3,7 +3,7 @@ export class Exam implements PrismaExam {
     id: number;
     title: string;
     description: string;
-    organizationId: number;
+    companyid: number;
     availableAt: Date;
     startsAt: Date;
     questions: number;

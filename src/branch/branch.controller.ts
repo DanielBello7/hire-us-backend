@@ -21,67 +21,55 @@ import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 
 @Controller('branches')
 export class BranchController {
-    constructor(private readonly branchService: BranchService) {}
+    constructor(private readonly branch: BranchService) {}
 
     @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
-        return this.branchService.findAll(query);
+        return this.branch.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.branchService.findOne(id);
+        return this.branch.findById(id);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post()
     create(@Body() body: CreateBranchDto) {
-        return this.branchService.createBranch(body);
+        return this.branch.createBranch(body);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: UpdateBranchDto,
     ) {
-        return this.branchService.updateBranch(id, body);
+        return this.branch.updateBranch(id, body);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Patch(':id/manager/')
     changeManager(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: UpdateBranchManagerDto,
     ) {
-        return this.branchService.updateManager(id, body.manager);
+        return this.branch.updateManager(id, body.manager);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
-        return this.branchService.removeBranch(id);
+        return this.branch.removeBranch(id);
     }
 }

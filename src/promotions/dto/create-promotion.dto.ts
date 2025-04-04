@@ -17,27 +17,22 @@ export class CreatePromotionDto
     @IsEnum(PromotionTypeEnum)
     @IsNotEmpty()
     type: string;
-
     @Expose()
     @IsOptional()
     @IsNumber()
     exam?: number;
-
     @Expose()
     @IsNumber()
     @IsNotEmpty()
     employee: number;
-
     @Expose()
     @IsNotEmpty()
     @IsNumber()
     fromPosition: number;
-
     @Expose()
     @IsNumber()
     @IsNotEmpty()
     toPosition: number;
-
     createdAt?: string | Date | undefined;
     updatedAt?: string | Date | undefined;
 }

@@ -5,56 +5,49 @@ import {
     IsString,
     Matches,
 } from 'class-validator';
-import { CreateRegisterDto } from './create-register.dto';
+import { CreateSignupDto } from './create-signup.dto';
 import { CreateEmployeeDto } from 'src/employee/dto/create-employee.dto';
-import { CreatePersonDto, GenderEnum } from 'src/person/dto/create-person.dto';
+import { CreatePersonDto, GENDER_ENUM } from 'src/person/dto/create-person.dto';
 import { ACCOUNT_ROLES_ENUM } from '@app/roles';
 import { Expose } from 'class-transformer';
 
-type RegisterEmployeeDto = Omit<CreateEmployeeDto, 'account' | 'person'> &
+type SignUpEmployeeDto = Omit<CreateEmployeeDto, 'account' | 'person'> &
     Omit<CreatePersonDto, 'account'>;
 
-export class CreateRegisterEmployeeDto
-    extends CreateRegisterDto
-    implements RegisterEmployeeDto
+export class CreateSignUpEmployeeDto
+    extends CreateSignupDto
+    implements SignUpEmployeeDto
 {
     @Expose()
     @Matches(ACCOUNT_ROLES_ENUM.EMPLOYEE)
     @IsNotEmpty()
     role: ACCOUNT_ROLES_ENUM;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
-    taxId: string;
-
+    taxid: string;
     @Expose()
     @IsString()
     @IsNotEmpty()
     username: string;
-
     @Expose()
     @IsString()
     @IsNotEmpty()
     country: string;
-
     @Expose()
     @IsString()
     @IsNotEmpty()
     address: string;
-
     @Expose()
     @IsNotEmpty()
-    @IsEnum(GenderEnum)
-    gender: string;
-
+    @IsEnum(GENDER_ENUM)
+    gender: GENDER_ENUM;
     @Expose()
     @IsNotEmpty()
     @IsNumber()
     position: number;
-
     @Expose()
     @IsNotEmpty()
     @IsNumber()
-    organization: number;
+    company: number;
 }

@@ -6,7 +6,6 @@ import {
     IsNotEmpty,
     IsNumber,
 } from 'class-validator';
-
 export class CreateConversationDto {
     @Expose()
     @IsArray()
@@ -14,7 +13,6 @@ export class CreateConversationDto {
     @ArrayMinSize(1)
     @IsNumber({}, { each: true })
     members: number[];
-
     @Expose()
     @IsNotEmpty()
     @IsNumber()

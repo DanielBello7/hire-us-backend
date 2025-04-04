@@ -8,27 +8,22 @@ export class CreateOptionDto
     @IsNotEmpty()
     @IsString()
     body: string;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     description?: string | null | undefined;
-
     @Expose()
     @IsNotEmpty()
     @IsNumber()
-    examId: number;
-
+    examid: number;
     @Expose()
     @IsNotEmpty()
     @IsNumber()
     question: number;
-
     @Expose()
     @IsNotEmpty()
     @IsBoolean()
-    isCorrect: boolean;
-
+    correct: boolean;
     createdAt?: string | Date | undefined;
     updatedAt?: string | Date | undefined;
 }

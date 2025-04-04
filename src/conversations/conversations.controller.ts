@@ -21,19 +21,19 @@ export class ConversationsController {
     @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
-        return this.conversations.findConversations(query);
+        return this.conversations.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.conversations.findOneUsingId(id);
+        return this.conversations.findById(id);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id/messages/')
     findMessages(@Param('id', ParseIntPipe) id: number) {
-        return this.conversations.findMessages(id);
+        return this.conversations.getMsgs(id);
     }
 
     @UseGuards(SessionGuard)

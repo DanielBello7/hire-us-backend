@@ -2,11 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOptionDto } from './dto/create-option.dto';
 import { UpdateOptionDto } from './dto/update-option.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class OptionsService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(private readonly db: DatabaseService) {}
 
     /**
      * Create many options at once
@@ -15,11 +14,11 @@ export class OptionsService {
         body: CreateOptionDto[],
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.option.createMany({
             data: body.map((option) => ({
                 ...option,
-                questionId: option.question,
+                questionid: option.question,
                 question: {
                     connect: {
                         id: option.question,
@@ -33,10 +32,10 @@ export class OptionsService {
      * Delete many question options, using filters.
      */
     async removeMany(
-        filter: Partial<{ questionId: number; examId: number }>,
+        filter: Partial<{ questionId: number; examid: number }>,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.option.deleteMany({
             where: filter,
         });
@@ -50,10 +49,10 @@ export class OptionsService {
         ids: number[],
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.option.deleteMany({
             where: {
-                questionId: { in: ids },
+                questionid: { in: ids },
             },
         });
     }
@@ -61,7 +60,7 @@ export class OptionsService {
     /**
      * Update an option excluding certain items
      */
-    async updateOption(
+    async modify(
         id: number,
         body: UpdateOptionDto,
         database?: DatabaseService | PrismaDatabaseService,
@@ -71,7 +70,7 @@ export class OptionsService {
         return this.update(id, rest, database);
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -90,10 +89,10 @@ export class OptionsService {
                     Object.entries(query).filter(([key]) =>
                         [
                             'id',
-                            'questionId',
+                            'questionid',
                             'body',
                             'description',
-                            'isCorrect',
+                            'correct',
                             'createdAt',
                             'updatedAt',
                         ].includes(key),
@@ -102,28 +101,28 @@ export class OptionsService {
             };
         }
 
-        return this.database.option.findMany({
+        return this.db.option.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.option.findFirst({
+    async findById(id: number) {
+        const response = await this.db.option.findFirst({
             where: {
                 id,
             },
         });
-        if (!response) throw new NotFoundException('cannot find option');
-        return response;
+        if (response) return response;
+        throw new NotFoundException('cannot find option');
     }
 
     async create(
         body: CreateOptionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.option.create({
             data: {
                 ...body,
@@ -141,7 +140,7 @@ export class OptionsService {
         body: UpdateOptionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.option.update({
             where: {
                 id,
@@ -163,7 +162,7 @@ export class OptionsService {
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.option.delete({
             where: {
                 id,

@@ -14,24 +14,20 @@ export class CreateQuestionDto
     @Expose()
     @IsNotEmpty()
     @IsNumber()
-    examId: number;
-
+    examid: number;
     @Expose()
     @IsNotEmpty()
     @IsNumber()
     index: number;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     body: string;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     @IsEnum(QuestionTypeEnum)
     type: string;
-
     createdAt?: string | Date | undefined;
     updatedAt?: string | Date | undefined;
 }

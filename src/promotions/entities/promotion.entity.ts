@@ -3,10 +3,10 @@ import { PromotionTypeEnum } from '../dto/create-promotion.dto';
 export class Promotion implements PrismaPromotion {
     id: number;
     type: PromotionTypeEnum;
-    examId: number | null;
-    employeeId: number;
-    fromPositionId: number;
-    toPositionId: number;
+    examid: number | null;
+    employeeid: number;
+    fromPositionid: number;
+    toPositionid: number;
     createdAt: Date;
     updatedAt: Date;
 }

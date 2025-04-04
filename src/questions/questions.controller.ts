@@ -18,64 +18,52 @@ import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('questions')
 export class QuestionsController {
-    constructor(private readonly questionsService: QuestionsService) {}
+    constructor(private readonly questions: QuestionsService) {}
 
     @UseGuards(SessionGuard)
     @Get()
     findAll() {
-        return this.questionsService.findAll();
+        return this.questions.get();
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.questionsService.findOne(id);
+        return this.questions.findById(id);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post()
     create(@Body() body: CreateQuestionDto) {
-        return this.questionsService.create(body);
+        return this.questions.create(body);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: UpdateQuestionDto,
     ) {
-        return this.questionsService.updateQuestion(id, body);
+        return this.questions.modify(id, body);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
-        return this.questionsService.remove(id);
+        return this.questions.remove(id);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Delete('exam/:id')
     deleteExamQuestions(@Param('id', ParseIntPipe) id: number) {
-        return this.questionsService.deleteQuestion(id);
+        return this.questions.deleteQuestion(id);
     }
 }

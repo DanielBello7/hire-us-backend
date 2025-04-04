@@ -32,7 +32,7 @@ export class ReviewsController {
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(ACCOUNT_ROLES_ENUM.ORGANIZATIONS, ACCOUNT_ROLES_ENUM.EMPLOYEE)
+    @AllowRoles(ACCOUNT_ROLES_ENUM.COMPANY, ACCOUNT_ROLES_ENUM.EMPLOYEE)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post()
     create(@Body() body: CreateReviewDto) {

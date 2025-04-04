@@ -2,13 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { EmployeeService } from 'src/employee/employee.service';
 
 @Injectable()
 export class PaymentsService {
     constructor(
-        private readonly database: DatabaseService,
+        private readonly db: DatabaseService,
         private readonly employees: EmployeeService,
     ) {}
 
@@ -18,7 +17,7 @@ export class PaymentsService {
         company: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const employees = await this.employees.findEmployees({
+        const employees = await this.employees.get({
             organizationId: company,
             isTerminated: false,
         });
@@ -28,7 +27,7 @@ export class PaymentsService {
                     amount: employee.position?.salary ?? 0,
                     currency: employee.position?.currency ?? 'usd',
                     employee: employee.id,
-                    organization: company,
+                    company: company,
                 }),
                 database,
             ),
@@ -40,13 +39,13 @@ export class PaymentsService {
         employee: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const response = await this.employees.findOne(employee);
+        const response = await this.employees.findById(employee);
         return this.create(
             {
                 amount: response.position?.salary ?? 0,
                 currency: response.position?.currency ?? 'usd',
                 employee,
-                organization: response.organizationId,
+                company: response.companyid,
             },
             database,
         );
@@ -56,13 +55,13 @@ export class PaymentsService {
         body: CreatePaymentDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.payment.create({
             data: {
                 ...body,
-                organization: {
+                company: {
                     connect: {
-                        id: body.organization,
+                        id: body.company,
                     },
                 },
                 employee: {
@@ -78,17 +77,17 @@ export class PaymentsService {
         body: CreatePaymentDto[],
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.payment.createMany({
             data: body.map((payment) => ({
                 ...payment,
-                employeeId: payment.employee,
-                organizationId: payment.organization,
+                employeeid: payment.employee,
+                companyid: payment.company,
             })),
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -110,7 +109,7 @@ export class PaymentsService {
                             'employeeid',
                             'amount',
                             'currency',
-                            'organizationId',
+                            'companyid',
                             'createdAt',
                             'updatedAt',
                         ].includes(key),
@@ -119,22 +118,21 @@ export class PaymentsService {
             };
         }
 
-        return this.database.payment.findMany({
+        return this.db.payment.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.payment.findFirst({
+    async findById(id: number) {
+        const response = await this.db.payment.findFirst({
             where: {
                 id,
             },
         });
-        if (!response)
-            throw new NotFoundException('cannot find payment record');
-        return response;
+        if (response) return response;
+        throw new NotFoundException('cannot find payment record');
     }
 
     async update(
@@ -142,7 +140,7 @@ export class PaymentsService {
         body: UpdatePaymentDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.payment.update({
             where: {
                 id,
@@ -154,9 +152,9 @@ export class PaymentsService {
                         id: body.employee,
                     },
                 },
-                organization: {
+                company: {
                     connect: {
-                        id: body.organization,
+                        id: body.company,
                     },
                 },
             },
@@ -167,7 +165,7 @@ export class PaymentsService {
         id: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.payment.delete({
             where: { id },
         });

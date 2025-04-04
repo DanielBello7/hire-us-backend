@@ -15,23 +15,23 @@ import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('progress')
 export class ProgressController {
-    constructor(private readonly progressService: ProgressService) {}
+    constructor(private readonly progress: ProgressService) {}
 
     @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
-        return this.progressService.findAll(query);
+        return this.progress.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.progressService.findOne(id);
+        return this.progress.findById(id);
     }
 
     @UseGuards(SessionGuard)
     @Post()
     create(@Body() body: CreateProgressDto) {
-        return this.progressService.create(body);
+        return this.progress.create(body);
     }
 }

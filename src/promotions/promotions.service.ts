@@ -11,25 +11,25 @@ import { EmployeeService } from 'src/employee/employee.service';
 @Injectable()
 export class PromotionsService {
     constructor(
-        private readonly database: DatabaseService,
+        private readonly db: DatabaseService,
         private readonly employee: EmployeeService,
     ) {}
 
     /** handles the promotion of an employee */
-    async promoteEmployee(employee: number) {
-        const selected = await this.employee.findOne(employee);
-        if (!selected.positionId) {
+    async promote(employee: number) {
+        const selected = await this.employee.findById(employee);
+        if (!selected.positionid) {
             throw new BadRequestException(
                 'Employee cannot be promoted. No position currently held',
             );
         }
-        if (!selected.position?.successorId) {
+        if (!selected.position?.successorid) {
             throw new BadRequestException(
                 'Employee cannot be promoted. Position has no successor',
             );
         }
-        return this.employee.updateEmployee(employee, {
-            person: selected.position.successorId,
+        return this.employee.modify(employee, {
+            person: selected.position.successorid,
         });
     }
 
@@ -39,7 +39,7 @@ export class PromotionsService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.promotion.create({
             data: {
                 ...body,
@@ -69,7 +69,7 @@ export class PromotionsService {
         });
     }
 
-    async findPromotions(query?: Record<string, any>) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -89,10 +89,10 @@ export class PromotionsService {
                         [
                             'id',
                             'type',
-                            'examId',
-                            'employeeId',
-                            'fromPositionId',
-                            'toPositionId',
+                            'examid',
+                            'employeeid',
+                            'fromPositionid',
+                            'toPositionid',
                             'createdAt',
                             'updatedAt',
                         ].includes(key),
@@ -101,21 +101,21 @@ export class PromotionsService {
             };
         }
 
-        return this.database.promotion.findMany({
+        return this.db.promotion.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOneUsingId(id: number) {
-        const response = await this.database.promotion.findFirst({
+    async findById(id: number) {
+        const response = await this.db.promotion.findFirst({
             where: {
                 id,
             },
         });
-        if (!response) throw new NotFoundException('cannot find promotion');
-        return response;
+        if (response) return response;
+        throw new NotFoundException('cannot find promotion');
     }
 
     async update(
@@ -125,7 +125,7 @@ export class PromotionsService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.promotion.update({
             where: {
                 id,
@@ -152,7 +152,7 @@ export class PromotionsService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.promotion.delete({
             where: {
                 id,

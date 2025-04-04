@@ -7,9 +7,6 @@ import {
 import { CreateUploadDto } from './dto/create-upload.dto';
 import { UpdateUploadDto } from './dto/update-upload.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { OrganizationService } from 'src/organization/organization.service';
-import { PersonService } from 'src/person/person.service';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
@@ -21,9 +18,7 @@ export class UploadsService {
     private readonly folder = path.join(__dirname, '..', '..', 'public');
 
     constructor(
-        private readonly database: DatabaseService,
-        private readonly organization: OrganizationService,
-        private readonly person: PersonService,
+        private readonly db: DatabaseService,
         private readonly accounts: AccountsService,
     ) {}
 
@@ -84,14 +79,14 @@ export class UploadsService {
     ) {
         if (this.isFolderMaxed())
             throw new InternalServerErrorException('storage maxed out');
-        return this.database.$transaction(async (tx) => {
+        return this.db.$transaction(async (tx) => {
             const upload = await this.saveFile(
                 accountid,
                 files[0],
                 database ?? tx,
             );
 
-            await this.accounts.updateAccount(
+            await this.accounts.modify(
                 accountid,
                 {
                     avatar: upload.url,
@@ -122,7 +117,7 @@ export class UploadsService {
 
     /** find file using temp id */
     async findUsingTempId(id: string) {
-        const response = await this.database.upload.findFirst({
+        const response = await this.db.upload.findFirst({
             where: { tempid: id },
             include: { account: true },
         });
@@ -133,7 +128,7 @@ export class UploadsService {
     /** delete uploaded file */
     async deleteUpload(id: number) {
         try {
-            const selected = await this.findOne(id);
+            const selected = await this.findById(id);
             const location = path.join(this.folder, selected.title);
             if (!fs.existsSync(location))
                 throw new NotFoundException('file missing on disk');
@@ -145,7 +140,7 @@ export class UploadsService {
     }
 
     async create(body: CreateUploadDto, database?: PrismaDatabaseService) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.upload.create({
             data: {
                 ...body,
@@ -158,7 +153,7 @@ export class UploadsService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -189,15 +184,15 @@ export class UploadsService {
             };
         }
 
-        return this.database.upload.findMany({
+        return this.db.upload.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.upload.findFirst({
+    async findById(id: number) {
+        const response = await this.db.upload.findFirst({
             where: { id },
             include: { account: true },
         });
@@ -210,7 +205,7 @@ export class UploadsService {
         body: UpdateUploadDto,
         database?: PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.upload.update({
             where: {
                 id,
@@ -229,7 +224,7 @@ export class UploadsService {
     }
 
     async remove(id: number, database?: PrismaDatabaseService) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.upload.delete({
             where: {
                 id,

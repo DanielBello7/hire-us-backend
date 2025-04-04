@@ -4,8 +4,8 @@ export class Message implements PrismaMessage {
     body: string;
     media: string | null;
     mediaType: string | null;
-    createdById: number;
-    conversationId: number;
+    createdByid: number;
+    conversationid: number;
     createdAt: Date;
     updatedAt: Date;
 }

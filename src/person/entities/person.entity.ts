@@ -1,10 +1,9 @@
 import { Person as PrismaPerson } from '@prisma/client';
-
 export class Person implements PrismaPerson {
-    taxId: string;
-    name: string;
     id: number;
-    accountId: number;
+    taxid: string;
+    name: string;
+    accountid: number;
     email: string;
     username: string;
     country: string;

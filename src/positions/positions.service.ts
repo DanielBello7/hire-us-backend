@@ -2,16 +2,15 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { Position } from './entities/position.entity';
 
 @Injectable()
 export class PositionsService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(private readonly db: DatabaseService) {}
 
     /** check if a position has already been recorded */
     async alreadyCreated(title: string, id: number): Promise<Position | false> {
-        const response: Position[] = await this.database.$queryRaw`
+        const response: Position[] = await this.db.$queryRaw`
             SELECT * FROM position 
             WHERE LOWER(title) = LOWER(${title}) 
             AND organizationId = ${id}
@@ -25,22 +24,19 @@ export class PositionsService {
         body: CreatePositionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const response = await this.alreadyCreated(
-            body.title,
-            body.organization,
-        );
+        const response = await this.alreadyCreated(body.title, body.company);
         if (response) return response;
         return this.create(body, database);
     }
 
     /** update a position record */
-    async updatePosition(
+    async modify(
         id: number,
         body: UpdatePositionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { organization, ...rest } = body;
+        const { company: organization, ...rest } = body;
         return this.update(id, rest, database);
     }
 
@@ -48,7 +44,7 @@ export class PositionsService {
         body: CreatePositionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const db = database ?? this.database;
+        const db = database ?? this.db;
         return db.position.create({
             data: {
                 ...body,
@@ -66,9 +62,9 @@ export class PositionsService {
                           },
                       }
                     : undefined,
-                organization: {
+                company: {
                     connect: {
-                        id: body.organization,
+                        id: body.company,
                     },
                 },
                 successor: {
@@ -85,7 +81,7 @@ export class PositionsService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -105,13 +101,13 @@ export class PositionsService {
                         [
                             'id',
                             'title',
-                            'organizationId',
-                            'successorId',
+                            'companyid',
+                            'successor',
                             'predecessor',
                             'salary',
                             'currency',
                             'description',
-                            'examId',
+                            'examid',
                             'email',
                             'createdAt',
                             'updatedAt',
@@ -121,21 +117,21 @@ export class PositionsService {
             };
         }
 
-        return this.database.position.findMany({
+        return this.db.position.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.position.findFirst({
+    async findById(id: number) {
+        const response = await this.db.position.findFirst({
             where: {
                 id,
             },
         });
-        if (!response) throw new NotFoundException('cannot find position');
-        return response;
+        if (response) return response;
+        throw new NotFoundException();
     }
 
     async remove(
@@ -144,7 +140,7 @@ export class PositionsService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.position.delete({
             where: { id },
         });
@@ -157,17 +153,17 @@ export class PositionsService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.position.update({
             where: {
                 id,
             },
             data: {
                 ...body,
-                organization: body.organization
+                company: body.company
                     ? {
                           connect: {
-                              id: body.organization,
+                              id: body.company,
                           },
                       }
                     : undefined,

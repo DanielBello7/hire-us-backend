@@ -20,13 +20,13 @@ export class PersonController {
     @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
-        return this.person.findAll(query);
+        return this.person.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.person.findOne(id);
+        return this.person.findById(id);
     }
 
     @UseGuards(SessionGuard)
@@ -35,6 +35,6 @@ export class PersonController {
         @Param('id', ParseIntPipe) id: number,
         @Body() body: UpdatePersonDto,
     ) {
-        return this.person.updatePerson(id, body);
+        return this.person.modify(id, body);
     }
 }

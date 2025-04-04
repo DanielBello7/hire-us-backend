@@ -17,28 +17,25 @@ import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('promotions')
 export class PromotionsController {
-    constructor(private readonly promotionsService: PromotionsService) {}
+    constructor(private readonly promotions: PromotionsService) {}
 
     @UseGuards(SessionGuard)
     @Get()
     findAll(@Query() query: ExpressQuery) {
-        return this.promotionsService.findPromotions(query);
+        return this.promotions.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get('employee/:id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.promotionsService.promoteEmployee(id);
+        return this.promotions.promote(id);
     }
 
     @UseGuards(SessionGuard)
-    @AllowRoles(
-        ACCOUNT_ROLES_ENUM.ADMINISTRATOR,
-        ACCOUNT_ROLES_ENUM.ORGANIZATIONS,
-    )
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(AuthGuard(), RolesGuard)
     @Post()
     create(@Body() body: CreatePromotionDto) {
-        return this.promotionsService.create(body);
+        return this.promotions.create(body);
     }
 }

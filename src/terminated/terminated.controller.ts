@@ -4,17 +4,17 @@ import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('terminated')
 export class TerminatedController {
-    constructor(private readonly terminatedService: TerminatedService) {}
+    constructor(private readonly terminated: TerminatedService) {}
 
     @UseGuards(SessionGuard)
     @Get()
     findAll() {
-        return this.terminatedService.findAll();
+        return this.terminated.get();
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id') id: string) {
-        return this.terminatedService.findOne(+id);
+        return this.terminated.findById(+id);
     }
 }

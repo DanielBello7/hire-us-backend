@@ -1,45 +1,46 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AccountsService } from 'src/accounts/accounts.service';
 import { PersonService } from 'src/person/person.service';
-import { OrganizationService } from 'src/organization/organization.service';
+import { CompanyService } from 'src/company/company.service';
 import { EmployeeService } from 'src/employee/employee.service';
-import { CreateRegisterEmployeeDto } from './dto/create-register-employee.dto';
-import { CreateRegisterAdministratorDto } from './dto/create-register-administrator.dto';
-import { CreateRegisterOrganizationDto } from './dto/create-register-organization.dto';
-import { AdministratorService } from 'src/administrator/administrator.service';
+import { CreateSignUpEmployeeDto } from './dto/create-signup-employee.dto';
+import { CreateSignUpAdminDto } from './dto/create-signup-admin.dto';
+import { CreateSignUpCompanyDto } from './dto/create-signup-company.dto';
+import { AdminsService } from 'src/admins/admins.service';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { plainToInstance } from 'class-transformer';
-import { CreateAdministratorDto } from 'src/administrator/dto/create-administrator.dto';
+import { CreateAdminDto } from 'src/admins/dto/create-admins.dto';
 import { CreatePersonDto } from 'src/person/dto/create-person.dto';
 import { CreateEmployeeDto } from 'src/employee/dto/create-employee.dto';
-import { CreateOrganizationDto } from 'src/organization/dto/create-organization.dto';
+import { CreateCompanyDto } from 'src/company/dto/create-company.dto';
 import { CreateAccountDto } from 'src/accounts/dto/create-account.dto';
 
 @Injectable()
-export class RegisterService {
+export class SignUpService {
     constructor(
-        private readonly database: DatabaseService,
         private readonly account: AccountsService,
         private readonly person: PersonService,
-        private readonly organization: OrganizationService,
+        private readonly db: DatabaseService,
+        private readonly company: CompanyService,
         private readonly employee: EmployeeService,
-        private readonly admin: AdministratorService,
+        private readonly admin: AdminsService,
     ) {}
 
     /** This creates an account, creates  person account, and creates an employee account */
     async registerEmployee(
-        body: CreateRegisterEmployeeDto,
+        body: CreateSignUpEmployeeDto,
         database?: PrismaDatabaseService,
     ) {
         const checks = await Promise.all([
-            this.account.isEmailRegistered(body.email),
-            this.person.isEmailRegistered(body.email),
+            this.account.isUsed(body.email),
+            this.person.isUsed(body.email),
         ]);
 
-        if (checks.includes(true))
+        if (checks.includes(true)) {
             throw new BadRequestException('Employee already registered');
+        }
 
-        return this.database.$transaction(async (tx) => {
+        return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
             const account = await this.account.createAccount(
                 {
@@ -73,18 +74,19 @@ export class RegisterService {
 
     /** This creates an account and creates an administrator account */
     async registerAdministrator(
-        body: CreateRegisterAdministratorDto,
+        body: CreateSignUpAdminDto,
         database?: PrismaDatabaseService,
     ) {
         const checks = await Promise.all([
-            this.account.isEmailRegistered(body.email),
-            this.admin.isEmailRegistered(body.email),
+            this.account.isUsed(body.email),
+            this.admin.isUsed(body.email),
         ]);
 
-        if (checks.includes(true))
+        if (checks.includes(true)) {
             throw new BadRequestException('Account already registered');
+        }
 
-        return this.database.$transaction(async (tx) => {
+        return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
             const account = await this.account.createAccount(
                 { ...body, isEmailVerified: false },
@@ -93,7 +95,7 @@ export class RegisterService {
 
             return this.admin.createAdmin(
                 {
-                    ...plainToInstance(CreateAdministratorDto, body, {
+                    ...plainToInstance(CreateAdminDto, body, {
                         excludeExtraneousValues: true,
                     }),
                     account: account.id,
@@ -105,18 +107,18 @@ export class RegisterService {
 
     /** This creates an account, and creates an organization ccount*/
     async registerOrganization(
-        body: CreateRegisterOrganizationDto,
+        body: CreateSignUpCompanyDto,
         database?: PrismaDatabaseService,
     ) {
         const checks = await Promise.all([
-            this.account.isEmailRegistered(body.email),
-            this.organization.isOrganizationRegistered(body.email, body.taxId),
+            this.account.isUsed(body.email),
+            this.company.isUsed(body.email, body.taxid),
         ]);
 
         if (checks.includes(true))
             throw new BadRequestException('Account already registered');
 
-        return this.database.$transaction(async (tx) => {
+        return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
 
             const account = await this.account.createAccount(
@@ -129,9 +131,9 @@ export class RegisterService {
                 db,
             );
 
-            return this.organization.createOrganization(
+            return this.company.createCompany(
                 {
-                    ...plainToInstance(CreateOrganizationDto, body, {
+                    ...plainToInstance(CreateCompanyDto, body, {
                         excludeExtraneousValues: true,
                     }),
                     account: account.id,

@@ -46,7 +46,7 @@ export class ResponseService {
                 body.employee,
                 body.exam,
             );
-            await this.progress.updateProgress(
+            await this.progress.modify(
                 progress.id,
                 {
                     score: response.isCorrect

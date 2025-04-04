@@ -8,25 +8,24 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
 import { ACCOUNT_ROLES_ENUM } from '@app/roles';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import * as bcrypt from 'bcrypt';
-import { AdministratorService } from 'src/administrator/administrator.service';
-import { OrganizationService } from 'src/organization/organization.service';
+import { AdminsService } from 'src/admins/admins.service';
+import { CompanyService } from 'src/company/company.service';
 
 @Injectable()
 export class AccountsService {
     constructor(
-        private readonly database: DatabaseService,
         private readonly person: PersonService,
-        private readonly admin: AdministratorService,
-        private readonly organization: OrganizationService,
+        private readonly admin: AdminsService,
+        private readonly db: DatabaseService,
+        private readonly organization: CompanyService,
     ) {}
 
     /** This finds an account using the email but returns null if it
      * cannot find it
      */
-    async findAccountUsingEmail(email: string) {
-        return this.database.account.findFirst({
+    async findByEmailorNull(email: string) {
+        return this.db.account.findFirst({
             where: {
                 email,
             },
@@ -34,20 +33,21 @@ export class AccountsService {
     }
 
     /** This checks if an email isa lready registered  */
-    async isEmailRegistered(email: string) {
-        const response = await this.database.account.findFirst({
+    async isUsed(email: string) {
+        const response = await this.db.account.findFirst({
             where: {
                 email,
             },
         });
-        return !!response;
+        if (!response) return false;
+        return true;
     }
 
     /** This compares the password of an account with a given string
      * it uses either the id or the email of the account in question
      */
     async comparePassword(idOrEmail: number | string, password: string) {
-        const account = await this.database.account.findFirst({
+        const account = await this.db.account.findFirst({
             where:
                 typeof idOrEmail === 'string'
                     ? {
@@ -68,7 +68,7 @@ export class AccountsService {
         data: CreateAccountDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        if (await this.isEmailRegistered(data.email)) {
+        if (await this.isUsed(data.email)) {
             throw new BadRequestException('Email already registered');
         }
         return this.create(data, database);
@@ -78,41 +78,40 @@ export class AccountsService {
      * fields, then it also updates the
      * same field for the respective account role types
      */
-    async updateAccount(
+    async modify(
         id: number,
         updates: UpdateAccountDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         const { role, ...rest } = updates;
-        const body = rest;
 
-        return this.database.$transaction(async (tx) => {
+        return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
-            if (body.email || body.name || body.avatar) {
-                if (role === ACCOUNT_ROLES_ENUM.ORGANIZATIONS) {
-                    await this.organization.updateOrganization(
+            if (rest.email || rest.name || rest.avatar) {
+                if (role === ACCOUNT_ROLES_ENUM.COMPANY) {
+                    await this.organization.modify(
                         id,
                         {
                             title: updates.name,
                             email: updates.email,
-                            avatar: body.avatar,
+                            avatar: rest.avatar,
                         },
                         db,
                     );
                 }
                 if (role === ACCOUNT_ROLES_ENUM.EMPLOYEE) {
-                    await this.person.updatePerson(
+                    await this.person.modify(
                         id,
                         {
                             name: updates.name,
                             email: updates.email,
-                            avatar: body.avatar,
+                            avatar: rest.avatar,
                         },
                         db,
                     );
                 }
-                if (role === ACCOUNT_ROLES_ENUM.ADMINISTRATOR) {
-                    await this.admin.updateAdmin(
+                if (role === ACCOUNT_ROLES_ENUM.ADMIN) {
+                    await this.admin.modify(
                         id,
                         {
                             name: updates.name,
@@ -125,15 +124,15 @@ export class AccountsService {
 
             if (rest.password) {
                 const hashed = bcrypt.hashSync(rest.password, 10);
-                body.password = hashed;
+                rest.password = hashed;
             }
 
             return this.update(id, updates, db);
         });
     }
 
-    async findAccount(id: number) {
-        const account = await this.database.account.findFirst({
+    async findById(id: number) {
+        const account = await this.db.account.findFirst({
             where: {
                 id,
             },
@@ -145,7 +144,7 @@ export class AccountsService {
         throw new NotFoundException('account not found');
     }
 
-    async getAccounts(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -177,7 +176,7 @@ export class AccountsService {
             };
         }
 
-        return this.database.account.findMany({
+        return this.db.account.findMany({
             where: options,
             skip,
             take: pickNum,
@@ -191,9 +190,7 @@ export class AccountsService {
         data: CreateAccountDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        let db: DatabaseService | PrismaDatabaseService;
-        if (database) db = database;
-        else db = this.database;
+        const db = database ?? this.db;
         return db.account.create({
             data: {
                 email: data.email,
@@ -210,9 +207,7 @@ export class AccountsService {
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         try {
-            let db: DatabaseService | PrismaDatabaseService;
-            if (database) db = database;
-            else db = this.database;
+            const db = database ?? this.db;
             return db.account.update({
                 where: {
                     id,

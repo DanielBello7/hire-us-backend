@@ -1,64 +1,63 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateAdministratorDto } from './dto/create-administrator.dto';
-import { UpdateAdministratorDto } from './dto/update-administrator.dto';
+import { CreateAdminDto } from './dto/create-admins.dto';
+import { UpdateAdminDto } from './dto/update-admins.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AccountsService } from 'src/accounts/accounts.service';
 
 @Injectable()
-export class AdministratorService {
+export class AdminsService {
     constructor(
-        private readonly database: DatabaseService,
+        private readonly db: DatabaseService,
         private readonly accounts: AccountsService,
     ) {}
 
     /** This checks if an admin account with the same email already exists */
-    async isEmailRegistered(email: string) {
-        const response = await this.database.administrator.findFirst({
+    async isUsed(email: string) {
+        const response = await this.db.admin.findFirst({
             where: {
                 email,
             },
         });
-        return !!response;
+        if (!response) return false;
+        return true;
     }
 
     /** This looks for an admin using the account id*/
-    async findAdminUsingAccountId(id: number) {
-        const response = await this.database.administrator.findFirst({
+    async findByAccId(id: number) {
+        const response = await this.db.admin.findFirst({
             where: {
-                accountId: id,
+                accountid: id,
             },
         });
-        if (!response)
-            throw new NotFoundException('administrator account not found');
-        return response;
+        if (response) return response;
+        throw new NotFoundException('admin account not found');
     }
 
     /** This creates an admin account */
     async createAdmin(
-        body: CreateAdministratorDto,
+        body: CreateAdminDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        if (await this.isEmailRegistered(body.email)) {
+        if (await this.isUsed(body.email)) {
             throw new NotFoundException('email already registered');
         }
         return this.create(body, database);
     }
 
     /** This updates an admin account */
-    async updateAdmin(
+    async modify(
         id: number,
-        body: UpdateAdministratorDto,
+        body: UpdateAdminDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { account, ...rest } = body;
-        return this.database.$transaction(async (tx) => {
+        return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
             if (rest.email || rest.name) {
-                const admin = await this.findOne(id);
-                await this.accounts.updateAccount(
-                    admin.accountId,
+                const admin = await this.findById(id);
+                await this.accounts.modify(
+                    admin.accountid,
                     {
                         email: rest.email,
                         name: rest.name,
@@ -70,7 +69,7 @@ export class AdministratorService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -100,32 +99,29 @@ export class AdministratorService {
             };
         }
 
-        return this.database.administrator.findMany({
+        return this.db.admin.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.administrator.findFirst({
+    async findById(id: number) {
+        const response = await this.db.admin.findFirst({
             where: {
                 id,
             },
         });
-        if (!response)
-            throw new NotFoundException('administrator account not found');
-        return response;
+        if (response) return response;
+        throw new NotFoundException('admin not found');
     }
 
     async create(
-        body: CreateAdministratorDto,
+        body: CreateAdminDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        let db: DatabaseService | PrismaDatabaseService;
-        if (database) db = database;
-        else db = this.database;
-        return db.administrator.create({
+        const db = database ?? this.db;
+        return db.admin.create({
             data: {
                 ...body,
                 account: {
@@ -139,13 +135,11 @@ export class AdministratorService {
 
     async update(
         id: number,
-        body: UpdateAdministratorDto,
+        body: UpdateAdminDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        let db: DatabaseService | PrismaDatabaseService;
-        if (database) db = database;
-        else db = this.database;
-        return db.administrator.update({
+        const db = database ?? this.db;
+        return db.admin.update({
             where: {
                 id,
             },

@@ -8,27 +8,22 @@ export class CreateMessageDto
     @IsNotEmpty()
     @IsString()
     body: string;
-
     @Expose()
     @IsOptional()
     @IsString()
     media?: string | null | undefined;
-
     @Expose()
     @IsOptional()
     @IsString()
     mediaType?: string | null | undefined;
-
     @Expose()
     @IsNotEmpty()
     @IsNumber()
     createdBy: number;
-
     @Expose()
     @IsNotEmpty()
     @IsNumber()
     conversation: number;
-
     createdAt?: string | Date | undefined;
     updatedAt?: string | Date | undefined;
 }
