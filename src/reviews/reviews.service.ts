@@ -6,7 +6,7 @@ import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Injectable()
 export class ReviewsService {
-    constructor(private readonly database: DatabaseService) {}
+    constructor(private readonly db: DatabaseService) {}
 
     async create(
         body: CreateReviewDto,
@@ -14,7 +14,7 @@ export class ReviewsService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
 
         return db.review.create({
             data: {
@@ -37,7 +37,7 @@ export class ReviewsService {
         });
     }
 
-    async findAll(query?: ExpressQuery) {
+    async get(query: ExpressQuery = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -58,8 +58,8 @@ export class ReviewsService {
                             'id',
                             'rating',
                             'body',
-                            'createdById',
-                            'createdForId',
+                            'createdByid',
+                            'createdForid',
                             'createdAt',
                             'updatedAt',
                         ].includes(key),
@@ -68,15 +68,15 @@ export class ReviewsService {
             };
         }
 
-        return this.database.review.findMany({
+        return this.db.review.findMany({
             where: options,
             skip,
             take: pickNum,
         });
     }
 
-    async findOne(id: number) {
-        const response = await this.database.review.findFirst({
+    async findById(id: number) {
+        const response = await this.db.review.findFirst({
             where: {
                 id,
             },
@@ -96,7 +96,7 @@ export class ReviewsService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.review.update({
             where: {
                 id,
@@ -131,7 +131,7 @@ export class ReviewsService {
     ) {
         let db: DatabaseService | PrismaDatabaseService;
         if (database) db = database;
-        else db = this.database;
+        else db = this.db;
         return db.review.delete({
             where: { id },
         });

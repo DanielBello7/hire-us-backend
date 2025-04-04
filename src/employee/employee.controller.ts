@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AuthGuard } from '@nestjs/passport';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { LayoffEmployeeDto } from './dto/layoff-emplyee.dto';
@@ -22,7 +21,7 @@ export class EmployeeController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: ExpressQuery) {
+    findAll(@Query() query: Record<string, any>) {
         return this.employee.get(query);
     }
 

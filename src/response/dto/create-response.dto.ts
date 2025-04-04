@@ -19,32 +19,26 @@ export class CreateResponseDto
     @IsNotEmpty()
     @IsNumber()
     exam: number;
-
     @Expose()
     @IsNotEmpty()
     @IsBoolean()
-    isCorrect: boolean;
-
+    correct: boolean;
     @Expose()
     @IsOptional()
     @IsString()
     body?: string | null | undefined;
-
     @Expose()
     @IsOptional()
     @IsNumber()
     option?: number;
-
     @Expose()
     @IsNotEmpty()
     @IsNumber()
     question: number;
-
     @Expose()
     @IsNotEmpty()
     @IsNumber()
     employee: number;
-
     createdAt?: string | Date | undefined;
     updatedAt?: string | Date | undefined;
 }

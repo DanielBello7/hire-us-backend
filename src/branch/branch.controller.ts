@@ -13,7 +13,6 @@ import {
 import { BranchService } from './branch.service';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { UpdateBranchManagerDto } from './dto/update-branch-manager.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { SessionGuard } from 'src/auth/guards/session.guard';
@@ -25,7 +24,7 @@ export class BranchController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: ExpressQuery) {
+    findAll(@Query() query: Record<string, any>) {
         return this.branch.get(query);
     }
 

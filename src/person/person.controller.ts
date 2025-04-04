@@ -9,7 +9,6 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { SessionGuard } from 'src/auth/guards/session.guard';
 
@@ -19,7 +18,7 @@ export class PersonController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: ExpressQuery) {
+    findAll(@Query() query: Record<string, any>) {
         return this.person.get(query);
     }
 

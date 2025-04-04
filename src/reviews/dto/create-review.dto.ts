@@ -10,22 +10,18 @@ export class CreateReviewDto
     @Min(1)
     @IsNumber()
     rating: number;
-
     @Expose()
     @IsNotEmpty()
     @IsString()
     body?: string | null | undefined;
-
     @Expose()
     @IsNotEmpty()
     @IsNumber()
     createdBy: number;
-
     @Expose()
     @IsNotEmpty()
     @IsNumber()
     createdFor: number;
-
     createdAt?: string | Date | undefined;
     updatedAt?: string | Date | undefined;
 }

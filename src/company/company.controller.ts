@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AuthGuard } from '@nestjs/passport';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { SessionGuard } from 'src/auth/guards/session.guard';
@@ -21,7 +20,7 @@ export class CompanyController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: ExpressQuery) {
+    findAll(@Query() query: Record<string, any>) {
         return this.company.get(query);
     }
 

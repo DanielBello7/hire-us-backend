@@ -13,12 +13,12 @@ export class ResponseService {
 
     /** This checks if an employee has already answered a question */
     async alreadyExists(
-        examId: number,
-        employeeId: number,
-        questionId: number,
+        examid: number,
+        employeeid: number,
+        questionid: number,
     ): Promise<boolean> {
         const response = await this.database.response.findFirst({
-            where: { examId, employeeId, questionId },
+            where: { examid, employeeid, questionid },
         });
         return !!response;
     }
@@ -49,7 +49,7 @@ export class ResponseService {
             await this.progress.modify(
                 progress.id,
                 {
-                    score: response.isCorrect
+                    score: response.correct
                         ? (progress.score ?? 0) + 1
                         : progress.score,
                 },
@@ -65,7 +65,7 @@ export class ResponseService {
         question: number,
     ) {
         const response = await this.database.response.findFirst({
-            where: { employeeId: employee, questionId: question },
+            where: { employeeid: employee, questionid: question },
         });
         if (!response) throw new NotFoundException('Cannot find response');
         return response;
@@ -82,7 +82,7 @@ export class ResponseService {
         return this.update(id, rest, database);
     }
 
-    async findAll(query?: Record<string, string | number>) {
+    async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
 
@@ -154,7 +154,7 @@ export class ResponseService {
         });
     }
 
-    async findOne(id: number) {
+    async findById(id: number) {
         const response = await this.database.response.findFirst({
             where: {
                 id,

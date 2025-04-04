@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('conversations')
@@ -20,7 +19,7 @@ export class ConversationsController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: ExpressQuery) {
+    findAll(@Query() query: Record<string, any>) {
         return this.conversations.get(query);
     }
 

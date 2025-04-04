@@ -9,7 +9,6 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { PromotionsService } from './promotions.service';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
@@ -21,7 +20,7 @@ export class PromotionsController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: ExpressQuery) {
+    findAll(@Query() query: Record<string, any>) {
         return this.promotions.get(query);
     }
 

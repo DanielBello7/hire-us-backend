@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { AdminsService } from './admins.service';
 import { UpdateAdminDto } from './dto/update-admins.dto';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { SessionGuard } from 'src/auth/guards/session.guard';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { AuthGuard } from '@nestjs/passport';
@@ -23,7 +22,7 @@ export class AdminsController {
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN)
     @UseGuards(AuthGuard(), RolesGuard)
     @Get()
-    findAll(@Query() query: ExpressQuery) {
+    findAll(@Query() query: Record<string, any>) {
         return this.admins.get(query);
     }
 

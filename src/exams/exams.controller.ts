@@ -13,7 +13,6 @@ import {
 import { ExamsService } from './exams.service';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AuthGuard } from '@nestjs/passport';
 import { SubmitExamDto } from './dto/submit-exam.dto';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
@@ -24,8 +23,16 @@ export class ExamsController {
     constructor(private readonly exams: ExamsService) {}
 
     @UseGuards(SessionGuard)
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
+    @UseGuards(AuthGuard(), RolesGuard)
+    @Delete('exam/:id')
+    deleteExamQuestions(@Param('id', ParseIntPipe) id: number) {
+        return this.exams.deleteQtn(id);
+    }
+
+    @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: ExpressQuery) {
+    findAll(@Query() query: Record<string, any>) {
         return this.exams.get(query);
     }
 

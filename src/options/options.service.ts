@@ -19,11 +19,7 @@ export class OptionsService {
             data: body.map((option) => ({
                 ...option,
                 questionid: option.question,
-                question: {
-                    connect: {
-                        id: option.question,
-                    },
-                },
+                question: { connect: { id: option.question } },
             })),
         });
     }
@@ -45,7 +41,7 @@ export class OptionsService {
      * Delete many question options, using questionIds,
      * takes in an array of question ids
      */
-    async removeManyUsingInclusive(
+    async removeByIds(
         ids: number[],
         database?: DatabaseService | PrismaDatabaseService,
     ) {
@@ -126,11 +122,7 @@ export class OptionsService {
         return db.option.create({
             data: {
                 ...body,
-                question: {
-                    connect: {
-                        id: body.question,
-                    },
-                },
+                question: { connect: { id: body.question } },
             },
         });
     }
@@ -163,10 +155,6 @@ export class OptionsService {
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         const db = database ?? this.db;
-        return db.option.delete({
-            where: {
-                id,
-            },
-        });
+        return db.option.delete({ where: { id } });
     }
 }

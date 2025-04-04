@@ -20,7 +20,6 @@ async function bootstrap() {
     app.use(helmet());
     app.useGlobalFilters(new ExceptionFilter(httpAdapter));
     app.useGlobalPipes(new ValidationPipe());
-    app.setGlobalPrefix('api');
     app.enableCors();
     app.use(cookie());
 

@@ -10,25 +10,24 @@ import {
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
-import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AuthGuard } from '@nestjs/passport';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { SessionGuard } from 'src/auth/guards/session.guard';
 
 @Controller('reviews')
 export class ReviewsController {
-    constructor(private readonly reviewsService: ReviewsService) {}
+    constructor(private readonly reviews: ReviewsService) {}
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: ExpressQuery) {
-        return this.reviewsService.findAll(query);
+    findAll(@Query() query: Record<string, any>) {
+        return this.reviews.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.reviewsService.findOne(id);
+        return this.reviews.findById(id);
     }
 
     @UseGuards(SessionGuard)
@@ -36,6 +35,6 @@ export class ReviewsController {
     @UseGuards(AuthGuard(), RolesGuard)
     @Post()
     create(@Body() body: CreateReviewDto) {
-        return this.reviewsService.create(body);
+        return this.reviews.create(body);
     }
 }

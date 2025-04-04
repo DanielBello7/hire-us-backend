@@ -12,6 +12,8 @@ import { OptionsService } from 'src/options/options.service';
 import { ResponseService } from 'src/response/response.service';
 import { ProgressService } from 'src/progress/progress.service';
 import { PROGRESS_ENUM } from 'src/progress/dto/create-progress.dto';
+import { CreateQuestionDto } from 'src/questions/dto/create-question.dto';
+import { Question } from 'src/questions/entities/question.entity';
 
 @Injectable()
 export class ExamsService {
@@ -34,7 +36,7 @@ export class ExamsService {
             examid,
         );
         const exam = await this.findById(examid);
-        const responses = await this.response.findAll({
+        const responses = await this.response.get({
             examid,
             employeeid,
         });
@@ -68,7 +70,7 @@ export class ExamsService {
     /**
      * This updates the total number of available questions for an exam
      */
-    async updateExamQuestionCount(id: number, amount: number) {
+    async updateExamQtnCount(id: number, amount: number) {
         const exam = await this.db.exam.findFirst({
             where: { id },
         });
@@ -122,6 +124,48 @@ export class ExamsService {
         });
     }
 
+    /** add questions for an exam */
+    async addQtns(id: number, body: CreateQuestionDto[]) {
+        return this.db.$transaction(async (tx) => {
+            const result: Question[] = [];
+            const exam = await this.findById(id);
+            for (const item of body) {
+                await this.modify(
+                    exam.id,
+                    { questions: exam.questions + 1 },
+                    tx,
+                );
+                const option = await this.question.save(item, tx);
+                result.push(option as unknown as Question);
+            }
+            return result;
+        });
+    }
+
+    /**
+     * Deletes a question,
+     * This also removes the options,
+     * This reduces the questions on the exam count
+     */
+    async deleteQtn(
+        id: number,
+        database?: DatabaseService | PrismaDatabaseService,
+    ) {
+        const question = await this.question.findById(id);
+        const exam = await this.findById(question.examid);
+
+        return this.db.$transaction(async (tx) => {
+            const db = database ?? tx;
+            await this.remove(id, db);
+            await this.update(
+                question.examid,
+                { questions: exam.questions - 1 },
+                db,
+            );
+            await this.options.removeMany({ questionId: id }, db);
+        });
+    }
+
     async get(query: Record<string, any> = {}) {
         let pageNum = 1;
         let pickNum = 5;
@@ -169,7 +213,7 @@ export class ExamsService {
             },
         });
         if (!response) throw new NotFoundException('cannot find exam');
-        const questions = await this.question.getExamQuestionsUsingExamId(id);
+        const questions = await this.question.getExamQtns(id);
         return {
             ...response,
             Questions: questions,
@@ -243,13 +287,8 @@ export class ExamsService {
                     id,
                 },
             });
-            await this.question.deleteQuestionsUsingExamId(id, db);
-            await this.options.removeMany(
-                {
-                    examid: id,
-                },
-                db,
-            );
+            await this.question.deleteQtns(id, db);
+            await this.options.removeMany({ examid: id }, db);
         });
     }
 }

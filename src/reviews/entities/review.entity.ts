@@ -3,8 +3,8 @@ export class Review implements PrismaReview {
     id: number;
     rating: number;
     body: string | null;
-    createdById: number;
-    createdForId: number;
+    createdByid: number;
+    createdForid: number;
     createdAt: Date;
     updatedAt: Date;
 }

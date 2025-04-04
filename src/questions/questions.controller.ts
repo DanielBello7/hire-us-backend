@@ -58,12 +58,4 @@ export class QuestionsController {
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.questions.remove(id);
     }
-
-    @UseGuards(SessionGuard)
-    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
-    @Delete('exam/:id')
-    deleteExamQuestions(@Param('id', ParseIntPipe) id: number) {
-        return this.questions.deleteQuestion(id);
-    }
 }

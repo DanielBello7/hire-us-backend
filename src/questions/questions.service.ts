@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
     BadRequestException,
     Injectable,
@@ -6,19 +7,17 @@ import {
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
-import { ExamsService } from 'src/exams/exams.service';
 import { OptionsService } from 'src/options/options.service';
 
 @Injectable()
 export class QuestionsService {
     constructor(
-        private readonly exams: ExamsService,
         private readonly db: DatabaseService,
         private readonly options: OptionsService,
     ) {}
 
     /** This checks if a particular index has been used */
-    async checkIfIndexIsUsed(examid: number, index: number) {
+    async isIndexUsed(examid: number, index: number) {
         return this.db.question.findFirst({
             where: {
                 examid,
@@ -30,7 +29,7 @@ export class QuestionsService {
     /**
      * Retrieves questions for an exam and include the options for each question
      */
-    async getExamQuestionsUsingExamId(examid: number) {
+    async getExamQtns(examid: number) {
         return this.db.question.findMany({
             where: {
                 examid,
@@ -45,56 +44,22 @@ export class QuestionsService {
      * This records a new question to the database,
      * This also updates the exam question count
      */
-    async saveQuestion(
+    async save(
         body: CreateQuestionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        if (await this.checkIfIndexIsUsed(body.examid, body.index)) {
-            throw new BadRequestException('Index has been used');
+        if (await this.isIndexUsed(body.examid, body.index)) {
+            throw new BadRequestException('index has been used');
         }
-
-        return this.db.$transaction(async (tx) => {
-            const db = database ?? tx;
-            const exam = await this.exams.findById(body.examid);
-            await this.exams.modify(
-                exam.id,
-                {
-                    questions: exam.questions + 1,
-                },
-                db,
-            );
-            return this.create(body, db);
-        });
-    }
-
-    /**
-     * Deletes a question,
-     * This also removes the options,
-     * This reduces the questions on the exam count
-     */
-    async deleteQuestion(
-        id: number,
-        database?: DatabaseService | PrismaDatabaseService,
-    ) {
-        const question = await this.findById(id);
-        const exam = await this.exams.findById(question.examid);
-        return this.db.$transaction(async (tx) => {
-            const db = database ?? tx;
-            await this.remove(id, db);
-            await this.exams.update(
-                question.examid,
-                { questions: exam.questions - 1 },
-                db,
-            );
-            await this.options.removeMany({ questionId: id }, db);
-        });
+        const db = database ?? this.db;
+        return this.create(body, db);
     }
 
     /**
      * Deletes plenty questions where the exam id is a given input,
      * it also deletes the options of all the deleted questions
      */
-    async deleteQuestionsUsingExamId(
+    async deleteQtns(
         examid: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
@@ -109,7 +74,7 @@ export class QuestionsService {
                     examid,
                 },
             });
-            await this.options.removeManyUsingInclusive(ids, db);
+            await this.options.removeByIds(ids, db);
         });
     }
 
@@ -119,8 +84,7 @@ export class QuestionsService {
         body: UpdateQuestionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { examid: examId, ...rest } = body;
+        const { examid, ...rest } = body;
         return this.update(id, rest, database);
     }
 
