@@ -8,7 +8,6 @@ export class ExceptionFilter extends BaseExceptionFilter {
         ExceptionFilter.name,
     );
     catch(exception: unknown, host: ArgumentsHost) {
-        console.log('ex', exception);
         this.logger.error((exception as Error).message, ExceptionFilter.name);
         super.catch(exception, host);
     }

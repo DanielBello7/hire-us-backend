@@ -58,12 +58,8 @@ export class ExamsService {
         body: UpdateExamDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
-        const {
-            company: organization,
-            eligiblePositions,
-            ineligibleEmployees,
-            ...rest
-        } = body;
+        const { company, eligiblePositions, ineligibleEmployees, ...rest } =
+            body;
         return this.update(id, rest, database);
     }
 

@@ -15,7 +15,7 @@ export class CompanyService {
         private readonly accounts: AccountsService,
     ) {}
 
-    /** This checks if an organization is registered, using the email and tax id */
+    /** This checks if an company is registered, using the email and tax id */
     async isUsed(email: string, taxid: string) {
         const response = await this.db.company.findFirst({
             where: {
@@ -26,7 +26,7 @@ export class CompanyService {
         return true;
     }
 
-    /** This looks for an organization using the account id*/
+    /** This looks for an company using the account id*/
     async findByAccId(id: number) {
         const response = await this.db.company.findFirst({
             where: {
@@ -37,7 +37,7 @@ export class CompanyService {
         throw new NotFoundException('company account not found');
     }
 
-    /** This creates an organization */
+    /** This creates an company */
     async save(
         body: CreateCompanyDto,
         database?: DatabaseService | PrismaDatabaseService,
@@ -48,8 +48,8 @@ export class CompanyService {
         return this.create(body, database);
     }
 
-    /** This updates an organization account, it also updates the accound
-     * record of the organization
+    /** This updates an company account, it also updates the accound
+     * record of the company
      */
     async modify(
         id: number,

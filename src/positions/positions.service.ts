@@ -13,7 +13,7 @@ export class PositionsService {
         const response: Position[] = await this.db.$queryRaw`
             SELECT * FROM position 
             WHERE LOWER(title) = LOWER(${title}) 
-            AND organizationId = ${id}
+            AND companyid = ${id}
         `;
         if (response.length > 0) return response[0];
         return false;
@@ -36,7 +36,7 @@ export class PositionsService {
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { company: organization, ...rest } = body;
+        const { company, ...rest } = body;
         return this.update(id, rest, database);
     }
 
@@ -67,16 +67,20 @@ export class PositionsService {
                         id: body.company,
                     },
                 },
-                successor: {
-                    connect: {
-                        id: body.successor,
-                    },
-                },
-                predecessor: {
-                    connect: {
-                        id: body.predecessor,
-                    },
-                },
+                successor: body.successor
+                    ? {
+                          connect: {
+                              id: body.successor,
+                          },
+                      }
+                    : undefined,
+                predecessor: body.predecessor
+                    ? {
+                          connect: {
+                              id: body.predecessor,
+                          },
+                      }
+                    : undefined,
             },
         });
     }

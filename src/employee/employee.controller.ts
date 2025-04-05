@@ -20,7 +20,7 @@ export class EmployeeController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: Record<string, any>) {
+    get(@Query() query: Record<string, any>) {
         return this.employee.get(query);
     }
 

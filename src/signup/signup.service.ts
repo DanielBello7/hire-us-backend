@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AccountsService } from 'src/accounts/accounts.service';
 import { PersonService } from 'src/person/person.service';
 import { CompanyService } from 'src/company/company.service';
@@ -8,10 +8,10 @@ import { CreateSignUpAdminDto } from './dto/create-signup-admin.dto';
 import { CreateSignUpCompanyDto } from './dto/create-signup-company.dto';
 import { AdminsService } from 'src/admins/admins.service';
 import { DatabaseService, PrismaDatabaseService } from '@app/database';
+import { CreateEmployeeDto } from 'src/employee/dto/create-employee.dto';
 import { plainToInstance } from 'class-transformer';
 import { CreateAdminDto } from 'src/admins/dto/create-admins.dto';
 import { CreatePersonDto } from 'src/person/dto/create-person.dto';
-import { CreateEmployeeDto } from 'src/employee/dto/create-employee.dto';
 import { CreateCompanyDto } from 'src/company/dto/create-company.dto';
 import { CreateAccountDto } from 'src/accounts/dto/create-account.dto';
 
@@ -31,22 +31,10 @@ export class SignUpService {
         body: CreateSignUpEmployeeDto,
         database?: PrismaDatabaseService,
     ) {
-        const checks = await Promise.all([
-            this.account.isUsed(body.email),
-            this.person.isUsed(body.email),
-        ]);
-
-        if (checks.includes(true)) {
-            throw new BadRequestException('Employee already registered');
-        }
-
         return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
             const account = await this.account.save(
-                {
-                    ...body,
-                    isEmailVerified: false,
-                },
+                { ...body, isEmailVerified: false },
                 db,
             );
 
@@ -72,20 +60,11 @@ export class SignUpService {
         });
     }
 
-    /** This creates an account and creates an administrator account */
+    /** This creates an account and creates an admin account */
     async signup_admin(
         body: CreateSignUpAdminDto,
         database?: PrismaDatabaseService,
     ) {
-        const checks = await Promise.all([
-            this.account.isUsed(body.email),
-            this.admin.isUsed(body.email),
-        ]);
-
-        if (checks.includes(true)) {
-            throw new BadRequestException('Account already registered');
-        }
-
         return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
             const account = await this.account.save(
@@ -105,19 +84,11 @@ export class SignUpService {
         });
     }
 
-    /** This creates an account, and creates an organization ccount*/
+    /** This creates an account, and creates an company ccount*/
     async signup_company(
         body: CreateSignUpCompanyDto,
         database?: PrismaDatabaseService,
     ) {
-        const checks = await Promise.all([
-            this.account.isUsed(body.email),
-            this.company.isUsed(body.email, body.taxid),
-        ]);
-
-        if (checks.includes(true))
-            throw new BadRequestException('Account already registered');
-
         return this.db.$transaction(async (tx) => {
             const db = database ?? tx;
 

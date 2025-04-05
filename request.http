@@ -40,7 +40,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "role": "administrator",
+    "role": "ADMIN",
     "password": "Admin1234567890$",
     "name": "David Bello",
     "email": "admin@example.com"
@@ -58,9 +58,26 @@ Accept: application/json
     "title": "Benny's Place",
     "taxid": "1234567890",
     "brief": "We provide expert legal representation, ensuring clients receive top-tier advocacy in corporate, criminal, and civil matters. Our experienced attorneys deliver strategic solutions, protecting your rights with professionalism and integrity. Whether in negotiations or courtrooms, we are committed to achieving the best outcomes for individuals and businesses alike",
-    "password": "Admin1234567890$",
+    "password": "Password1$",
     "name": "Benny's Place",
     "email": "benny@example.com"
+}
+
+#### REGISTER COMPANY
+POST http://localhost:3000/api/signup/company/
+Content-Type: application/json
+Accept: application/json
+
+{
+    "role": "COMPANY",
+    "country": "united-states",
+    "address": "5673 Breakpoint Drive No. 97",
+    "title": "OpenSea Developments",
+    "taxid": "2234567890",
+    "brief": "We provide expert legal representation, ensuring clients receive top-tier advocacy in corporate, criminal, and civil matters. Our experienced attorneys deliver strategic solutions, protecting your rights with professionalism and integrity. Whether in negotiations or courtrooms, we are committed to achieving the best outcomes for individuals and businesses alike",
+    "password": "Password1$",
+    "name": "OpenSea Developments",
+    "email": "opensea@example.com"
 }
 
 #### REGISTER EMPLOYEE
@@ -77,8 +94,8 @@ Accept: application/json
     "address": "6033 Beachview Drive Apt 450",
     "gender": "female",
     "position": 1,
-    "organization": 1,
-    "password": "Admin1234567890$",
+    "company": 1,
+    "password": "Password1$",
     "name": "Oluchi Bello",
     "email": "oluchi@example.com"
 }
@@ -94,5 +111,5 @@ Accept: application/json
     "title": "Social Media Manager",
     "salary": 5000,
     "currency": "USD",
-    "organization": 1
+    "company": 1
 }

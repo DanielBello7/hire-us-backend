@@ -11,14 +11,14 @@ export class PaymentsService {
         private readonly employees: EmployeeService,
     ) {}
 
-    /** organization/company id */
+    /** company id */
     /** this handles payment of employee salary in bulk */
     async paySalaries(
         company: number,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         const employees = await this.employees.get({
-            organizationId: company,
+            companyid: company,
             isTerminated: false,
         });
         return this.createMany(

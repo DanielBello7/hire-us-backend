@@ -48,7 +48,7 @@ export class EmployeeService {
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { company: organization, person, ...rest } = body;
+        const { company, person, ...rest } = body;
         return this.update(id, rest, database);
     }
 
@@ -94,9 +94,9 @@ export class EmployeeService {
                     Object.entries(query).filter(([key]) =>
                         [
                             'id',
-                            'personId',
-                            'organizationId',
-                            'positionId',
+                            'personid',
+                            'companyid',
+                            'positionid',
                             'isTerminated',
                             'examId',
                             'createdAt',

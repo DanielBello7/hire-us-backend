@@ -26,7 +26,7 @@ export class BranchService {
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { company: organization, manager, ...rest } = updates;
+        const { company, manager, ...rest } = updates;
         return this.update(id, rest, database);
     }
 
@@ -48,7 +48,7 @@ export class BranchService {
         return this.remove(id, database);
     }
 
-    /** remove many branches using the organization id */
+    /** remove many branches using the company id */
     async removeManyById(
         id: number,
         database?: DatabaseService | PrismaDatabaseService,

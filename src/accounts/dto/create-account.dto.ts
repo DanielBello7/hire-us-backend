@@ -15,8 +15,8 @@ export class CreateAccountDto
         Omit<
             Prisma.AccountCreateInput,
             | 'Person'
-            | 'Administrator'
-            | 'Organization'
+            | 'Admin'
+            | 'Company'
             | 'Message'
             | 'CreatedBy'
             | 'ConversationMembers'
