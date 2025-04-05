@@ -3,10 +3,10 @@ import {
     Get,
     ParseIntPipe,
     Post,
+    UseGuards,
     Param,
     Body,
     Query,
-    UseGuards,
 } from '@nestjs/common';
 import { CreateProgressDto } from './dto/create-progress.dto';
 import { ProgressService } from './progress.service';
@@ -18,13 +18,13 @@ export class ProgressController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: Record<string, any>) {
+    get(@Query() query: Record<string, any>) {
         return this.progress.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
+    one(@Param('id', ParseIntPipe) id: number) {
         return this.progress.findById(id);
     }
 

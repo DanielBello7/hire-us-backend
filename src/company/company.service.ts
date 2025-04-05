@@ -38,7 +38,7 @@ export class CompanyService {
     }
 
     /** This creates an organization */
-    async createCompany(
+    async save(
         body: CreateCompanyDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {

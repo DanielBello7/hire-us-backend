@@ -5,12 +5,11 @@ import {
     Body,
     Get,
     Patch,
-    Query,
     UseGuards,
+    Query,
 } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { LayoffEmployeeDto } from './dto/layoff-emplyee.dto';
 import { SessionGuard } from 'src/auth/guards/session.guard';
@@ -37,9 +36,8 @@ export class EmployeeController {
         return this.employee.modify(+id, body);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Patch(':id/terminate/')
     terminate(
         @Param('id', ParseIntPipe) id: number,

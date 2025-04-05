@@ -36,7 +36,7 @@ export class ConversationsService {
     }
 
     /** create a conversation */
-    async createConversation(
+    async save(
         body: CreateConversationDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {

@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UploadsService } from './uploads.service';
 import { ExpressRequest } from 'src/auth/auth.controller';
-import { ValidatedUser } from 'src/auth/auth.service';
+import { ValidUser } from 'src/auth/auth.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { SessionGuard } from 'src/auth/guards/session.guard';
@@ -32,7 +32,7 @@ export class UploadsController {
         @UploadedFiles() files: Express.Multer.File[],
         @Req() req: ExpressRequest,
     ) {
-        const user: ValidatedUser = req.user;
+        const user: ValidUser = req.user;
         return this.uploads.updateAvatar(user.accountId, files);
     }
 }

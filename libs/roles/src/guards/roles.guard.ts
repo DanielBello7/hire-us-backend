@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+    CanActivate,
+    ExecutionContext,
+    ForbiddenException,
+    Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { ACCOUNT_ROLES_ENUM } from '../enums/roles.enum';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-import { ValidatedUser } from 'src/auth/auth.service';
+import { ValidUser } from 'src/auth/auth.service';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -21,8 +26,12 @@ export class RolesGuard implements CanActivate {
         if (!required) return true;
 
         const request = context.switchToHttp().getRequest();
-        const user: ValidatedUser = request.user;
-        return matchRole(required, user.role);
+        const user: ValidUser = request.user;
+
+        if (matchRole(required, user.role)) {
+            return true;
+        }
+        throw new ForbiddenException();
     }
 }
 

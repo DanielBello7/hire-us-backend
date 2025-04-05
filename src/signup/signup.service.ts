@@ -50,7 +50,7 @@ export class SignUpService {
                 db,
             );
 
-            const person = await this.person.createPerson(
+            const person = await this.person.save(
                 {
                     ...plainToInstance(CreatePersonDto, body, {
                         excludeExtraneousValues: true,
@@ -60,7 +60,7 @@ export class SignUpService {
                 db,
             );
 
-            return this.employee.createEmployee(
+            return this.employee.save(
                 {
                     ...plainToInstance(CreateEmployeeDto, body, {
                         excludeExtraneousValues: true,
@@ -131,7 +131,7 @@ export class SignUpService {
                 db,
             );
 
-            return this.company.createCompany(
+            return this.company.save(
                 {
                     ...plainToInstance(CreateCompanyDto, body, {
                         excludeExtraneousValues: true,

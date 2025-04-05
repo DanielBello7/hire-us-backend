@@ -12,7 +12,7 @@ export class BranchService {
     ) {}
 
     /** create branch */
-    async createBranch(
+    async save(
         body: CreateBranchDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
@@ -20,7 +20,7 @@ export class BranchService {
     }
 
     /** update a branch data */
-    async updateBranch(
+    async modify(
         id: number,
         updates: UpdateBranchDto,
         database?: DatabaseService | PrismaDatabaseService,

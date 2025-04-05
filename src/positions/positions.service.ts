@@ -20,7 +20,7 @@ export class PositionsService {
     }
 
     /** save a position to the database */
-    async recordPosition(
+    async save(
         body: CreatePositionDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {

@@ -10,7 +10,7 @@ export class OptionsService {
     /**
      * Create many options at once
      */
-    async createMany(
+    async saveMany(
         body: CreateOptionDto[],
         database?: DatabaseService | PrismaDatabaseService,
     ) {

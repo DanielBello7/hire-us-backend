@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { SessionGuard } from 'src/auth/guards/session.guard';
 
@@ -30,9 +29,8 @@ export class CompanyController {
         return this.company.findById(id);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,

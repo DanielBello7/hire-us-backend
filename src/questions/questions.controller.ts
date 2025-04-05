@@ -2,17 +2,15 @@ import {
     Controller,
     Get,
     Delete,
-    Post,
     Patch,
     Body,
     ParseIntPipe,
     Param,
     UseGuards,
+    Query,
 } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
-import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { SessionGuard } from 'src/auth/guards/session.guard';
 
@@ -22,27 +20,18 @@ export class QuestionsController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll() {
-        return this.questions.get();
+    get(@Query() query: Record<string, any>) {
+        return this.questions.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
+    one(@Param('id', ParseIntPipe) id: number) {
         return this.questions.findById(id);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
-    @Post()
-    create(@Body() body: CreateQuestionDto) {
-        return this.questions.create(body);
-    }
-
-    @UseGuards(SessionGuard)
-    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
@@ -51,9 +40,8 @@ export class QuestionsController {
         return this.questions.modify(id, body);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.questions.remove(id);

@@ -28,7 +28,7 @@ export class EmployeeService {
     }
 
     /** this creates a new employee record */
-    async createEmployee(
+    async save(
         body: CreateEmployeeDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {

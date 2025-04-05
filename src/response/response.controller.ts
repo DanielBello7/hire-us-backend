@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { ResponseService } from './response.service';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
-import { AuthGuard } from '@nestjs/passport';
 import { CreateResponseDto } from './dto/create-response.dto';
 import { SessionGuard } from 'src/auth/guards/session.guard';
 
@@ -20,18 +19,17 @@ export class ResponseController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: Record<string, any>) {
+    get(@Query() query: Record<string, any>) {
         return this.response.get(query);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.EMPLOYEE)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Post(':id/submit/')
     submit(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: CreateResponseDto,
     ) {
-        return this.response.submitResponse(body);
+        return this.response.save(body);
     }
 }

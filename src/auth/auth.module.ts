@@ -11,12 +11,17 @@ import { CompanyModule } from 'src/company/company.module';
 import { PassportJWTStrategy } from './strategies/jwt.strategy';
 
 @Module({
-    providers: [AuthService, PassportLocalStrategy, PassportJWTStrategy],
+    providers: [
+        AuthService,
+        PassportLocalStrategy,
+        PassportJWTStrategy,
+        // cookie strategy
+    ],
     controllers: [AuthController],
     imports: [
         AccountsModule,
         CompanyModule,
-        PassportModule.register({ defaultStrategy: 'jwt' }),
+        PassportModule,
         AdminsModule,
         PersonModule,
         JwtModule.register({

@@ -38,7 +38,7 @@ export class ConversationsController {
     @UseGuards(SessionGuard)
     @Post()
     create(@Body() body: CreateConversationDto) {
-        return this.conversations.createConversation(body);
+        return this.conversations.save(body);
     }
 
     @UseGuards(SessionGuard)

@@ -2,15 +2,11 @@ import { Module } from '@nestjs/common';
 import { TerminatedService } from './terminated.service';
 import { TerminatedController } from './terminated.controller';
 import { DatabaseModule } from '@app/database';
-import { PassportModule } from '@nestjs/passport';
 
 @Module({
+    imports: [DatabaseModule],
     controllers: [TerminatedController],
-    imports: [
-        DatabaseModule,
-        PassportModule.register({ defaultStrategy: 'jwt' }),
-    ],
-    providers: [TerminatedService],
     exports: [TerminatedService],
+    providers: [TerminatedService],
 })
 export class TerminatedModule {}

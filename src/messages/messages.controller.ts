@@ -40,7 +40,7 @@ export class MessagesController {
         )
         files: Express.Multer.File[],
     ) {
-        return this.messages.saveMessage(body, files[0]);
+        return this.messages.save(body, files[0]);
     }
 
     @UseGuards(SessionGuard)

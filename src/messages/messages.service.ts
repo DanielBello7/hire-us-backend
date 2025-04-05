@@ -24,7 +24,7 @@ export class MessagesService {
     }
 
     /** save a message with a media upload or none */
-    async saveMessage(
+    async save(
         body: CreateMessageDto,
         file?: Express.Multer.File,
         database?: DatabaseService | PrismaDatabaseService,

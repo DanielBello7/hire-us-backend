@@ -13,7 +13,6 @@ import {
 import { CreateOptionDto } from './dto/create-option.dto';
 import { UpdateOptionDto } from './dto/update-option.dto';
 import { OptionsService } from './options.service';
-import { AuthGuard } from '@nestjs/passport';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { SessionGuard } from 'src/auth/guards/session.guard';
 
@@ -33,17 +32,15 @@ export class OptionsController {
         return this.options.findById(id);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Post()
     create(@Body() body: CreateOptionDto) {
         return this.options.create(body);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
@@ -52,9 +49,8 @@ export class OptionsController {
         return this.options.modify(id, body);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.options.remove(id);

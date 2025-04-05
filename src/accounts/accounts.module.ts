@@ -1,15 +1,14 @@
-import { Module } from '@nestjs/common';
-import { AccountsController } from './accounts.controller';
 import { AccountsService } from './accounts.service';
+import { Module } from '@nestjs/common';
 import { DatabaseModule } from '@app/database';
-import { PassportModule } from '@nestjs/passport';
+import { AccountsController } from './accounts.controller';
 
 @Module({
     controllers: [AccountsController],
     exports: [AccountsService],
     imports: [
         DatabaseModule,
-        PassportModule.register({ defaultStrategy: 'jwt' }),
+        // passport
     ],
     providers: [AccountsService],
 })

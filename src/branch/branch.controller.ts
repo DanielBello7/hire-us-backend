@@ -14,7 +14,6 @@ import { BranchService } from './branch.service';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
 import { UpdateBranchManagerDto } from './dto/update-branch-manager.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { SessionGuard } from 'src/auth/guards/session.guard';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 
@@ -34,28 +33,25 @@ export class BranchController {
         return this.branch.findById(id);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Post()
     create(@Body() body: CreateBranchDto) {
-        return this.branch.createBranch(body);
+        return this.branch.save(body);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: UpdateBranchDto,
     ) {
-        return this.branch.updateBranch(id, body);
+        return this.branch.modify(id, body);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Patch(':id/manager/')
     changeManager(
         @Param('id', ParseIntPipe) id: number,
@@ -64,9 +60,8 @@ export class BranchController {
         return this.branch.updateManager(id, body.manager);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.branch.removeBranch(id);

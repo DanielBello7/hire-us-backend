@@ -1,20 +1,41 @@
+### LOGIN
+POST http://localhost:3000/api/auth/signin
+Accept: application/json
+Content-Type: application/json
+
+{
+    "username": "admin@example.com",
+    "password": "Password1$"
+}
+
 ### GET ACCOUNTS
 GET http://localhost:3000/api/accounts/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU4iLCJhY2NvdW50SWQiOjEsIm5hbWUiOiJhZG1pbiBhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDM4MTE3NDQsImV4cCI6MTc0Mzg5ODE0NH0.Nq9IyZ8PtAccb2o1x-tolFF8sLkw0jZ1Vd9zFi72u28
+Accept: application/json
 
 ### GET ADMINSTRATORS
-GET http://localhost:3000/api/administrators/
+GET http://localhost:3000/api/admins/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU4iLCJhY2NvdW50SWQiOjEsIm5hbWUiOiJhZG1pbiBhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDM4MTE3NDQsImV4cCI6MTc0Mzg5ODE0NH0.Nq9IyZ8PtAccb2o1x-tolFF8sLkw0jZ1Vd9zFi72u28
+Accept: application/json
 
 ### GET EMPLOYEES
 GET http://localhost:3000/api/employees/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU4iLCJhY2NvdW50SWQiOjEsIm5hbWUiOiJhZG1pbiBhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDM4MTE3NDQsImV4cCI6MTc0Mzg5ODE0NH0.Nq9IyZ8PtAccb2o1x-tolFF8sLkw0jZ1Vd9zFi72u28
+Accept: application/json
 
-### GET ORGANIZATIONS
-GET http://localhost:3000/api/organizations/
+### GET COMPANIES
+GET http://localhost:3000/api/company/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU4iLCJhY2NvdW50SWQiOjEsIm5hbWUiOiJhZG1pbiBhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDM4MTE3NDQsImV4cCI6MTc0Mzg5ODE0NH0.Nq9IyZ8PtAccb2o1x-tolFF8sLkw0jZ1Vd9zFi72u28
+Accept: application/json
 
 ### GET POSITIONS
 GET http://localhost:3000/api/positions/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU4iLCJhY2NvdW50SWQiOjEsIm5hbWUiOiJhZG1pbiBhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDM4MTE3NDQsImV4cCI6MTc0Mzg5ODE0NH0.Nq9IyZ8PtAccb2o1x-tolFF8sLkw0jZ1Vd9zFi72u28
+Accept: application/json
 
-#### REGISTER ADMINISTRATOR
-POST http://localhost:3000/api/register/administrator/
+#### REGISTER ADMIN
+POST http://localhost:3000/api/signup/admins/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU4iLCJhY2NvdW50SWQiOjEsIm5hbWUiOiJhZG1pbiBhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDM4MTE3NDQsImV4cCI6MTc0Mzg5ODE0NH0.Nq9IyZ8PtAccb2o1x-tolFF8sLkw0jZ1Vd9zFi72u28
 Content-Type: application/json
 Accept: application/json
 
@@ -22,20 +43,20 @@ Accept: application/json
     "role": "administrator",
     "password": "Admin1234567890$",
     "name": "David Bello",
-    "email": "david@example.com"
+    "email": "admin@example.com"
 }
 
-#### REGISTER ORGANIZATION
-POST http://localhost:3000/api/register/organization/
+#### REGISTER COMPANY
+POST http://localhost:3000/api/signup/company/
 Content-Type: application/json
 Accept: application/json
 
 {
-    "role": "organization",
+    "role": "COMPANY",
     "country": "united-states",
     "address": "5673 Breakpoint Drive No. 98",
     "title": "Benny's Place",
-    "taxId": "1234567890",
+    "taxid": "1234567890",
     "brief": "We provide expert legal representation, ensuring clients receive top-tier advocacy in corporate, criminal, and civil matters. Our experienced attorneys deliver strategic solutions, protecting your rights with professionalism and integrity. Whether in negotiations or courtrooms, we are committed to achieving the best outcomes for individuals and businesses alike",
     "password": "Admin1234567890$",
     "name": "Benny's Place",
@@ -43,13 +64,14 @@ Accept: application/json
 }
 
 #### REGISTER EMPLOYEE
-POST http://localhost:3000/api/register/employee/
+POST http://localhost:3000/api/signup/employees/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU4iLCJhY2NvdW50SWQiOjEsIm5hbWUiOiJhZG1pbiBhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDM4MTE3NDQsImV4cCI6MTc0Mzg5ODE0NH0.Nq9IyZ8PtAccb2o1x-tolFF8sLkw0jZ1Vd9zFi72u28
 Content-Type: application/json
 Accept: application/json
 
 {
     "role": "employee",
-    "taxId": "0987654321",
+    "taxid": "0987654321",
     "username": "oluchibello",
     "country": "united-states",
     "address": "6033 Beachview Drive Apt 450",
@@ -63,6 +85,7 @@ Accept: application/json
 
 #### ADD POSITION
 POST http://localhost:3000/api/positions/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU4iLCJhY2NvdW50SWQiOjEsIm5hbWUiOiJhZG1pbiBhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3NDM4MTE3NDQsImV4cCI6MTc0Mzg5ODE0NH0.Nq9IyZ8PtAccb2o1x-tolFF8sLkw0jZ1Vd9zFi72u28
 Content-Type: application/json
 Accept: application/json
 

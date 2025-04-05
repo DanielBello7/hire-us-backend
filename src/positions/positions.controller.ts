@@ -13,7 +13,6 @@ import {
 import { PositionsService } from './positions.service';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { SessionGuard } from 'src/auth/guards/session.guard';
 
@@ -23,7 +22,7 @@ export class PositionsController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: Record<string, any>) {
+    get(@Query() query: Record<string, any>) {
         return this.positions.get(query);
     }
 
@@ -33,17 +32,15 @@ export class PositionsController {
         return this.positions.findById(id);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Post()
     create(@Body() body: CreatePositionDto) {
-        return this.positions.recordPosition(body);
+        return this.positions.save(body);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
@@ -52,9 +49,8 @@ export class PositionsController {
         return this.positions.modify(id, body);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.positions.remove(id);

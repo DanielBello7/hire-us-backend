@@ -27,16 +27,15 @@ export class ResponseService {
      * it checks if a user has answered the question before first, if yes, it updates the body,
      * and changes the selected option, if not it creates a new response.
      */
-    async submitResponse(
+    async save(
         body: CreateResponseDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {
         if (await this.alreadyExists(body.exam, body.employee, body.question)) {
-            const response =
-                await this.findResponseUsingEmployeeIdAndQuestionId(
-                    body.employee,
-                    body.question,
-                );
+            const response = await this.findByEmployeeIdAndQtnId(
+                body.employee,
+                body.question,
+            );
             return this.update(response.id, { option: body.option });
         }
         return this.database.$transaction(async (tx) => {
@@ -60,10 +59,7 @@ export class ResponseService {
     }
 
     /** This finds a response using the employee id and the question id */
-    async findResponseUsingEmployeeIdAndQuestionId(
-        employee: number,
-        question: number,
-    ) {
+    async findByEmployeeIdAndQtnId(employee: number, question: number) {
         const response = await this.database.response.findFirst({
             where: { employeeid: employee, questionid: question },
         });
@@ -72,7 +68,7 @@ export class ResponseService {
     }
 
     /** This updates a response but excludes some fields */
-    async updateResponse(
+    async modify(
         id: number,
         updates: UpdateResponseDto,
         database?: DatabaseService | PrismaDatabaseService,

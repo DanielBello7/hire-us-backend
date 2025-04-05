@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
@@ -18,7 +19,6 @@ export class SessionGuard implements CanActivate {
             throw new UnauthorizedException();
         }
         try {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             request.user = await this.jwtservice.verifyAsync(token);
             return true;
         } catch {

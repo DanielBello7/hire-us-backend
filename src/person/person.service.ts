@@ -38,7 +38,7 @@ export class PersonService {
     }
 
     /** This creates a person account */
-    async createPerson(
+    async save(
         body: CreatePersonDto,
         database?: DatabaseService | PrismaDatabaseService,
     ) {

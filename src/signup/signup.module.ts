@@ -17,7 +17,7 @@ import { PassportModule } from '@nestjs/passport';
     imports: [
         EmployeeModule,
         PersonModule,
-        PassportModule.register({ defaultStrategy: 'jwt' }),
+        PassportModule,
         CompanyModule,
         AccountsModule,
         AdminsModule,

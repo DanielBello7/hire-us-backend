@@ -10,8 +10,11 @@ import { JwtService } from '@nestjs/jwt';
 import { AdminsService } from 'src/admins/admins.service';
 import { PersonService } from 'src/person/person.service';
 import { CompanyService } from 'src/company/company.service';
+import { Person } from 'src/person/entities/person.entity';
+import { Admin } from 'src/admins/entities/admins.entity';
+import { Company } from 'src/company/entities/company.entity';
 
-export type ValidatedUser = {
+export type ValidUser = {
     role: ACCOUNT_ROLES_ENUM;
     email: string;
     accountId: number;
@@ -25,10 +28,10 @@ export class AuthService {
         private readonly jwt: JwtService,
         private readonly admin: AdminsService,
         private readonly person: PersonService,
-        private readonly organization: CompanyService,
+        private readonly company: CompanyService,
     ) {}
 
-    async validate(body: LoginAccountDto): Promise<ValidatedUser | null> {
+    async validate(body: LoginAccountDto): Promise<ValidUser | null> {
         const response = await this.accounts.findByEmailorNull(body.email);
         if (!response) return null;
         if (
@@ -49,29 +52,32 @@ export class AuthService {
     async authenticate(body: LoginAccountDto) {
         const response = await this.validate(body);
         if (!response) throw new UnauthorizedException();
-        return this.signIn(response);
+        return this.sign_in(response);
     }
 
-    signIn(body: ValidatedUser) {
+    sign_in(body: ValidUser) {
         const token = this.jwt.sign(body);
         return { token };
     }
 
     async getMe(id: number) {
         const response = await this.accounts.findById(id);
-        const actions = {
-            [ACCOUNT_ROLES_ENUM.ADMIN]: async (id: number) =>
-                this.admin.findByAccId(id),
-            [ACCOUNT_ROLES_ENUM.EMPLOYEE]: async (id: number) =>
-                this.person.findByAccId(id),
-            [ACCOUNT_ROLES_ENUM.COMPANY]: async (id: number) =>
-                this.organization.findByAccId(id),
+        const actions: Record<
+            string,
+            (id: number) => Promise<Person | Admin | Company>
+        > = {
+            [ACCOUNT_ROLES_ENUM.EMPLOYEE]: async (id: number) => {
+                return this.person.findByAccId(id);
+            },
+            [ACCOUNT_ROLES_ENUM.ADMIN]: async (id: number) => {
+                return this.admin.findByAccId(id);
+            },
+            [ACCOUNT_ROLES_ENUM.COMPANY]: async (id: number) => {
+                return this.company.findByAccId(id);
+            },
         };
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const action = actions[response.role];
-        if (!action) throw new BadRequestException('Invalid account role');
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        return action(id);
+        if (action) return action(id);
+        throw new BadRequestException('invalid role');
     }
 }

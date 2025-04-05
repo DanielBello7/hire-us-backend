@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { PromotionsService } from './promotions.service';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { SessionGuard } from 'src/auth/guards/session.guard';
 
@@ -20,19 +19,18 @@ export class PromotionsController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: Record<string, any>) {
+    get(@Query() query: Record<string, any>) {
         return this.promotions.get(query);
     }
 
     @UseGuards(SessionGuard)
     @Get('employee/:id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
+    one(@Param('id', ParseIntPipe) id: number) {
         return this.promotions.promote(id);
     }
 
-    @UseGuards(SessionGuard)
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(AuthGuard(), RolesGuard)
+    @UseGuards(SessionGuard, RolesGuard)
     @Post()
     create(@Body() body: CreatePromotionDto) {
         return this.promotions.create(body);

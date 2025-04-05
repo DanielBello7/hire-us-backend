@@ -18,14 +18,8 @@ export class PersonController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: Record<string, any>) {
+    get(@Query() query: Record<string, any>) {
         return this.person.get(query);
-    }
-
-    @UseGuards(SessionGuard)
-    @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.person.findById(id);
     }
 
     @UseGuards(SessionGuard)
@@ -35,5 +29,11 @@ export class PersonController {
         @Body() body: UpdatePersonDto,
     ) {
         return this.person.modify(id, body);
+    }
+
+    @UseGuards(SessionGuard)
+    @Get(':id')
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.person.findById(id);
     }
 }
