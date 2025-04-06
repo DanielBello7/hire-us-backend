@@ -23,7 +23,7 @@ export class BranchController {
 
     @UseGuards(SessionGuard)
     @Get()
-    findAll(@Query() query: Record<string, any>) {
+    get(@Query() query: Record<string, any>) {
         return this.branch.get(query);
     }
 

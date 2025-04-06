@@ -7,6 +7,7 @@ import {
     Patch,
     UseGuards,
     Query,
+    Delete,
 } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
@@ -38,7 +39,7 @@ export class EmployeeController {
 
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(SessionGuard, RolesGuard)
-    @Patch(':id/terminate/')
+    @Delete(':id/terminate/')
     terminate(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: LayoffEmployeeDto,

@@ -25,7 +25,7 @@ export class ReviewsController {
 
     @UseGuards(SessionGuard)
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
+    find(@Param('id', ParseIntPipe) id: number) {
         return this.reviews.findById(id);
     }
 

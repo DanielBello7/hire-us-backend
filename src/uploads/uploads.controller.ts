@@ -7,6 +7,8 @@ import {
     Req,
     UseInterceptors,
     UploadedFiles,
+    HttpStatus,
+    ParseFilePipeBuilder,
 } from '@nestjs/common';
 import { UploadsService } from './uploads.service';
 import { ExpressRequest } from 'src/auth/auth.controller';
@@ -29,7 +31,20 @@ export class UploadsController {
     @Post('avatar')
     @UseInterceptors(FilesInterceptor('files'))
     create(
-        @UploadedFiles() files: Express.Multer.File[],
+        @UploadedFiles(
+            new ParseFilePipeBuilder()
+                .addFileTypeValidator({
+                    fileType: /(jpg|png|jpeg)$/,
+                })
+                .addMaxSizeValidator({
+                    maxSize: 50 * 1024, // 50KB
+                })
+                .build({
+                    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+                    fileIsRequired: true,
+                }),
+        )
+        files: Express.Multer.File[],
         @Req() req: ExpressRequest,
     ) {
         const user: ValidUser = req.user;

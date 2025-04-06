@@ -1,13 +1,4 @@
-import {
-    Body,
-    Controller,
-    Get,
-    Param,
-    ParseIntPipe,
-    Post,
-    Query,
-    UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ResponseService } from './response.service';
 import { ACCOUNT_ROLES_ENUM, AllowRoles, RolesGuard } from '@app/roles';
 import { CreateResponseDto } from './dto/create-response.dto';
@@ -25,11 +16,8 @@ export class ResponseController {
 
     @AllowRoles(ACCOUNT_ROLES_ENUM.EMPLOYEE)
     @UseGuards(SessionGuard, RolesGuard)
-    @Post(':id/submit/')
-    submit(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() body: CreateResponseDto,
-    ) {
+    @Post('submit/')
+    submit(@Body() body: CreateResponseDto) {
         return this.response.save(body);
     }
 }

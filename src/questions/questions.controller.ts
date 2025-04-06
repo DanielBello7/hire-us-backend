@@ -24,12 +24,6 @@ export class QuestionsController {
         return this.questions.get(query);
     }
 
-    @UseGuards(SessionGuard)
-    @Get(':id')
-    one(@Param('id', ParseIntPipe) id: number) {
-        return this.questions.findById(id);
-    }
-
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(SessionGuard, RolesGuard)
     @Patch(':id')

@@ -8,9 +8,9 @@ import {
     Body,
     Query,
 } from '@nestjs/common';
-import { CreateProgressDto } from './dto/create-progress.dto';
 import { ProgressService } from './progress.service';
 import { SessionGuard } from 'src/auth/guards/session.guard';
+import { CreateProgressDto } from './dto/create-progress.dto';
 
 @Controller('progress')
 export class ProgressController {

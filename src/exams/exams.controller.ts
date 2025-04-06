@@ -22,13 +22,6 @@ import { CreateQuestionDto } from 'src/questions/dto/create-question.dto';
 export class ExamsController {
     constructor(private readonly exams: ExamsService) {}
 
-    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
-    @UseGuards(SessionGuard, RolesGuard)
-    @Delete('exam/:id')
-    deleteExamQuestions(@Param('id', ParseIntPipe) id: number) {
-        return this.exams.deleteQtn(id);
-    }
-
     @UseGuards(SessionGuard)
     @Get()
     get(@Query() query: Record<string, any>) {
@@ -84,6 +77,13 @@ export class ExamsController {
 
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(SessionGuard, RolesGuard)
+    @Delete(':id/questions/')
+    deleteExamQuestions(@Param('id', ParseIntPipe) id: number) {
+        return this.exams.deleteQtn(id);
+    }
+
+    @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
+    @UseGuards(SessionGuard, RolesGuard)
     @Post(':id/eligible_positions')
     addEligiblePositions(
         @Param('id', ParseIntPipe) id: number,
@@ -104,21 +104,21 @@ export class ExamsController {
 
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(SessionGuard, RolesGuard)
-    @Delete(':exam/eligible_positions/:id')
+    @Delete(':_id/eligible_positions/:id')
     removeEligiblePositions(
-        @Param('exam', ParseIntPipe) exam: number,
+        @Param('_id', ParseIntPipe) _id: number,
         @Param('id', ParseIntPipe) id: number,
     ) {
-        return this.exams.updateEligiblePositions(exam, [], [id]);
+        return this.exams.updateEligiblePositions(_id, [], [id]);
     }
 
     @AllowRoles(ACCOUNT_ROLES_ENUM.ADMIN, ACCOUNT_ROLES_ENUM.COMPANY)
     @UseGuards(SessionGuard, RolesGuard)
-    @Delete(':exam/ineligible_employees/:id')
+    @Delete(':_id/ineligible_employees/:id')
     removeIneligibleEmployees(
-        @Param('exam', ParseIntPipe) exam: number,
+        @Param('_id', ParseIntPipe) _id: number,
         @Param('id', ParseIntPipe) id: number,
     ) {
-        return this.exams.updateIneligibleEmployees(exam, [], [id]);
+        return this.exams.updateIneligibleEmployees(_id, [], [id]);
     }
 }
